@@ -1613,9 +1613,9 @@ const SCHEDULE = [
     events: [
       { time: '07:00', what: '기상 및 아침 식사', note: '호텔 조식 · ~ 08:00' },
       { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인' },
-      { time: '09:30', what: '공연 관람 · 점프', note: '서울 중구 경향아트힐 · ~11:00' },
-      { time: '11:20', what: '서울 자유 여행 시작', note: '경복궁 주차장에서 조별 출발' },
-      { time: '20:30', what: '조별 지정 장소 집결', note: '조장 인원 확인' },
+      { time: '09:30', what: '공연 관람 · 점프', note: '서울 중구 명보아트홀 · ~11:00' },
+      { time: '11:20', what: '서울 자유 여행 시작', note: '명보아트홀에서 조별 출발' },
+      { time: '20:30', what: '경복궁 주차장 집결', note: '조장 인원 확인' },
       { time: '21:00', what: '인원 확인 후 숙소로 이동', note: '버스 탑승' },
       { time: '22:00', what: '숙소 도착', note: '조별 점호 · 취침' }
     ]
@@ -1682,14 +1682,15 @@ const SEOUL_ZONES = [
 ];
 
 const SEOUL_INFO = {
-  showVenue: '경향아트힐',
+  showVenue: '명보아트홀',
   showAddress: '서울 중구 마른내로 47',
   showTime: '09:30 ~ 11:00',
   showName: '점프 (JUMP)',
-  freeStart: '경복궁 주차장',
+  freeStart: '명보아트홀',
   freeStartTime: '11:20',
+  meetPoint: '경복궁 주차장',
   meetTime: '20:30',
-  meetNote: '조별 지정 장소'
+  meetNote: '경복궁 주차장'
 };
 
 // 전주한옥마을
@@ -2270,9 +2271,23 @@ function renderMyCourseCard() {
     `;
   }
 
-  const courseList = Array.isArray(g.course_list) && g.course_list.length > 0
-    ? g.course_list
-    : (g.course ? g.course.split(/→|->|→/).map(p => p.trim()).filter(Boolean) : []);
+  // 코스 리스트 결정 (우선순위: course_list > course > theme)
+  // → 와 - 등 다양한 구분자로 분리
+  function parseSteps(str) {
+    if (!str) return [];
+    return str.split(/\s*(?:→|->|➡|▶|▷|–|—|-(?!\d))\s*/)
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+  }
+
+  let courseList = [];
+  if (Array.isArray(g.course_list) && g.course_list.length > 0) {
+    courseList = g.course_list;
+  } else if (g.course) {
+    courseList = parseSteps(g.course);
+  } else if (g.theme) {
+    courseList = parseSteps(g.theme);
+  }
 
   const leader = g.leader || {};
   const teacher = g.teacher || g.area || '';
@@ -2288,18 +2303,21 @@ function renderMyCourseCard() {
       `).join('')
     : '<div style="color:var(--coral-ink);opacity:0.6;font-size:12px;padding:8px 0;">세부 코스가 아직 등록되지 않았어요</div>';
 
+  // theme이 course_list와 같은 경우 상단 theme 표시 생략 (중복 방지)
+  const showTheme = g.theme && courseList.length === 0;
+
   return `
     <div class="course-card">
       <div class="cc-head">
         <div class="cc-label">내 조 세부 코스</div>
         <div class="cc-badge">${escapeHtml(s.group)}조</div>
       </div>
-      ${g.theme ? `<div class="cc-theme">${escapeHtml(g.theme)}</div>` : ''}
+      ${showTheme ? `<div class="cc-theme">${escapeHtml(g.theme)}</div>` : ''}
 
       <div class="cc-stops">
         <div class="cc-range">
-          <span><b>11:20</b> 경복궁 주차장 출발</span>
-          <span><b>20:30</b> 집결</span>
+          <span><b>11:20</b> 명보아트홀 출발</span>
+          <span><b>20:30</b> 경복궁 주차장 집결</span>
         </div>
         ${stopsHTML}
       </div>
@@ -2506,9 +2524,13 @@ function renderSeoul() {
     <div class="meet-banner">
       <div class="mb-left">
         <div class="mb-label">저녁 집결</div>
-        <div class="mb-time">${SEOUL_INFO.meetTime} · 조별 지정 장소</div>
-        <div class="mb-place">조장이 공지한 장소로 이동</div>
+        <div class="mb-time">${SEOUL_INFO.meetTime} · 경복궁 주차장</div>
+        <div class="mb-place">조장이 인원 확인 후 버스로 이동</div>
       </div>
+      <a href="${kakaoMapLink('경복궁 주차장')}" target="_blank" class="map-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        지도
+      </a>
     </div>
 
     <div class="section-label" style="padding:0;margin-bottom:10px">지역별 인솔 교사</div>
