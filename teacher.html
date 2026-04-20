@@ -1146,74 +1146,82 @@ function loadKakaoMap() {
   if (!KAKAO_APP_KEY) {
     document.getElementById('map').innerHTML = `
       <div style="padding:40px 20px; text-align:center; color:var(--warn);">
-        ⚠️ Kakao Map 키가 설정되지 않았습니다.<br>
-        <span style="font-size:12px; color:var(--ink-mute);">
-          Firebase_설정가이드.md 의 Part 2 참고
-        </span>
+        ⚠️ Kakao Map 키가 설정되지 않았습니다.
       </div>`;
     return;
   }
+
+  // 전역 에러 캐처 (SDK 내부 에러 포착)
+  const originalError = window.onerror;
+  let sdkErrorCaptured = null;
+  window.onerror = function(msg, src) {
+    if (src && src.includes('kakao')) {
+      sdkErrorCaptured = msg;
+    }
+    if (originalError) return originalError.apply(this, arguments);
+  };
+
   const script = document.createElement('script');
   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`;
+
   script.onload = () => {
+    // 스크립트는 로드됐지만 kakao 객체가 없으면 SDK 내부 에러
+    if (!window.kakao || !window.kakao.maps) {
+      showMapError('SDK 로딩은 됐지만 kakao.maps 객체 없음',
+        'JavaScript 키가 잘못됐거나 도메인 미등록일 가능성',
+        sdkErrorCaptured);
+      return;
+    }
     try {
       kakao.maps.load(() => {
         try {
           initKakaoMap();
         } catch(e) {
-          document.getElementById('map').innerHTML = `
-            <div style="padding:40px 20px; text-align:center; color:var(--accent);">
-              ❌ 지도 초기화 실패<br>
-              <span style="font-size:11px; color:var(--ink-mute); font-family:monospace;">${e.message}</span>
-            </div>`;
+          showMapError('지도 초기화 중 에러', e.message);
         }
       });
     } catch(e) {
-      document.getElementById('map').innerHTML = `
-        <div style="padding:40px 20px; text-align:center; color:var(--accent);">
-          ❌ kakao.maps.load 실패<br>
-          <span style="font-size:11px; color:var(--ink-mute); font-family:monospace;">${e.message}</span>
-        </div>`;
+      showMapError('kakao.maps.load 호출 실패', e.message);
     }
   };
+
   script.onerror = (e) => {
-    // 카카오 에러 응답 확인을 위해 직접 fetch
-    fetch(`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`)
-      .then(r => r.text())
-      .then(txt => {
-        let errMsg = '';
-        if (txt.includes('InvalidDomain') || txt.includes('domain')) {
-          errMsg = '🚫 <strong>도메인 등록 문제</strong><br>카카오 Developers에 <code>https://wataryu00-boop.github.io</code> 등록 확인';
-        } else if (txt.includes('KeyAuthFailed') || txt.includes('appkey')) {
-          errMsg = '🔑 <strong>API 키 문제</strong><br>JavaScript 키가 잘못되었습니다';
-        } else if (txt.includes('Disabled')) {
-          errMsg = '⚙️ <strong>앱 비활성 상태</strong><br>카카오 Developers에서 앱 활성화 확인';
-        } else if (txt.includes('Quota')) {
-          errMsg = '📊 <strong>할당량 초과</strong><br>월 30만회 한도를 초과했습니다';
-        } else {
-          errMsg = `❓ 알 수 없는 에러:<br><code style="font-size:10px;">${txt.substring(0, 200)}</code>`;
-        }
-        document.getElementById('map').innerHTML = `
-          <div style="padding:40px 20px; text-align:left; color:var(--ink); max-width:400px; margin:0 auto;">
-            <div style="color:var(--accent); font-weight:600; margin-bottom:12px; text-align:center;">❌ Kakao Map 로딩 실패</div>
-            <div style="font-size:13px; line-height:1.7;">${errMsg}</div>
-            <div style="margin-top:16px; padding:10px; background:var(--surface-2); font-size:11px; color:var(--ink-mute);">
-              💡 F12 → Console 탭에서 더 자세한 에러 확인 가능
-            </div>
-          </div>`;
-      })
-      .catch(fetchErr => {
-        document.getElementById('map').innerHTML = `
-          <div style="padding:40px 20px; text-align:center; color:var(--accent);">
-            ❌ Kakao Map 로딩 실패<br>
-            <span style="font-size:12px; color:var(--ink-mute);">
-              네트워크 오류 또는 CSP 차단<br>
-              ${fetchErr.message}
-            </span>
-          </div>`;
-      });
+    showMapError('스크립트 로딩 실패 (script.onerror)',
+      '네트워크 차단(CSP/AdBlock/회사망)이거나<br>카카오 서버 응답 오류');
   };
+
   document.head.appendChild(script);
+
+  // 10초 내에 로드 안 되면 타임아웃
+  setTimeout(() => {
+    if (!window.kakao || !window.kakao.maps) {
+      if (!document.getElementById('map').innerHTML.includes('❌')) {
+        showMapError('10초 타임아웃',
+          '스크립트가 로드되지 않음. 키/도메인 등록 확인 필요',
+          sdkErrorCaptured);
+      }
+    }
+  }, 10000);
+}
+
+function showMapError(title, detail, extra) {
+  document.getElementById('map').innerHTML = `
+    <div style="padding:30px 20px; text-align:left; color:var(--ink); max-width:440px; margin:0 auto;">
+      <div style="color:var(--accent); font-weight:700; font-size:14px; margin-bottom:16px; text-align:center;">
+        ❌ ${title}
+      </div>
+      <div style="background:var(--surface-2); padding:14px; border:1px solid var(--line); font-size:12px; line-height:1.7; color:var(--ink-soft); margin-bottom:14px;">
+        ${detail}
+        ${extra ? `<br><br><code style="font-size:10px; color:var(--warn);">${extra}</code>` : ''}
+      </div>
+      <div style="background:var(--bg); padding:12px; border-left:2px solid var(--accent); font-size:11px; color:var(--ink-mute); line-height:1.8;">
+        <strong>💡 확인 순서:</strong><br>
+        1. 카카오 JavaScript 키가 맞는지 (네이티브/REST키 아님)<br>
+        2. 카카오 Developers 플랫폼에 <code>https://wataryu00-boop.github.io</code> 등록됐는지<br>
+        3. 앱이 활성화 상태인지<br>
+        4. F12 → Console 탭에서 정확한 에러 확인
+      </div>
+    </div>`;
 }
 
 function initKakaoMap() {
