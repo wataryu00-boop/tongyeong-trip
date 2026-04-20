@@ -246,6 +246,42 @@
     border-radius: 999px;
     letter-spacing: -0.01em;
   }
+  .home-head .head-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .home-head .homeroom-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 11px 7px 9px;
+    border-radius: 999px;
+    text-decoration: none;
+    line-height: 1;
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+  .home-head .homeroom-btn:active {
+    transform: scale(0.96);
+    background: var(--surface-2);
+  }
+  .home-head .homeroom-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: var(--coral);
+  }
+  .home-head .homeroom-btn .hr-name {
+    font-weight: 600;
+  }
+  .home-head .homeroom-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
   /* ═══════════════════════════════════════════════════
      공통 카드 · 섹션
@@ -1195,6 +1231,146 @@
     font-size: 11px;
   }
 
+  /* ═══════════════════════════════════════════════════
+     홈 전용 조원 콜 그리드 (큰 카드 + 전화 버튼)
+     ═══════════════════════════════════════════════════ */
+  .grp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .grp-head-left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .grp-head-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .grp-head-count {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .grp-head-theme {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 3px;
+    font-family: 'Gowun Batang', serif;
+  }
+  .grp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 360px) {
+    .grp-grid { grid-template-columns: 1fr; }
+  }
+  .grp-card {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 12px 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 54px;
+    position: relative;
+    overflow: hidden;
+  }
+  .grp-card.leader {
+    background: linear-gradient(180deg, #FFF9EE 0%, #FEF5E0 100%);
+    border-color: rgba(217, 169, 33, 0.35);
+  }
+  .grp-card.me {
+    background: var(--coral-bg);
+    border-color: rgba(216, 90, 48, 0.35);
+  }
+  .grp-card.leader.me {
+    background: linear-gradient(135deg, #FFF3D6 0%, #FDE3D3 100%);
+    border-color: rgba(216, 90, 48, 0.45);
+  }
+  .grp-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+  }
+  .grp-star {
+    font-size: 12px;
+    color: var(--amber, #d9a921);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .grp-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .grp-card.leader .grp-name { color: #8a6d10; }
+  .grp-card.me .grp-name { color: var(--coral-ink); }
+  .grp-card.me .grp-me-mark {
+    font-size: 9px;
+    color: var(--coral);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-left: 4px;
+    flex-shrink: 0;
+  }
+  .grp-call {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--coral);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform 0.12s ease;
+  }
+  .grp-call:active { transform: scale(0.9); }
+  .grp-call svg {
+    width: 15px;
+    height: 15px;
+    stroke: #fff;
+    stroke-width: 2.2;
+  }
+  .grp-call.disabled {
+    background: var(--surface-2);
+    pointer-events: none;
+  }
+  .grp-call.disabled svg { stroke: var(--ink-3); }
+
+  .grp-empty {
+    padding: 30px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-3);
+    background: var(--surface-2);
+    border-radius: 12px;
+  }
+
+  /* 홈 조 카드 푸터(담당 교사 등) */
+  .grp-foot {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px dashed var(--line);
+    font-size: 11px;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .grp-foot b { color: var(--ink-2); font-weight: 600; }
 
   .placeholder {
     padding: 60px 24px;
@@ -1352,7 +1528,13 @@
           <div class="hello">TONGYEONG 2026</div>
           <div class="name" id="homeGreeting">안녕하세요</div>
         </div>
-        <div class="group-badge" id="homeGroupBadge">-조</div>
+        <div class="head-right">
+          <a id="homeroomBtn" class="homeroom-btn disabled" href="#" aria-label="담임 선생님 전화">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span class="hr-name" id="homeroomBtnName">담임</span>
+          </a>
+          <div class="group-badge" id="homeGroupBadge">-조</div>
+        </div>
       </div>
 
       <!-- D-day -->
@@ -1385,15 +1567,10 @@
         </div>
       </div>
 
-      <!-- 오늘의 일정 -->
+      <!-- 내 조 (메인) -->
       <div class="section">
-        <div class="section-label" id="todayLabel">오늘의 일정</div>
-        <div class="schedule-day-switcher" id="daySwitcher">
-          <button class="schedule-day-btn" data-day="1">5/6 (수)</button>
-          <button class="schedule-day-btn" data-day="2">5/7 (목)</button>
-          <button class="schedule-day-btn" data-day="3">5/8 (금)</button>
-        </div>
-        <div class="schedule-list" id="scheduleList">
+        <div class="section-label" id="homeGroupLabel">내 조</div>
+        <div id="homeGroupBox">
           <!-- JS로 채움 -->
         </div>
       </div>
@@ -1657,6 +1834,22 @@ const TEACHER_TEL = {
   '박보경': '010-9691-1639'
 };
 
+// 반별 담임 매핑 (2학년 1반 ~ 11반)
+// 값이 빈 문자열이면 담임 버튼이 비활성화되고, TEACHER_TEL에도 있어야 전화 버튼이 작동함
+const HOMEROOM = {
+  1:  '김연경',
+  2:  '김미경',
+  3:  '최선아',
+  4:  '박수현',
+  5:  '강수미',
+  6:  '김동희',
+  7:  '진현창',
+  8:  '송인식',
+  9:  '한호연',
+  10: '박효덕',
+  11: '김혜영'
+};
+
 // 에버랜드 5구역 담당 교사 (PDF 18쪽)
 const EVERLAND_ZONES = [
   { name: '유로피안 어드벤처', emoji: '🏰', teachers: ['성화룡', '김연경', '김미경'] },
@@ -1728,6 +1921,23 @@ function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   })[c]);
+}
+
+// 전화번호 정규화: 숫자만 추출해 tel: 링크에 쓸 수 있는 형태로
+function normalizeTel(raw) {
+  if (!raw) return '';
+  const digits = String(raw).replace(/[^\d]/g, '');
+  if (digits.length < 9) return '';
+  return digits;
+}
+
+// 화면 표시용 포맷: 01012345678 → 010-1234-5678
+function formatTel(raw) {
+  const d = normalizeTel(raw);
+  if (!d) return '';
+  if (d.length === 11) return `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+  return d;
 }
 
 function toast(msg, dur) {
@@ -2078,6 +2288,9 @@ function renderHome() {
   document.getElementById('homeGreeting').textContent = `${s.name}님`;
   document.getElementById('homeGroupBadge').textContent = s.group ? `${s.group}조` : '조 미정';
 
+  // 담임 버튼
+  renderHomeroomBtn();
+
   // D-day
   const dd = getDdayInfo();
   document.getElementById('ddayNum').textContent = dd.num;
@@ -2112,55 +2325,141 @@ function renderHome() {
     </div>
   `;
 
-  // 오늘의 일정
-  renderDayScheduleHome(currentDaySelected || getCurrentTripDay());
+  // 내 조 (조원 콜 그리드)
+  renderHomeGroup();
   renderAlertBanner();
   updateCommBadge();
 }
 
-function renderDayScheduleHome(day) {
-  // 탭 active 상태
-  document.querySelectorAll('#daySwitcher .schedule-day-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.dataset.day, 10) === day);
-  });
-  const isToday = day === getCurrentTripDay() && (new Date() >= TRIP_CONFIG.departDate) && (new Date() <= TRIP_CONFIG.returnDate);
-  document.getElementById('todayLabel').textContent = isToday ? '오늘의 일정' : SCHEDULE[day - 1].date + ' 일정';
+/* ─────────────────────────────────────────────
+   담임 버튼: 학생 class로 HOMEROOM 찾아서 tel: 링크
+   ───────────────────────────────────────────── */
+function renderHomeroomBtn() {
+  const btn = document.getElementById('homeroomBtn');
+  const nameEl = document.getElementById('homeroomBtnName');
+  if (!btn || !nameEl) return;
 
-  const sched = SCHEDULE[day - 1];
-  const now = new Date();
-  const isTripActive = (now >= TRIP_CONFIG.departDate) && (now <= TRIP_CONFIG.returnDate);
-  const isThisDayToday = sched.dateISO === todayISO() && isTripActive;
+  const s = currentStudent;
+  const classNum = s?.classNum; // 숫자 (1~11)
+  const teacher = classNum != null ? HOMEROOM[classNum] : '';
+  const tel = teacher ? normalizeTel(TEACHER_TEL[teacher]) : '';
 
-  // "현재 진행 중" 판정: 이 날이 오늘이고, 이 이벤트와 다음 이벤트 사이의 시간일 때
-  const nowHHMM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  let activeIdx = -1;
-  if (isThisDayToday) {
-    for (let i = 0; i < sched.events.length; i++) {
-      if (sched.events[i].time <= nowHHMM) activeIdx = i;
-    }
+  if (teacher && tel) {
+    btn.classList.remove('disabled');
+    btn.href = `tel:${tel}`;
+    nameEl.textContent = `${teacher} T.`;
+    btn.setAttribute('aria-label', `${teacher} 선생님 전화`);
+    btn.title = `${teacher} 선생님 (${formatTel(tel)})`;
+  } else if (teacher) {
+    // 이름은 있는데 번호가 없는 경우
+    btn.classList.add('disabled');
+    btn.removeAttribute('href');
+    nameEl.textContent = `${teacher} T.`;
+    btn.title = '전화번호가 등록되지 않았어요';
+  } else {
+    btn.classList.add('disabled');
+    btn.removeAttribute('href');
+    nameEl.textContent = '담임';
+    btn.title = '담임 선생님 정보를 불러오는 중...';
   }
-
-  document.getElementById('scheduleList').innerHTML = sched.events.map((e, i) => {
-    const isPast = isThisDayToday && i < activeIdx;
-    const isNow = isThisDayToday && i === activeIdx;
-    const cls = isNow ? 'now' : (isPast ? 'past' : '');
-    return `
-      <div class="schedule-item ${cls}">
-        <div class="time">${e.time}</div>
-        <div class="what">${escapeHtml(e.what)}${e.note ? `<span class="note">${escapeHtml(e.note)}</span>` : ''}</div>
-      </div>
-    `;
-  }).join('');
 }
 
-// day 버튼 수동 전환
+/* ─────────────────────────────────────────────
+   홈 "내 조": 조장 ★ + 이름 + 전화버튼 그리드
+   ───────────────────────────────────────────── */
+function renderHomeGroup() {
+  const box = document.getElementById('homeGroupBox');
+  const labelEl = document.getElementById('homeGroupLabel');
+  if (!box) return;
+
+  const s = currentStudent;
+
+  if (!s.group) {
+    labelEl.textContent = '내 조';
+    box.innerHTML = `<div class="grp-empty">조 편성이 아직 공유되지 않았어요</div>`;
+    return;
+  }
+
+  const g = GROUPS[s.group];
+  if (!g || !g.members || g.members.length === 0) {
+    labelEl.textContent = `${s.group}조`;
+    box.innerHTML = `<div class="grp-empty">${s.group}조 명단을 불러오는 중...</div>`;
+    return;
+  }
+
+  labelEl.textContent = `내 조 · ${s.group}조`;
+
+  const leaderName = g.leader?.name || '';
+  const teacher = g.teacher || g.area || '';
+  const teacherTel = normalizeTel(TEACHER_TEL[teacher]);
+
+  const cardsHTML = g.members.map(m => {
+    const isLeader = leaderName && m.name === leaderName;
+    const isMe = m.id === s.id;
+    const tel = normalizeTel(m.tel);
+    const cls = [
+      'grp-card',
+      isLeader ? 'leader' : '',
+      isMe ? 'me' : ''
+    ].filter(Boolean).join(' ');
+
+    const nameHTML = `
+      <div class="grp-name-wrap">
+        ${isLeader ? '<span class="grp-star">★</span>' : ''}
+        <span class="grp-name">${escapeHtml(m.name)}</span>
+        ${isMe ? '<span class="grp-me-mark">ME</span>' : ''}
+      </div>
+    `;
+
+    // 본인 카드는 전화 버튼 대신 "나" 라벨 느낌으로 비활성
+    let callHTML = '';
+    if (isMe) {
+      callHTML = `<span class="grp-call disabled" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </span>`;
+    } else if (tel) {
+      callHTML = `<a class="grp-call" href="tel:${tel}" aria-label="${escapeHtml(m.name)}에게 전화">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </a>`;
+    } else {
+      callHTML = `<span class="grp-call disabled" title="전화번호 없음">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </span>`;
+    }
+
+    return `<div class="${cls}">${nameHTML}${callHTML}</div>`;
+  }).join('');
+
+  const footHTML = (teacher || g.theme) ? `
+    <div class="grp-foot">
+      <div>
+        ${teacher ? `<b>인솔</b> ${escapeHtml(teacher)} 선생님` : ''}
+      </div>
+      ${teacher && teacherTel ? `<a class="grp-call" style="width:32px;height:32px" href="tel:${teacherTel}" aria-label="${escapeHtml(teacher)} 선생님 전화">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </a>` : ''}
+    </div>
+  ` : '';
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="grp-head">
+        <div class="grp-head-left">
+          <div class="grp-head-title">조원 ${g.members.length}명</div>
+          <div class="grp-head-count">★ 조장 · ME 나</div>
+        </div>
+      </div>
+      ${g.theme ? `<div class="grp-head-theme" style="margin-bottom:14px">${escapeHtml(g.theme)}</div>` : ''}
+      <div class="grp-grid">${cardsHTML}</div>
+      ${footHTML}
+    </div>
+  `;
+}
+
+// (과거 홈의 일정 섹션 렌더러 renderDayScheduleHome — 홈이 조원 그리드로 교체되면서 제거됨)
+
+// day 버튼 수동 전환 (일정 탭 · 장소 탭)
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('#daySwitcher .schedule-day-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentDaySelected = parseInt(btn.dataset.day, 10);
-      renderDayScheduleHome(currentDaySelected);
-    });
-  });
   // 장소 탭 날짜 전환
   document.querySelectorAll('#placeDayTabs .place-day-tab').forEach(btn => {
     btn.addEventListener('click', () => {
