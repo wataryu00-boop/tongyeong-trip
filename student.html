@@ -632,8 +632,570 @@
   .conn-pill.offline { background: var(--red); }
 
   /* ═══════════════════════════════════════════════════
-     플레이스홀더 (공사 중 탭용)
+     📍 장소 탭
      ═══════════════════════════════════════════════════ */
+  .place-day-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 6px 20px 16px;
+    background: var(--bg);
+  }
+  .place-day-tab {
+    flex: 1;
+    padding: 9px 4px;
+    background: var(--surface-2);
+    border: none;
+    border-radius: 10px;
+    color: var(--ink-2);
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .place-day-tab.active {
+    background: var(--ink);
+    color: #fff;
+  }
+  .place-day-tab .tab-sub {
+    display: block;
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  /* 집결 정보 배너 (각 날짜별 최상단) */
+  .meet-banner {
+    background: var(--coral-bg);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .meet-banner .mb-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .meet-banner .mb-label {
+    font-size: 11px;
+    color: var(--coral-ink);
+    opacity: 0.8;
+    margin-bottom: 4px;
+  }
+  .meet-banner .mb-time {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--coral-ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .meet-banner .mb-place {
+    font-size: 12px;
+    color: var(--coral-ink);
+    opacity: 0.9;
+  }
+  .meet-banner .map-btn {
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .meet-banner .map-btn:active { opacity: 0.85; }
+
+  /* 구역 카드 */
+  .zone-card {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .zone-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .zone-emoji {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .zone-name {
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+    letter-spacing: -0.01em;
+  }
+  .zone-note {
+    font-size: 10px;
+    color: var(--ink-3);
+    margin-top: 1px;
+    font-weight: 400;
+  }
+  .zone-teachers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .teacher-chip {
+    background: var(--surface-2);
+    border: none;
+    padding: 7px 12px 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .teacher-chip:active { background: var(--line); }
+  .teacher-chip .phone-ico {
+    width: 12px;
+    height: 12px;
+    color: var(--ink-3);
+  }
+
+  /* 내 조 카드 (서울 탭에서 제일 위에 크게) */
+  .my-group-card {
+    background: var(--coral-bg);
+    border: 0.5px solid rgba(216, 90, 48, 0.18);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .mg-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .mg-badge {
+    background: var(--coral);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+  .mg-label {
+    font-size: 11px;
+    color: var(--coral-ink);
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+  }
+  .mg-theme {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--coral-ink);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .mg-teacher {
+    padding-top: 12px;
+    border-top: 0.5px solid rgba(216, 90, 48, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mg-teacher .mt-label {
+    font-size: 11px;
+    color: var(--coral-ink);
+    opacity: 0.7;
+  }
+  .mg-teacher .mt-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--coral-ink);
+  }
+  .mg-call {
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .mg-call:active { opacity: 0.85; }
+  .mg-empty {
+    font-size: 12px;
+    color: var(--coral-ink);
+    opacity: 0.7;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  /* 정보 카드 (주소·전화) */
+  .info-row {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .info-row-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--line);
+  }
+  .info-row-item:last-child { border-bottom: none; }
+  .info-row-item .ir-ico {
+    width: 16px;
+    height: 16px;
+    color: var(--ink-3);
+    flex-shrink: 0;
+  }
+  .info-row-item .ir-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .info-row-item .ir-action {
+    font-size: 11px;
+    color: var(--coral);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  /* 안내 팁 */
+  .tip-box {
+    background: var(--amber-bg);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--amber-ink);
+    line-height: 1.6;
+    display: flex;
+    gap: 8px;
+  }
+  .tip-box .tip-ico {
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* 공연장 특별 카드 (서울 탭 상단) */
+  .show-card {
+    background: var(--blue-bg);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .show-card .sc-label {
+    font-size: 11px;
+    color: var(--blue-ink);
+    opacity: 0.75;
+    margin-bottom: 4px;
+  }
+  .show-card .sc-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--blue-ink);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .show-card .sc-meta {
+    font-size: 12px;
+    color: var(--blue-ink);
+    opacity: 0.8;
+    margin-bottom: 10px;
+  }
+  .show-card .sc-map {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     📅 일정 탭
+     ═══════════════════════════════════════════════════ */
+  .sched-today-label {
+    background: var(--coral);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-left: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  /* 타임라인 */
+  .timeline {
+    position: relative;
+    padding-left: 8px;
+    margin-bottom: 22px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    bottom: 14px;
+    width: 1.5px;
+    background: var(--line-2);
+  }
+  .tl-item {
+    position: relative;
+    padding: 8px 0 8px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 14px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--line-2);
+    z-index: 1;
+  }
+  .tl-item.now::before {
+    background: var(--coral);
+    border-color: var(--coral);
+    box-shadow: 0 0 0 4px rgba(216, 90, 48, 0.2);
+  }
+  .tl-item.past::before {
+    background: var(--ink-3);
+    border-color: var(--ink-3);
+  }
+  .tl-item.past {
+    opacity: 0.5;
+  }
+  .tl-time {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-2);
+    width: 50px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    padding-top: 1px;
+  }
+  .tl-item.now .tl-time {
+    color: var(--coral-ink);
+  }
+  .tl-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .tl-what {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.4;
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+  }
+  .tl-item.now .tl-what {
+    font-weight: 600;
+    color: var(--coral-ink);
+  }
+  .tl-note {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+
+  /* 내 조 세부 코스 카드 (5/7 핵심) */
+  .course-card {
+    background: var(--coral-bg);
+    border: 0.5px solid rgba(216, 90, 48, 0.18);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .course-card .cc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .course-card .cc-label {
+    font-size: 11px;
+    color: var(--coral-ink);
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+  }
+  .course-card .cc-badge {
+    background: var(--coral);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+  .course-card .cc-theme {
+    font-size: 12px;
+    color: var(--coral-ink);
+    opacity: 0.85;
+    margin-bottom: 14px;
+    font-family: 'Gowun Batang', serif;
+    line-height: 1.5;
+  }
+  .course-card .cc-stops {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 14px 14px 14px 16px;
+  }
+  .course-card .cc-range {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--coral-ink);
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 0.5px solid rgba(216, 90, 48, 0.15);
+    font-weight: 500;
+  }
+  .course-card .cc-range b {
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .course-stop {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .course-stop-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--coral);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .course-stop-name {
+    flex: 1;
+    font-size: 14px;
+    color: var(--coral-ink);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  .course-stop-map {
+    background: rgba(255, 255, 255, 0.7);
+    border: 0.5px solid rgba(216, 90, 48, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--coral-ink);
+    font-size: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .course-stop-map:active { opacity: 0.7; }
+  .course-card .cc-leader {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 0.5px solid rgba(216, 90, 48, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--coral-ink);
+  }
+  .course-card .cc-leader .cc-call {
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* 조원 명단 박스 (5/6, 5/8용) */
+  .members-card {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .mc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .mc-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .mc-badge {
+    background: var(--coral-bg);
+    color: var(--coral-ink);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .mc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 10px;
+  }
+  .mc-member {
+    font-size: 12px;
+    color: var(--ink);
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .mc-member.me {
+    color: var(--coral);
+    font-weight: 600;
+  }
+  .mc-member.leader::before {
+    content: '★';
+    color: var(--amber);
+    font-size: 11px;
+  }
+
+
   .placeholder {
     padding: 60px 24px;
     text-align: center;
@@ -867,7 +1429,7 @@
       </div>
     </section>
 
-    <!-- 📅 일정 탭 (플레이스홀더) -->
+    <!-- 📅 일정 탭 -->
     <section class="panel" id="panel-sched">
       <div class="page-head">
         <div>
@@ -875,11 +1437,24 @@
           <div class="h-title">일정</div>
         </div>
       </div>
-      <div class="placeholder">
-        <div class="ico">📅</div>
-        <div class="title">일정 탭은 다음 업데이트에서 완성됩니다</div>
-        <div class="desc">3일 전체 일정 + 내 조 코스가 날짜별로<br>한 눈에 보여질 예정이에요.</div>
+
+      <!-- 날짜 탭 (장소 탭과 같은 스타일 재활용) -->
+      <div class="place-day-tabs" id="schedDayTabs">
+        <button class="place-day-tab" data-sday="1">
+          5/6 (수)
+          <span class="tab-sub">에버랜드</span>
+        </button>
+        <button class="place-day-tab" data-sday="2">
+          5/7 (목)
+          <span class="tab-sub">서울</span>
+        </button>
+        <button class="place-day-tab" data-sday="3">
+          5/8 (금)
+          <span class="tab-sub">전주</span>
+        </button>
       </div>
+
+      <div class="section" id="schedContent"></div>
     </section>
 
     <!-- 📍 장소 탭 (플레이스홀더) -->
@@ -890,11 +1465,25 @@
           <div class="h-title">장소</div>
         </div>
       </div>
-      <div class="placeholder">
-        <div class="ico">📍</div>
-        <div class="title">장소 탭은 다음 업데이트에서 완성됩니다</div>
-        <div class="desc">에버랜드 교사 배치 · 서울 자유여행 코스<br>전주한옥마을 정보가 들어갑니다.</div>
+
+      <!-- 날짜 탭 -->
+      <div class="place-day-tabs" id="placeDayTabs">
+        <button class="place-day-tab" data-pday="1">
+          5/6 에버랜드
+          <span class="tab-sub">수요일</span>
+        </button>
+        <button class="place-day-tab" data-pday="2">
+          5/7 서울
+          <span class="tab-sub">목요일</span>
+        </button>
+        <button class="place-day-tab" data-pday="3">
+          5/8 전주
+          <span class="tab-sub">금요일</span>
+        </button>
       </div>
+
+      <!-- 내용 (JS로 채움) -->
+      <div class="section" id="placeContent"></div>
     </section>
 
     <!-- 📢 소통 탭 (플레이스홀더) -->
@@ -1043,6 +1632,76 @@ const SCHEDULE = [
     ]
   }
 ];
+
+/* ═══════════════════════════════════════════════════
+   장소 데이터 (PDF 기반)
+   ═══════════════════════════════════════════════════ */
+
+// 담임/인솔교사 전화번호 (PDF 11쪽)
+const TEACHER_TEL = {
+  '정학룡': '010-3073-1707',
+  '성화룡': '010-2710-5248',
+  '김연경': '010-2128-6355',
+  '김미경': '010-7670-8551',
+  '최선아': '010-8606-9596',
+  '박수현': '010-7366-1776',
+  '강수미': '010-4541-7685',
+  '김동희': '010-2312-8254',
+  '진현창': '010-7378-1439',
+  '송인식': '010-3341-5633',
+  '한호연': '010-6677-6706',
+  '박효덕': '010-9427-1283',
+  '김혜영': '010-7714-3403',
+  '강성두': '010-5065-4878',
+  '최명기': '010-2713-3745',
+  '박보경': '010-9691-1639'
+};
+
+// 에버랜드 5구역 담당 교사 (PDF 18쪽)
+const EVERLAND_ZONES = [
+  { name: '유로피안 어드벤처', emoji: '🏰', teachers: ['성화룡', '김연경', '김미경'] },
+  { name: '매직랜드', emoji: '🎢', teachers: ['최선아', '박수현', '강성두'] },
+  { name: '주토피아', emoji: '🦁', teachers: ['강수미', '김동희', '진현창'] },
+  { name: '아메리칸 어드벤처', emoji: '🤠', teachers: ['박보경', '송인식', '한호연'] },
+  { name: '글로벌 페어', emoji: '🌏', teachers: ['박효덕', '김혜영', '최명기'] }
+];
+
+const EVERLAND_INFO = {
+  address: '경기 용인시 처인구 에버랜드로 199',
+  tel: '031-320-5000',
+  meetPoint: '정문 옆 CU편의점',
+  meetTime: '20:30',
+  mapQuery: '에버랜드 정문'
+};
+
+// 서울 자유여행 3구역 담당 교사 (PDF 25쪽)
+const SEOUL_ZONES = [
+  { name: '마포구 · 영등포구 일대', emoji: '🌉', teachers: ['김연경', '김미경', '최선아', '박수현', '강성두'] },
+  { name: '종로구 · 중구 일대', emoji: '🏛️', teachers: ['성화룡', '강수미', '김동희', '진현창', '박보경'], note: '경복궁 주차장 포함' },
+  { name: '강남구 · 송파구 일대', emoji: '🌆', teachers: ['송인식', '한호연', '박효덕', '김혜영', '최명기'] }
+];
+
+const SEOUL_INFO = {
+  showVenue: '경향아트힐',
+  showAddress: '서울 중구 마른내로 47',
+  showTime: '09:30 ~ 11:00',
+  showName: '점프 (JUMP)',
+  freeStart: '경복궁 주차장',
+  freeStartTime: '11:20',
+  meetTime: '20:30',
+  meetNote: '조별 지정 장소'
+};
+
+// 전주한옥마을
+const JEONJU_INFO = {
+  name: '전주한옥마을',
+  address: '전북 전주시 완산구 기린대로 99',
+  tel: '063-282-1330',
+  activityTime: '11:00 ~ 14:00',
+  meetPoint: '버스에서 내린 곳 (당일 안내)',
+  meetTime: '13:50',
+  mapQuery: '전주한옥마을'
+};
 
 /* ═══════════════════════════════════════════════════
    상태 (Firebase에서 로드)
@@ -1219,7 +1878,9 @@ function initFirebase() {
             area: g.area || g.teacher || '',
             teacher: g.teacher || '',
             leader: leaderObj,
-            members: memberObjs
+            members: memberObjs,
+            course: g.course || '',
+            course_list: Array.isArray(g.course_list) ? g.course_list : []
           };
         });
         GROUPS = out;
@@ -1400,6 +2061,8 @@ function switchTab(name) {
   window.scrollTo({ top: 0, behavior: 'instant' });
 
   if (name === 'home') renderHome();
+  if (name === 'sched') renderSched();
+  if (name === 'place') renderPlace();
   if (name === 'comm') markCommAsSeen();
 }
 
@@ -1497,7 +2160,403 @@ document.addEventListener('DOMContentLoaded', () => {
       renderDayScheduleHome(currentDaySelected);
     });
   });
+  // 장소 탭 날짜 전환
+  document.querySelectorAll('#placeDayTabs .place-day-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPlaceDay = parseInt(btn.dataset.pday, 10);
+      renderPlace();
+    });
+  });
+  // 일정 탭 날짜 전환
+  document.querySelectorAll('#schedDayTabs .place-day-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSchedDay = parseInt(btn.dataset.sday, 10);
+      renderSched();
+    });
+  });
 });
+
+/* ═══════════════════════════════════════════════════
+   📅 일정 탭 렌더링
+   ═══════════════════════════════════════════════════ */
+let currentSchedDay = null;
+
+function renderSched() {
+  if (currentSchedDay === null) currentSchedDay = getCurrentTripDay();
+  const day = currentSchedDay;
+
+  // 탭 active 상태
+  document.querySelectorAll('#schedDayTabs .place-day-tab').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.sday, 10) === day);
+  });
+
+  const content = document.getElementById('schedContent');
+  const sched = SCHEDULE[day - 1];
+  const now = new Date();
+  const isTripActive = (now >= TRIP_CONFIG.departDate) && (now <= TRIP_CONFIG.returnDate);
+  const isToday = sched.dateISO === todayISO() && isTripActive;
+
+  // 현재 진행 중 이벤트 idx 계산
+  const nowHHMM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  let activeIdx = -1;
+  if (isToday) {
+    for (let i = 0; i < sched.events.length; i++) {
+      if (sched.events[i].time <= nowHHMM) activeIdx = i;
+    }
+  }
+
+  // 날짜 헤더
+  let html = `
+    <div style="display:flex;align-items:baseline;margin-bottom:14px;padding:0 4px;">
+      <div style="font-size:13px;color:var(--ink-2);">${escapeHtml(sched.date)}</div>
+      ${isToday ? '<span class="sched-today-label">오늘</span>' : ''}
+      <div style="flex:1"></div>
+      <div style="font-size:11px;color:var(--ink-3);" class="serif">${escapeHtml(sched.title)}</div>
+    </div>
+  `;
+
+  // 내 조 세부 코스 (5/7 서울만)
+  if (day === 2) {
+    html += renderMyCourseCard();
+  }
+
+  // 타임라인
+  html += '<div class="section-label" style="padding:0;margin-bottom:10px;">타임라인</div>';
+  html += '<div class="timeline">';
+  sched.events.forEach((e, i) => {
+    const isPast = isToday && i < activeIdx;
+    const isNow = isToday && i === activeIdx;
+    const cls = isNow ? 'now' : (isPast ? 'past' : '');
+    html += `
+      <div class="tl-item ${cls}">
+        <div class="tl-time">${e.time}</div>
+        <div class="tl-content">
+          <div class="tl-what">${escapeHtml(e.what)}</div>
+          ${e.note ? `<div class="tl-note">${escapeHtml(e.note)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+
+  // 내 조 명단 (5/6, 5/8)
+  if (day !== 2) {
+    html += renderGroupMembersCard();
+  }
+
+  content.innerHTML = html;
+}
+
+function renderMyCourseCard() {
+  const s = currentStudent;
+  if (!s || !s.group) {
+    return `
+      <div class="course-card">
+        <div class="mg-empty" style="color:var(--coral-ink);opacity:0.7;text-align:center;padding:10px 0;font-size:13px;">
+          조 편성이 아직 공유되지 않았어요
+        </div>
+      </div>
+    `;
+  }
+
+  const g = GROUPS[s.group];
+  if (!g) {
+    return `
+      <div class="course-card">
+        <div class="mg-empty" style="color:var(--coral-ink);opacity:0.7;text-align:center;padding:10px 0;font-size:13px;">
+          ${s.group}조 정보를 불러오는 중...
+        </div>
+      </div>
+    `;
+  }
+
+  const courseList = Array.isArray(g.course_list) && g.course_list.length > 0
+    ? g.course_list
+    : (g.course ? g.course.split(/→|->|→/).map(p => p.trim()).filter(Boolean) : []);
+
+  const leader = g.leader || {};
+  const teacher = g.teacher || g.area || '';
+  const teacherTel = TEACHER_TEL[teacher];
+
+  const stopsHTML = courseList.length > 0
+    ? courseList.map((stop, i) => `
+        <div class="course-stop">
+          <div class="course-stop-num">${i + 1}</div>
+          <div class="course-stop-name">${escapeHtml(stop)}</div>
+          <a href="${kakaoMapLink(stop)}" target="_blank" class="course-stop-map">지도</a>
+        </div>
+      `).join('')
+    : '<div style="color:var(--coral-ink);opacity:0.6;font-size:12px;padding:8px 0;">세부 코스가 아직 등록되지 않았어요</div>';
+
+  return `
+    <div class="course-card">
+      <div class="cc-head">
+        <div class="cc-label">내 조 세부 코스</div>
+        <div class="cc-badge">${escapeHtml(s.group)}조</div>
+      </div>
+      ${g.theme ? `<div class="cc-theme">${escapeHtml(g.theme)}</div>` : ''}
+
+      <div class="cc-stops">
+        <div class="cc-range">
+          <span><b>11:20</b> 경복궁 주차장 출발</span>
+          <span><b>20:30</b> 집결</span>
+        </div>
+        ${stopsHTML}
+      </div>
+
+      ${(leader.name || teacher) ? `
+      <div class="cc-leader">
+        <div>
+          ${teacher ? `<b>담당</b> ${escapeHtml(teacher)} 선생님` : ''}
+          ${leader.name ? `${teacher ? ' · ' : ''}<b>조장</b> ${escapeHtml(leader.name)}` : ''}
+        </div>
+        ${teacherTel ? `<a href="tel:${teacherTel}" class="cc-call">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          전화
+        </a>` : ''}
+      </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderGroupMembersCard() {
+  const s = currentStudent;
+  if (!s || !s.group) return '';
+  const g = GROUPS[s.group];
+  if (!g || !g.members || g.members.length === 0) return '';
+
+  const leaderId = (typeof g.leader === 'object' && g.leader.id) ||
+    (Object.entries(STUDENTS).find(([id, st]) => st.name === g.leader?.name)?.[0]);
+
+  const membersHTML = g.members.map(m => {
+    const isLeader = g.leader && g.leader.name === m.name;
+    const isMe = m.id === s.id;
+    const cls = [isLeader ? 'leader' : '', isMe ? 'me' : ''].filter(Boolean).join(' ');
+    return `<div class="mc-member ${cls}">${escapeHtml(m.name)}</div>`;
+  }).join('');
+
+  return `
+    <div class="members-card" style="margin-top:4px;">
+      <div class="mc-head">
+        <div class="mc-title">우리 조 (${g.members.length}명)</div>
+        <div class="mc-badge">${escapeHtml(s.group)}조</div>
+      </div>
+      <div class="mc-grid">${membersHTML}</div>
+      <div style="font-size:10px;color:var(--ink-3);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--line);">
+        ★ 조장 · <span style="color:var(--coral);font-weight:600">굵은 글씨</span> 내 이름
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════
+   📍 장소 탭 렌더링
+   ═══════════════════════════════════════════════════ */
+let currentPlaceDay = null;
+
+function renderPlace() {
+  // 기본: 여행 중이면 오늘 날짜, 아니면 1일차
+  if (currentPlaceDay === null) currentPlaceDay = getCurrentTripDay();
+  const day = currentPlaceDay;
+
+  // 탭 active 상태
+  document.querySelectorAll('#placeDayTabs .place-day-tab').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.pday, 10) === day);
+  });
+
+  const content = document.getElementById('placeContent');
+  if (day === 1) content.innerHTML = renderEverland();
+  else if (day === 2) content.innerHTML = renderSeoul();
+  else if (day === 3) content.innerHTML = renderJeonju();
+}
+
+function kakaoMapLink(query) {
+  // 카카오맵 검색 링크 (어디에서든 열림)
+  return `https://map.kakao.com/link/search/${encodeURIComponent(query)}`;
+}
+
+function telLink(name) {
+  const tel = TEACHER_TEL[name];
+  return tel ? `tel:${tel}` : null;
+}
+
+function teacherChipsHTML(teachers) {
+  return teachers.map(name => {
+    const tel = TEACHER_TEL[name];
+    if (tel) {
+      return `<a href="tel:${tel}" class="teacher-chip">
+        <svg class="phone-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        ${escapeHtml(name)}
+      </a>`;
+    }
+    return `<span class="teacher-chip">${escapeHtml(name)}</span>`;
+  }).join('');
+}
+
+function renderEverland() {
+  const zones = EVERLAND_ZONES.map(z => `
+    <div class="zone-card">
+      <div class="zone-card-head">
+        <div class="zone-emoji">${z.emoji}</div>
+        <div class="zone-name">${escapeHtml(z.name)}</div>
+      </div>
+      <div class="zone-teachers">${teacherChipsHTML(z.teachers)}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="meet-banner">
+      <div class="mb-left">
+        <div class="mb-label">집결 시간 · 장소</div>
+        <div class="mb-time">${EVERLAND_INFO.meetTime} · ${escapeHtml(EVERLAND_INFO.meetPoint)}</div>
+        <div class="mb-place">조장이 인원 확인 후 버스로 이동</div>
+      </div>
+      <a href="${kakaoMapLink(EVERLAND_INFO.mapQuery)}" target="_blank" class="map-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        지도
+      </a>
+    </div>
+
+    <div class="section-label" style="padding:0;margin-bottom:10px">구역별 담당 교사</div>
+    ${zones}
+
+    <div class="info-row" style="margin-top:14px">
+      <div class="info-row-item">
+        <svg class="ir-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="ir-text">${escapeHtml(EVERLAND_INFO.address)}</div>
+      </div>
+      <div class="info-row-item">
+        <svg class="ir-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <div class="ir-text">에버랜드 고객센터</div>
+        <a href="tel:${EVERLAND_INFO.tel}" class="ir-action">${EVERLAND_INFO.tel}</a>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-ico">💡</div>
+      <div>중식 · 석식은 식사 쿠폰으로 자유롭게 해결해요. 탑승 전 신장 · 건강 제한을 꼭 확인하고, 20:30까지 CU편의점에 모여주세요.</div>
+    </div>
+  `;
+}
+
+function renderSeoul() {
+  // 내 조 정보
+  const s = currentStudent;
+  const groupMeta = s && s.group ? GROUPS[s.group] : null;
+
+  let myGroupHTML = '';
+  if (groupMeta) {
+    const teacher = groupMeta.teacher || groupMeta.area || '';
+    const teacherTel = TEACHER_TEL[teacher];
+    myGroupHTML = `
+      <div class="my-group-card">
+        <div class="mg-top">
+          <div>
+            <div class="mg-label">내 조 일정</div>
+          </div>
+          <div class="mg-badge">${s.group}조</div>
+        </div>
+        <div class="mg-theme">${escapeHtml(groupMeta.theme || groupMeta.name || '일정이 아직 등록되지 않았어요')}</div>
+        ${teacher ? `
+          <div class="mg-teacher">
+            <div>
+              <div class="mt-label">담당 교사</div>
+              <div class="mt-name">${escapeHtml(teacher)} 선생님</div>
+            </div>
+            ${teacherTel ? `<a href="tel:${teacherTel}" class="mg-call">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              전화
+            </a>` : ''}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  } else {
+    myGroupHTML = `
+      <div class="my-group-card">
+        <div class="mg-empty">조 편성이 아직 공유되지 않았어요</div>
+      </div>
+    `;
+  }
+
+  const zones = SEOUL_ZONES.map(z => `
+    <div class="zone-card">
+      <div class="zone-card-head">
+        <div class="zone-emoji">${z.emoji}</div>
+        <div class="zone-name">
+          ${escapeHtml(z.name)}
+          ${z.note ? `<div class="zone-note">${escapeHtml(z.note)}</div>` : ''}
+        </div>
+      </div>
+      <div class="zone-teachers">${teacherChipsHTML(z.teachers)}</div>
+    </div>
+  `).join('');
+
+  return `
+    ${myGroupHTML}
+
+    <div class="show-card">
+      <div class="sc-label">오전 단체 공연</div>
+      <div class="sc-title">🎭 ${escapeHtml(SEOUL_INFO.showName)} · ${escapeHtml(SEOUL_INFO.showVenue)}</div>
+      <div class="sc-meta">${escapeHtml(SEOUL_INFO.showTime)} · ${escapeHtml(SEOUL_INFO.showAddress)}</div>
+      <a href="${kakaoMapLink(SEOUL_INFO.showVenue)}" target="_blank" class="sc-map" style="text-decoration:none;display:inline-block">지도 보기</a>
+    </div>
+
+    <div class="meet-banner">
+      <div class="mb-left">
+        <div class="mb-label">저녁 집결</div>
+        <div class="mb-time">${SEOUL_INFO.meetTime} · 조별 지정 장소</div>
+        <div class="mb-place">조장이 공지한 장소로 이동</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="padding:0;margin-bottom:10px">지역별 인솔 교사</div>
+    ${zones}
+
+    <div class="tip-box" style="margin-top:14px">
+      <div class="tip-ico">💡</div>
+      <div>자유 여행은 ${escapeHtml(SEOUL_INFO.freeStartTime)}에 ${escapeHtml(SEOUL_INFO.freeStart)}에서 출발해요. 개별 중·석식. 조별로 최소 2인 이상 함께 이동하세요.</div>
+    </div>
+  `;
+}
+
+function renderJeonju() {
+  return `
+    <div class="meet-banner">
+      <div class="mb-left">
+        <div class="mb-label">집결 시간 · 장소</div>
+        <div class="mb-time">${JEONJU_INFO.meetTime}</div>
+        <div class="mb-place">${escapeHtml(JEONJU_INFO.meetPoint)}</div>
+      </div>
+      <a href="${kakaoMapLink(JEONJU_INFO.mapQuery)}" target="_blank" class="map-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        지도
+      </a>
+    </div>
+
+    <div class="info-row">
+      <div class="info-row-item">
+        <svg class="ir-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <div class="ir-text">활동 시간 · ${escapeHtml(JEONJU_INFO.activityTime)}</div>
+      </div>
+      <div class="info-row-item">
+        <svg class="ir-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="ir-text">${escapeHtml(JEONJU_INFO.address)}</div>
+      </div>
+      <div class="info-row-item">
+        <svg class="ir-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <div class="ir-text">관광안내소</div>
+        <a href="tel:${JEONJU_INFO.tel}" class="ir-action">${JEONJU_INFO.tel}</a>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-ico">💡</div>
+      <div>전주는 조 구분 없이 자유 탐방이에요. 개별 중식. 13:50까지 버스에서 내린 곳(당일 안내)으로 돌아오세요. 14:00 정시 출발합니다.</div>
+    </div>
+  `;
+}
 
 /* ═══════════════════════════════════════════════════
    공지 · 기록 배너 / 배지
