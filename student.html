@@ -938,6 +938,13 @@
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .show-card .sc-left {
+    flex: 1;
+    min-width: 0;
   }
   .show-card .sc-label {
     font-size: 11px;
@@ -956,17 +963,24 @@
     font-size: 12px;
     color: var(--blue-ink);
     opacity: 0.8;
-    margin-bottom: 10px;
   }
   .show-card .sc-map {
     background: var(--blue);
     color: #fff;
     border: none;
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 10px;
     font-size: 12px;
     font-weight: 500;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: transform 0.12s ease, opacity 0.12s ease;
   }
+  .show-card .sc-map:active { transform: scale(0.96); opacity: 0.9; }
+  .show-card .sc-map svg { width: 12px; height: 12px; stroke: #fff; }
 
   /* ═══════════════════════════════════════════════════
      📅 일정 탭
@@ -1805,7 +1819,7 @@ const SCHEDULE = [
       { time: '07:30', what: '집결 및 인원 확인', note: '열방교회 앞', map: '통영 열방교회' },
       { time: '08:00', what: '통영 출발', note: '열방교회에서 버스 탑승' },
       { time: '12:30', what: '에버랜드 자유 활동 시작', note: '중·석식 식사쿠폰 지급', map: '에버랜드 정문' },
-      { time: '20:30', what: '정문 옆 CU편의점 집결', note: '조장 인원 확인', map: '에버랜드 정문 CU편의점' },
+      { time: '20:30', what: '정문 옆 CU편의점 집결', note: '조장 인원 확인', map: 'CU에버랜드점' },
       { time: '21:00', what: '인원 확인 후 숙소로 이동', note: '버스 탑승' },
       { time: '21:30', what: '숙소 도착', note: '더트리니 호텔 (용인)', map: '더트리니 호텔 용인' }
     ]
@@ -1889,7 +1903,7 @@ const EVERLAND_INFO = {
   tel: '031-320-5000',
   meetPoint: '정문 옆 CU편의점',
   meetTime: '20:30',
-  mapQuery: '에버랜드 정문'
+  mapQuery: 'CU에버랜드점'
 };
 
 // 서울 자유여행 3구역 담당 교사 (PDF 25쪽)
@@ -2679,10 +2693,14 @@ function telLink(name) {
   return tel ? `tel:${tel}` : null;
 }
 
-function teacherChipsHTML(teachers) {
+// teachers 배열의 각 이름을 칩으로 렌더.
+// callable: null이면 기존 동작(TEACHER_TEL에 있으면 모두 전화 연결),
+//          Set이면 이름이 Set에 있을 때만 전화 연결 (그 외엔 이름만).
+function teacherChipsHTML(teachers, callable = null) {
   return teachers.map(name => {
     const tel = TEACHER_TEL[name];
-    if (tel) {
+    const isCallable = tel && (callable === null ? true : callable.has(name));
+    if (isCallable) {
       return `<a href="tel:${tel}" class="teacher-chip">
         <svg class="phone-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         ${escapeHtml(name)}
@@ -2692,14 +2710,26 @@ function teacherChipsHTML(teachers) {
   }).join('');
 }
 
+// 현재 학생의 반 담임 이름 반환 (없으면 '')
+function getMyHomeroom() {
+  const cn = currentStudent?.classNum;
+  return (cn != null && HOMEROOM[cn]) ? HOMEROOM[cn] : '';
+}
+
 function renderEverland() {
+  // 5/6 에버랜드: 구역 담당 교사 중 담임 + 학년부장(성화룡)만 전화 연결
+  const callable = new Set();
+  const myHR = getMyHomeroom();
+  if (myHR) callable.add(myHR);
+  callable.add('성화룡');
+
   const zones = EVERLAND_ZONES.map(z => `
     <div class="zone-card">
       <div class="zone-card-head">
         <div class="zone-emoji">${z.emoji}</div>
         <div class="zone-name">${escapeHtml(z.name)}</div>
       </div>
-      <div class="zone-teachers">${teacherChipsHTML(z.teachers)}</div>
+      <div class="zone-teachers">${teacherChipsHTML(z.teachers, callable)}</div>
     </div>
   `).join('');
 
@@ -2778,6 +2808,9 @@ function renderSeoul() {
     `;
   }
 
+  // 5/7 서울 구역 담당 교사 15명: 성화룡(학년부장)만 전화 연결
+  // 내 조 담당 교사는 위 "내 조 일정" 카드에서 별도로 연결 유지
+  const zoneCallable = new Set(['성화룡']);
   const zones = SEOUL_ZONES.map(z => `
     <div class="zone-card">
       <div class="zone-card-head">
@@ -2787,7 +2820,7 @@ function renderSeoul() {
           ${z.note ? `<div class="zone-note">${escapeHtml(z.note)}</div>` : ''}
         </div>
       </div>
-      <div class="zone-teachers">${teacherChipsHTML(z.teachers)}</div>
+      <div class="zone-teachers">${teacherChipsHTML(z.teachers, zoneCallable)}</div>
     </div>
   `).join('');
 
@@ -2795,10 +2828,15 @@ function renderSeoul() {
     ${myGroupHTML}
 
     <div class="show-card">
-      <div class="sc-label">오전 단체 공연</div>
-      <div class="sc-title">🎭 ${escapeHtml(SEOUL_INFO.showName)} · ${escapeHtml(SEOUL_INFO.showVenue)}</div>
-      <div class="sc-meta">${escapeHtml(SEOUL_INFO.showTime)} · ${escapeHtml(SEOUL_INFO.showAddress)}</div>
-      <a href="${kakaoMapLink(SEOUL_INFO.showVenue)}" target="_blank" class="sc-map" style="text-decoration:none;display:inline-block">지도 보기</a>
+      <div class="sc-left">
+        <div class="sc-label">오전 단체 공연</div>
+        <div class="sc-title">🎭 ${escapeHtml(SEOUL_INFO.showName)} · ${escapeHtml(SEOUL_INFO.showVenue)}</div>
+        <div class="sc-meta">${escapeHtml(SEOUL_INFO.showTime)} · ${escapeHtml(SEOUL_INFO.showAddress)}</div>
+      </div>
+      <a href="${kakaoMapLink(SEOUL_INFO.showVenue)}" target="_blank" class="sc-map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        지도
+      </a>
     </div>
 
     <div class="meet-banner">
@@ -2824,6 +2862,27 @@ function renderSeoul() {
 }
 
 function renderJeonju() {
+  // 5/8 전주: 담임 + 학년부장(성화룡)만 전화 연결
+  const myHR = getMyHomeroom();
+  const contactsChips = [];
+  if (myHR) contactsChips.push(myHR);
+  if (!contactsChips.includes('성화룡')) contactsChips.push('성화룡');
+  const callable = new Set(contactsChips);
+
+  const contactsHTML = contactsChips.length > 0 ? `
+    <div class="section-label" style="padding:0;margin-bottom:10px">도움이 필요할 때</div>
+    <div class="zone-card">
+      <div class="zone-card-head">
+        <div class="zone-emoji">📞</div>
+        <div class="zone-name">
+          담임 · 학년부장
+          <div class="zone-note">전주는 자유 탐방이라 문제가 생기면 담임 혹은 학년부장(성화룡 선생님)께 연락하세요</div>
+        </div>
+      </div>
+      <div class="zone-teachers">${teacherChipsHTML(contactsChips, callable)}</div>
+    </div>
+  ` : '';
+
   return `
     <div class="meet-banner">
       <div class="mb-left">
@@ -2836,6 +2895,8 @@ function renderJeonju() {
         지도
       </a>
     </div>
+
+    ${contactsHTML}
 
     <div class="info-row">
       <div class="info-row-item">
