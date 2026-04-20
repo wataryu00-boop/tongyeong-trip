@@ -2239,8 +2239,8 @@ function renderSched() {
   });
   html += '</div>';
 
-  // 내 조 명단 (5/6, 5/8)
-  if (day !== 2) {
+  // 내 조 명단 (5/7 서울만 — 다른 날은 조 구분 없이 자유활동)
+  if (day === 2) {
     html += renderGroupMembersCard();
   }
 
