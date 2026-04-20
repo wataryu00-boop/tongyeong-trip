@@ -1,0 +1,1649 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>통영고 수학여행 · 관리자 도구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#121933; --card:#161d3a; --card2:#1d2548;
+    --line:#2a3566; --line2:#3a4785;
+    --text:#e8ecff; --muted:#97a0d0; --dim:#6b7299;
+    --accent:#7c9cff; --accent2:#a78bfa;
+    --ok:#10b981; --warn:#f59e0b; --danger:#ef4444; --info:#06b6d4;
+    --g1:#ef4444; --g2:#f97316; --g3:#f59e0b; --g4:#eab308;
+    --g5:#84cc16; --g6:#10b981; --g7:#14b8a6; --g8:#06b6d4;
+    --g9:#3b82f6; --g10:#8b5cf6; --g11:#ec4899;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:linear-gradient(180deg,#0b1020 0%,#0d1228 100%);padding-bottom:80px}
+  button{font-family:inherit}
+  input,select,textarea{font-family:inherit}
+  h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-0.02em}
+  .mono{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+
+  /* 상단 바 */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(11,16,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#fff;font-size:14px}
+  .brand-title{font-size:15px;font-weight:700}
+  .brand-sub{font-size:11px;color:var(--muted);font-family:'Gowun Batang',serif}
+  .conn{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+  .dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+  .dot.off{background:var(--danger)}
+
+  /* 탭 */
+  .tabs{display:flex;gap:4px;padding:12px 20px;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--bg2)}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex-shrink:0;padding:8px 14px;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;white-space:nowrap}
+  .tab:hover{border-color:var(--line2);color:var(--text)}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tab .badge{display:inline-block;margin-left:6px;padding:1px 6px;background:rgba(255,255,255,.2);border-radius:10px;font-size:10px;font-weight:700}
+
+  /* 레이아웃 */
+  .container{max-width:1400px;margin:0 auto;padding:20px}
+  .panel{display:none}
+  .panel.active{display:block;animation:fadein .2s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+  .card h3{font-size:16px;margin-bottom:4px}
+  .card-desc{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:150px}
+
+  .btn{padding:10px 16px;border:1px solid var(--line2);background:var(--card2);color:var(--text);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+  .btn:hover:not(:disabled){background:var(--line);border-color:var(--accent)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover:not(:disabled){background:#6b8aee;border-color:#6b8aee}
+  .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+  .btn.ok:hover:not(:disabled){background:#0f9970;border-color:#0f9970}
+  .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+  .btn.danger:hover:not(:disabled){background:#dc2626;border-color:#dc2626}
+  .btn.sm{padding:6px 10px;font-size:12px}
+  .btn.ghost{background:transparent}
+
+  .input, .select, textarea.input{width:100%;padding:10px 12px;border:1px solid var(--line2);background:var(--bg2);color:var(--text);border-radius:10px;font-size:13px;outline:none;transition:border-color .15s}
+  .input:focus, .select:focus, textarea.input:focus{border-color:var(--accent)}
+  .label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600}
+
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:var(--card2);border:1px solid var(--line)}
+
+  /* 대시보드 */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .stat-label{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .stat-value{font-size:26px;font-weight:800;letter-spacing:-0.02em}
+  .stat-sub{font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* 테이블 */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--bg2);color:var(--muted);font-weight:700;font-size:12px;position:sticky;top:0;z-index:1}
+  tbody tr:hover{background:rgba(124,156,255,.06)}
+  tbody tr:last-child td{border-bottom:none}
+  .cell-actions{display:flex;gap:4px}
+
+  /* 조 색상 */
+  .group-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;color:#fff}
+  .g-1{background:var(--g1)} .g-2{background:var(--g2)} .g-3{background:var(--g3)}
+  .g-4{background:var(--g4);color:#333} .g-5{background:var(--g5);color:#1a2e05} .g-6{background:var(--g6)}
+  .g-7{background:var(--g7)} .g-8{background:var(--g8)} .g-9{background:var(--g9)}
+  .g-10{background:var(--g10)} .g-11{background:var(--g11)}
+  .g-0{background:var(--dim)}
+
+  /* 드래그&드롭 */
+  .dnd-wrap{display:grid;grid-template-columns:280px 1fr;gap:16px}
+  @media(max-width:900px){.dnd-wrap{grid-template-columns:1fr}}
+  .pool{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;max-height:720px;overflow-y:auto}
+  .pool h4{font-size:13px;margin-bottom:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+  .pool-list{min-height:100px}
+  .groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;max-height:720px;overflow-y:auto;padding:2px}
+  .group-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;transition:border-color .15s}
+  .group-box.drag-over{border-color:var(--accent);background:rgba(124,156,255,.08)}
+  .group-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .group-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .group-count{font-size:11px;color:var(--muted)}
+  .group-members{display:flex;flex-direction:column;gap:4px;min-height:40px}
+  .chip{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;font-size:12px;cursor:grab;user-select:none}
+  .chip:active{cursor:grabbing}
+  .chip.dragging{opacity:.4}
+  .chip-name{font-weight:600}
+  .chip-id{color:var(--muted);font-size:11px}
+  .chip-remove{background:none;border:none;color:var(--dim);cursor:pointer;padding:0 2px;font-size:14px}
+  .chip-remove:hover{color:var(--danger)}
+  .chip-female{border-left:3px solid #ec4899}
+  .chip-male{border-left:3px solid #3b82f6}
+
+  /* 방 배정 */
+  .floor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .room-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;transition:border-color .15s}
+  .room-card.drag-over{border-color:var(--accent);background:rgba(124,156,255,.08)}
+  .room-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .room-no{font-size:14px;font-weight:700}
+  .room-floor{font-size:10px;color:var(--muted);padding:2px 6px;background:var(--bg2);border-radius:4px}
+  .room-cap{font-size:11px;color:var(--muted)}
+  .room-cap.over{color:var(--danger);font-weight:700}
+  .room-members{display:flex;flex-direction:column;gap:3px;min-height:30px}
+
+  /* 모달 */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;padding:16px}
+  .modal-backdrop.show{display:flex}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto}
+  .modal h3{font-size:17px;margin-bottom:16px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-grid.full>*{grid-column:1/-1}
+
+  /* 로그인 */
+  .login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+  .login-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;max-width:400px;width:100%;text-align:center}
+  .login-logo{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#fff;font-size:22px;margin:0 auto 16px}
+
+  /* 토스트 */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:12px 20px;font-size:13px;z-index:200;opacity:0;transition:all .2s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+  .toast.ok{border-color:var(--ok);background:rgba(16,185,129,.1)}
+  .toast.warn{border-color:var(--warn);background:rgba(245,158,11,.1)}
+  .toast.err{border-color:var(--danger);background:rgba(239,68,68,.1)}
+
+  /* 위치 */
+  .loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .loc-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px}
+  .loc-card .ln1{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .loc-name{font-weight:700;font-size:13px}
+  .loc-time{color:var(--muted);font-size:11px}
+  .loc-coord{font-family:ui-monospace,monospace;color:var(--muted);font-size:11px;margin-top:4px}
+  .loc-link{color:var(--accent);text-decoration:none;font-weight:600}
+  .loc-link:hover{text-decoration:underline}
+
+  .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+
+  .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .section-title h2{font-size:18px}
+  .section-title .tools{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* 엑셀 붙여넣기 */
+  .paste-area{width:100%;min-height:140px;padding:12px;border:1px dashed var(--line2);background:var(--bg2);color:var(--text);border-radius:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical}
+
+  .hint{font-size:11px;color:var(--dim);margin-top:4px}
+  .divider{height:1px;background:var(--line);margin:16px 0}
+
+  details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--card2);margin-bottom:8px}
+  details>summary{cursor:pointer;font-weight:600;font-size:13px;outline:none}
+  details[open]>summary{margin-bottom:10px}
+
+  /* 필터 바 */
+  .filterbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .filterbar .input, .filterbar .select{padding:8px 10px;font-size:12px;flex:0 1 auto;min-width:120px}
+
+  /* 작은 화면 반응형 */
+  @media (max-width: 768px) {
+    .form-grid{grid-template-columns:1fr}
+    .container{padding:14px}
+    .card{padding:16px}
+    .stat-value{font-size:22px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">T</div>
+    <h2 style="margin-bottom:6px">통영고 수학여행</h2>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:24px">관리자 도구 · Admin Console</div>
+    <input id="adminPw" type="password" class="input" placeholder="관리자 비밀번호" style="margin-bottom:12px" onkeypress="if(event.key==='Enter')login()"/>
+    <button class="btn primary" style="width:100%" onclick="login()">로그인</button>
+    <div style="margin-top:20px;font-size:11px;color:var(--dim);font-family:'Gowun Batang',serif">2026.5.6 ~ 5.8 · 서울·용인·전주</div>
+  </div>
+</div>
+
+<!-- 메인 -->
+<div id="mainWrap" style="display:none">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo">T</div>
+      <div>
+        <div class="brand-title">관리자 도구</div>
+        <div class="brand-sub">2026 수학여행 데이터 관리</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="conn">
+        <span class="dot" id="fbDot"></span>
+        <span id="fbStatus">연결 중...</span>
+      </div>
+      <button class="btn sm ghost" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="dashboard">📊 대시보드</button>
+    <button class="tab" data-tab="students">👥 학생 명단 <span class="badge" id="tabStudentCount">0</span></button>
+    <button class="tab" data-tab="import">📥 가져오기/내보내기</button>
+    <button class="tab" data-tab="groups">🧭 조 편성</button>
+    <button class="tab" data-tab="rooms">🏨 방 배정</button>
+    <button class="tab" data-tab="locations">📍 위치 조회</button>
+    <button class="tab" data-tab="sync">☁️ Firebase 동기화</button>
+  </div>
+
+  <div class="container">
+
+    <!-- 📊 대시보드 -->
+    <div class="panel active" data-panel="dashboard">
+      <div class="stats">
+        <div class="stat"><div class="stat-label">총 학생 수</div><div class="stat-value" id="stTotal">0</div><div class="stat-sub">2학년 전체</div></div>
+        <div class="stat"><div class="stat-label">반 수</div><div class="stat-value" id="stClass">0</div><div class="stat-sub">개 반</div></div>
+        <div class="stat"><div class="stat-label">조 편성 완료</div><div class="stat-value" id="stGrouped">0</div><div class="stat-sub">명</div></div>
+        <div class="stat"><div class="stat-label">방 배정 완료</div><div class="stat-value" id="stRoomed">0</div><div class="stat-sub">명</div></div>
+        <div class="stat"><div class="stat-label">미배정</div><div class="stat-value" id="stPending" style="color:var(--warn)">0</div><div class="stat-sub">명</div></div>
+      </div>
+
+      <div class="card">
+        <h3>🚀 빠른 시작</h3>
+        <div class="card-desc">아래 순서대로 진행하시면 됩니다.</div>
+        <ol style="color:var(--muted);font-size:13px;line-height:1.9;padding-left:18px">
+          <li><b style="color:var(--text)">📥 가져오기</b> 탭에서 엑셀/CSV로 학생 전체 명단 업로드</li>
+          <li><b style="color:var(--text)">👥 학생 명단</b> 탭에서 누락/오류 데이터 수정</li>
+          <li><b style="color:var(--text)">🧭 조 편성</b> 탭에서 드래그&드롭으로 조 편성 (전체 학년에서 섞어서)</li>
+          <li><b style="color:var(--text)">🏨 방 배정</b> 탭에서 호텔 층/방 시각화로 방 배정</li>
+          <li><b style="color:var(--text)">☁️ Firebase 동기화</b> 탭에서 전체 업로드 → 학생·교사 앱에 즉시 반영</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>💾 현재 저장 상태</h3>
+        <div class="card-desc">작업은 브라우저 임시 저장(localStorage)에 자동 저장됩니다. Firebase에 올려야 학생·교사 앱에서 보여요.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="saveLocal();toast('저장됨','ok')">💾 지금 임시저장</button>
+          <button class="btn" onclick="loadLocal();render();toast('불러옴','ok')">🔄 임시저장에서 불러오기</button>
+          <button class="btn danger" onclick="clearLocal()">🗑 임시저장 초기화</button>
+        </div>
+        <div class="hint" id="lastSaved">-</div>
+      </div>
+    </div>
+
+    <!-- 👥 학생 명단 -->
+    <div class="panel" data-panel="students">
+      <div class="section-title">
+        <h2>학생 명단</h2>
+        <div class="tools">
+          <button class="btn primary sm" onclick="openStudentModal()">+ 학생 추가</button>
+          <button class="btn sm" onclick="bulkAddClass()">+ 반 일괄 생성</button>
+          <button class="btn danger sm" onclick="deleteAllStudents()">전체 삭제</button>
+        </div>
+      </div>
+
+      <div class="filterbar">
+        <input class="input" id="fltSearch" placeholder="이름/학번 검색" oninput="renderStudents()"/>
+        <select class="select" id="fltClass" onchange="renderStudents()">
+          <option value="">전체 반</option>
+        </select>
+        <select class="select" id="fltGender" onchange="renderStudents()">
+          <option value="">성별 전체</option>
+          <option value="M">남</option>
+          <option value="F">여</option>
+        </select>
+        <select class="select" id="fltGroup" onchange="renderStudents()">
+          <option value="">조 전체</option>
+          <option value="0">미배정</option>
+        </select>
+        <select class="select" id="fltRoom" onchange="renderStudents()">
+          <option value="">방 배정 전체</option>
+          <option value="yes">배정됨</option>
+          <option value="no">미배정</option>
+        </select>
+        <span class="pill" id="fltCount">0명</span>
+      </div>
+
+      <div class="table-wrap">
+        <table id="studentTable">
+          <thead>
+            <tr>
+              <th>학번</th>
+              <th>이름</th>
+              <th>반</th>
+              <th>번호</th>
+              <th>성별</th>
+              <th>조</th>
+              <th>방</th>
+              <th>버스</th>
+              <th>연락처</th>
+              <th style="text-align:right">관리</th>
+            </tr>
+          </thead>
+          <tbody id="studentTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 📥 가져오기/내보내기 -->
+    <div class="panel" data-panel="import">
+      <div class="card">
+        <h3>📋 엑셀 붙여넣기</h3>
+        <div class="card-desc">엑셀에서 범위를 복사(Ctrl+C)하여 아래에 붙여넣으세요. 첫 행은 헤더입니다.</div>
+        <div style="margin-bottom:10px">
+          <span class="pill">필수: 학번(또는 반+번호), 이름</span>
+          <span class="pill">선택: 성별(M/F, 남/여), 버스, 연락처, 생년월일</span>
+        </div>
+        <textarea class="paste-area" id="pasteBox" placeholder="학번&#9;이름&#9;반&#9;번호&#9;성별&#9;버스&#9;연락처&#10;20101&#9;김통영&#9;1&#9;1&#9;남&#9;1&#9;010-0000-0000&#10;20102&#9;이통영&#9;1&#9;2&#9;여&#9;1&#9;010-0000-0001"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="parsePaste()">🔍 분석 후 미리보기</button>
+          <button class="btn" onclick="fillSampleTemplate()">📝 샘플 채우기</button>
+          <button class="btn ghost" onclick="document.getElementById('pasteBox').value=''">초기화</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📁 엑셀/CSV 파일 업로드</h3>
+        <div class="card-desc">.xlsx, .xls, .csv 파일을 선택하세요. 첫 행이 헤더여야 합니다.</div>
+        <input type="file" id="fileUp" accept=".xlsx,.xls,.csv" class="input" onchange="handleFileUpload(event)"/>
+        <div class="hint">헤더 예시: 학번, 이름, 반, 번호, 성별, 버스, 연락처</div>
+      </div>
+
+      <div class="card" id="previewCard" style="display:none">
+        <h3>👀 미리보기</h3>
+        <div class="card-desc"><span id="previewMeta"></span></div>
+        <div class="table-wrap" style="max-height:400px">
+          <table id="previewTable">
+            <thead id="previewHead"></thead>
+            <tbody id="previewBody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn ok" onclick="commitImport(false)">✅ 추가로 가져오기</button>
+          <button class="btn primary" onclick="commitImport(true)">🔄 기존 삭제 후 덮어쓰기</button>
+          <button class="btn ghost" onclick="document.getElementById('previewCard').style.display='none'">취소</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📤 내보내기</h3>
+        <div class="card-desc">현재 데이터를 엑셀 또는 CSV로 내려받습니다.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" onclick="exportExcel()">📊 엑셀(.xlsx) 다운로드</button>
+          <button class="btn" onclick="exportCSV()">📄 CSV 다운로드</button>
+          <button class="btn" onclick="exportJSON()">🔧 JSON 백업 다운로드</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🧭 조 편성 -->
+    <div class="panel" data-panel="groups">
+      <div class="card">
+        <h3>조 편성 — 전체 학년 섞기</h3>
+        <div class="card-desc">왼쪽 학생을 오른쪽 조로 드래그하세요. 조장은 ⭐ 버튼으로 지정합니다.</div>
+        <div class="filterbar">
+          <label class="label" style="margin:0">조 개수</label>
+          <input type="number" class="input" id="groupCount" value="10" min="1" max="30" style="width:80px" oninput="adjustGroups()"/>
+          <button class="btn sm" onclick="autoAssignGroups('balanced')">🎲 균등 자동배정</button>
+          <button class="btn sm" onclick="autoAssignGroups('gender')">👫 성별 균등</button>
+          <button class="btn sm" onclick="autoAssignGroups('mix')">🔀 반 섞기</button>
+          <button class="btn sm danger" onclick="clearAllGroups()">조 전체 해제</button>
+        </div>
+        <div class="hint">조 이름과 테마는 아래 각 조 카드에서 편집할 수 있어요.</div>
+      </div>
+
+      <div class="dnd-wrap">
+        <div class="pool">
+          <h4>
+            <span>📋 미배정 학생</span>
+            <span id="poolCount" class="pill">0명</span>
+          </h4>
+          <input class="input" id="poolSearch" placeholder="이름·학번 검색" style="margin-bottom:10px;font-size:12px;padding:7px 10px" oninput="renderGroupsUI()"/>
+          <div class="pool-list" id="poolList" data-dropzone="pool"></div>
+        </div>
+        <div class="groups-grid" id="groupsGrid"></div>
+      </div>
+    </div>
+
+    <!-- 🏨 방 배정 -->
+    <div class="panel" data-panel="rooms">
+      <div class="card">
+        <h3>호텔 방 배정 (Trinit Hotel, 5/6~5/8)</h3>
+        <div class="card-desc">방을 만든 뒤 학생을 끌어다 놓으세요. 성별은 자동으로 체크됩니다.</div>
+        <div class="row">
+          <div>
+            <label class="label">층</label>
+            <input type="number" class="input" id="newFloor" placeholder="예: 3" value="3"/>
+          </div>
+          <div>
+            <label class="label">방 번호</label>
+            <input type="text" class="input" id="newRoomNo" placeholder="예: 301"/>
+          </div>
+          <div>
+            <label class="label">수용 인원</label>
+            <input type="number" class="input" id="newCap" value="4" min="1" max="8"/>
+          </div>
+          <div>
+            <label class="label">성별</label>
+            <select class="select" id="newRoomGender">
+              <option value="M">남</option>
+              <option value="F">여</option>
+              <option value="">무관</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:6px">
+            <button class="btn primary" onclick="addRoom()">+ 방 추가</button>
+          </div>
+        </div>
+        <details style="margin-top:12px">
+          <summary>빠른 방 생성 (연속 번호)</summary>
+          <div class="row" style="margin-top:10px">
+            <div><label class="label">시작 번호</label><input type="number" class="input" id="bulkStart" value="301"/></div>
+            <div><label class="label">개수</label><input type="number" class="input" id="bulkQty" value="10"/></div>
+            <div><label class="label">층</label><input type="number" class="input" id="bulkFloor" value="3"/></div>
+            <div><label class="label">성별</label>
+              <select class="select" id="bulkGender">
+                <option value="M">남</option>
+                <option value="F">여</option>
+                <option value="">무관</option>
+              </select>
+            </div>
+            <div><label class="label">수용</label><input type="number" class="input" id="bulkCap" value="4"/></div>
+            <div style="display:flex;align-items:flex-end"><button class="btn" onclick="bulkAddRooms()">일괄 생성</button></div>
+          </div>
+        </details>
+      </div>
+
+      <div class="dnd-wrap">
+        <div class="pool">
+          <h4>
+            <span>📋 미배정 학생</span>
+            <span id="poolRoomCount" class="pill">0명</span>
+          </h4>
+          <div class="filterbar" style="margin-bottom:8px">
+            <select class="select" id="roomPoolGender" onchange="renderRoomsUI()" style="font-size:11px;padding:6px 8px">
+              <option value="">성별 전체</option>
+              <option value="M">남만</option>
+              <option value="F">여만</option>
+            </select>
+          </div>
+          <input class="input" id="roomPoolSearch" placeholder="이름·학번 검색" style="margin-bottom:10px;font-size:12px;padding:7px 10px" oninput="renderRoomsUI()"/>
+          <div class="pool-list" id="poolRoomList" data-dropzone="pool-room"></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="pill" id="roomStatsTotal">방 0개</span>
+              <span class="pill" id="roomStatsAssigned">배정 0/0</span>
+            </div>
+            <button class="btn sm danger" onclick="clearAllRooms()">방 전체 삭제</button>
+          </div>
+          <div class="floor-grid" id="roomsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📍 위치 조회 -->
+    <div class="panel" data-panel="locations">
+      <div class="section-title">
+        <h2>학생 위치 (Firebase 실시간)</h2>
+        <div class="tools">
+          <button class="btn sm" onclick="refreshLocations()">🔄 새로고침</button>
+          <button class="btn sm ok" id="autoRefreshBtn" onclick="toggleAutoRefresh()">⏱ 자동 새로고침 OFF</button>
+        </div>
+      </div>
+      <div class="filterbar">
+        <input class="input" id="locSearch" placeholder="이름·학번 검색" oninput="renderLocations()"/>
+        <select class="select" id="locClass" onchange="renderLocations()"><option value="">전체 반</option></select>
+        <select class="select" id="locGroup" onchange="renderLocations()"><option value="">조 전체</option></select>
+        <select class="select" id="locAge" onchange="renderLocations()">
+          <option value="">전체 기간</option>
+          <option value="5">5분 이내</option>
+          <option value="15">15분 이내</option>
+          <option value="60">1시간 이내</option>
+          <option value="stale">1시간 이상 전</option>
+        </select>
+        <span class="pill" id="locCount">0명</span>
+      </div>
+      <div class="loc-grid" id="locGrid"></div>
+    </div>
+
+    <!-- ☁️ Firebase -->
+    <div class="panel" data-panel="sync">
+      <div class="card">
+        <h3>Firebase 동기화</h3>
+        <div class="card-desc">현재 편집 중인 데이터를 Firebase에 업로드하면 학생/교사 앱에서 즉시 보입니다.</div>
+        <div class="row">
+          <div>
+            <button class="btn primary" style="width:100%" onclick="syncToFirebase('students')">👥 학생 명단 업로드</button>
+          </div>
+          <div>
+            <button class="btn primary" style="width:100%" onclick="syncToFirebase('groups')">🧭 조 편성 업로드</button>
+          </div>
+          <div>
+            <button class="btn primary" style="width:100%" onclick="syncToFirebase('rooms')">🏨 방 배정 업로드</button>
+          </div>
+          <div>
+            <button class="btn ok" style="width:100%" onclick="syncToFirebase('all')">☁️ 전체 한번에 업로드</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <h4 style="font-size:14px;margin-bottom:6px">🔽 Firebase에서 가져오기</h4>
+        <div class="card-desc">서버의 최신 데이터를 현재 작업에 가져옵니다. (덮어쓰기 주의)</div>
+        <div class="row">
+          <div><button class="btn" style="width:100%" onclick="pullFromFirebase('students')">학생 가져오기</button></div>
+          <div><button class="btn" style="width:100%" onclick="pullFromFirebase('groups')">조 가져오기</button></div>
+          <div><button class="btn" style="width:100%" onclick="pullFromFirebase('rooms')">방 가져오기</button></div>
+          <div><button class="btn" style="width:100%" onclick="pullFromFirebase('all')">전체 가져오기</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⚠️ 위험 구역</h3>
+        <div class="card-desc">Firebase 서버의 데이터를 직접 삭제합니다. 되돌릴 수 없어요.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn danger sm" onclick="fbDelete('students')">서버 학생 삭제</button>
+          <button class="btn danger sm" onclick="fbDelete('groups')">서버 조 삭제</button>
+          <button class="btn danger sm" onclick="fbDelete('rooms')">서버 방 삭제</button>
+          <button class="btn danger sm" onclick="fbDelete('locations')">서버 위치 초기화</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 학생 편집 모달 -->
+<div class="modal-backdrop" id="studentModal">
+  <div class="modal">
+    <h3 id="stModalTitle">학생 추가</h3>
+    <div class="form-grid">
+      <div>
+        <label class="label">학번 (5자리)</label>
+        <input type="text" id="stId" class="input" placeholder="20101" maxlength="5"/>
+      </div>
+      <div>
+        <label class="label">이름 *</label>
+        <input type="text" id="stName" class="input" placeholder="홍길동"/>
+      </div>
+      <div>
+        <label class="label">반</label>
+        <input type="number" id="stClass" class="input" placeholder="1"/>
+      </div>
+      <div>
+        <label class="label">번호</label>
+        <input type="number" id="stNum" class="input" placeholder="1"/>
+      </div>
+      <div>
+        <label class="label">성별</label>
+        <select id="stGender" class="select">
+          <option value="">-</option>
+          <option value="M">남</option>
+          <option value="F">여</option>
+        </select>
+      </div>
+      <div>
+        <label class="label">버스</label>
+        <input type="number" id="stBus" class="input"/>
+      </div>
+      <div>
+        <label class="label">연락처</label>
+        <input type="text" id="stTel" class="input" placeholder="010-0000-0000"/>
+      </div>
+      <div>
+        <label class="label">생년월일</label>
+        <input type="text" id="stBirth" class="input" placeholder="2009-03-15"/>
+      </div>
+      <div style="grid-column:1/-1">
+        <label class="label">비고</label>
+        <input type="text" id="stNote" class="input" placeholder="특이사항 (알레르기 등)"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end">
+      <button class="btn ghost" onclick="closeStudentModal()">취소</button>
+      <button class="btn primary" onclick="saveStudentModal()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= Firebase 설정 ================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB6I4tsGTDT1jo9XWMWa3riLp3AMiB7zHA",
+  authDomain: "tongyeong-h.firebaseapp.com",
+  databaseURL: "https://tongyeong-h-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "tongyeong-h",
+  storageBucket: "tongyeong-h.firebasestorage.app",
+  messagingSenderId: "413183012977",
+  appId: "1:413183012977:web:d691733599f54bd704ebd0"
+};
+const FB_ROOT = "field-trip-2026";
+const ADMIN_PW = "vkejr317";
+const LS_KEY = "tyh_admin_v1";
+
+/* ================= 상태 ================= */
+let state = {
+  students: {},       // id -> {id,name,class,num,gender,bus,tel,birth,note,group,room}
+  groups: {},         // groupNo -> {no,name,theme,area,leader}
+  rooms: {},          // roomId -> {id,no,floor,cap,gender}
+  locations: {},      // id -> {lat,lng,accuracy,ts,trigger}
+  groupCount: 10
+};
+let fb = null, fbDb = null;
+let editingStudentId = null;
+let locAutoTimer = null;
+
+/* ================= 초기화 ================= */
+window.addEventListener('DOMContentLoaded', ()=>{
+  // 로그인 세션 확인
+  if(sessionStorage.getItem('tyh_admin_ok')==='1'){
+    showMain();
+  }
+  // 탭 핸들러
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click', ()=>switchTab(t.dataset.tab));
+  });
+});
+
+function login(){
+  const pw = document.getElementById('adminPw').value;
+  if(pw===ADMIN_PW){
+    sessionStorage.setItem('tyh_admin_ok','1');
+    showMain();
+  } else {
+    toast('비밀번호가 틀렸어요','err');
+  }
+}
+function logout(){
+  sessionStorage.removeItem('tyh_admin_ok');
+  location.reload();
+}
+function showMain(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('mainWrap').style.display='block';
+  initFirebase();
+  loadLocal();
+  render();
+}
+
+function initFirebase(){
+  try{
+    if(!firebase.apps.length){
+      fb = firebase.initializeApp(FIREBASE_CONFIG);
+    } else {
+      fb = firebase.app();
+    }
+    fbDb = firebase.database();
+    const connRef = fbDb.ref(".info/connected");
+    connRef.on("value", snap=>{
+      const ok = snap.val()===true;
+      document.getElementById('fbDot').className = ok ? 'dot on' : 'dot off';
+      document.getElementById('fbStatus').textContent = ok ? '연결됨' : '연결 끊김';
+    });
+  }catch(e){
+    console.error(e);
+    document.getElementById('fbStatus').textContent='초기화 실패';
+    document.getElementById('fbDot').className='dot off';
+  }
+}
+
+/* ================= 탭 ================= */
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.panel===name));
+  // 진입시 필요한 렌더
+  if(name==='dashboard') renderDashboard();
+  if(name==='students') renderStudents();
+  if(name==='groups') renderGroupsUI();
+  if(name==='rooms') renderRoomsUI();
+  if(name==='locations') refreshLocations();
+}
+
+/* ================= localStorage ================= */
+function saveLocal(){
+  localStorage.setItem(LS_KEY, JSON.stringify({
+    students: state.students,
+    groups: state.groups,
+    rooms: state.rooms,
+    groupCount: state.groupCount,
+    ts: Date.now()
+  }));
+  const el = document.getElementById('lastSaved');
+  if(el) el.textContent = '마지막 저장: ' + new Date().toLocaleString('ko-KR');
+}
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const obj = JSON.parse(raw);
+    state.students = obj.students || {};
+    state.groups = obj.groups || {};
+    state.rooms = obj.rooms || {};
+    state.groupCount = obj.groupCount || 10;
+    if(obj.ts){
+      const el = document.getElementById('lastSaved');
+      if(el) el.textContent = '마지막 저장: ' + new Date(obj.ts).toLocaleString('ko-KR');
+    }
+  }catch(e){console.error(e)}
+}
+function clearLocal(){
+  if(!confirm('브라우저 임시저장을 모두 삭제할까요? Firebase는 영향받지 않습니다.')) return;
+  localStorage.removeItem(LS_KEY);
+  state = {students:{},groups:{},rooms:{},locations:{},groupCount:10};
+  render();
+  toast('임시저장 초기화 완료','ok');
+}
+// 자동 저장
+setInterval(()=>{
+  if(Object.keys(state.students).length>0) saveLocal();
+}, 30000);
+
+/* ================= 렌더링 허브 ================= */
+function render(){
+  renderDashboard();
+  renderStudents();
+  renderGroupsUI();
+  renderRoomsUI();
+  fillClassFilters();
+  fillGroupFilters();
+}
+
+function renderDashboard(){
+  const students = Object.values(state.students);
+  document.getElementById('stTotal').textContent = students.length;
+  const classSet = new Set(students.map(s=>s.class).filter(Boolean));
+  document.getElementById('stClass').textContent = classSet.size;
+  const grouped = students.filter(s=>s.group && s.group>0).length;
+  const roomed = students.filter(s=>s.room).length;
+  document.getElementById('stGrouped').textContent = grouped;
+  document.getElementById('stRoomed').textContent = roomed;
+  document.getElementById('stPending').textContent = students.length - grouped;
+  document.getElementById('tabStudentCount').textContent = students.length;
+}
+
+/* ================= 학생 명단 ================= */
+function fillClassFilters(){
+  const classes = [...new Set(Object.values(state.students).map(s=>s.class).filter(Boolean))].sort((a,b)=>a-b);
+  ['fltClass','locClass'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">전체 반</option>' + classes.map(c=>`<option value="${c}">${c}반</option>`).join('');
+    el.value = cur;
+  });
+}
+function fillGroupFilters(){
+  ['fltGroup','locGroup'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const cur = el.value;
+    const opts = ['<option value="">조 전체</option>','<option value="0">미배정</option>'];
+    for(let i=1;i<=state.groupCount;i++){
+      const g = state.groups[i] || {no:i,name:`${i}조`};
+      opts.push(`<option value="${i}">${g.name||i+'조'}</option>`);
+    }
+    el.innerHTML = opts.join('');
+    el.value = cur;
+  });
+}
+
+function renderStudents(){
+  const tbody = document.getElementById('studentTbody');
+  if(!tbody) return;
+  const search = (document.getElementById('fltSearch').value||'').trim().toLowerCase();
+  const fltClass = document.getElementById('fltClass').value;
+  const fltGender = document.getElementById('fltGender').value;
+  const fltGroup = document.getElementById('fltGroup').value;
+  const fltRoom = document.getElementById('fltRoom').value;
+
+  let list = Object.values(state.students);
+  if(search) list = list.filter(s=> (s.name||'').toLowerCase().includes(search) || String(s.id||'').includes(search));
+  if(fltClass) list = list.filter(s=>String(s.class)===fltClass);
+  if(fltGender) list = list.filter(s=>s.gender===fltGender);
+  if(fltGroup!==''){
+    const gn = parseInt(fltGroup,10);
+    list = list.filter(s=> (s.group||0)===gn);
+  }
+  if(fltRoom==='yes') list = list.filter(s=>s.room);
+  if(fltRoom==='no') list = list.filter(s=>!s.room);
+
+  list.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  document.getElementById('fltCount').textContent = `${list.length}명`;
+
+  if(list.length===0){
+    tbody.innerHTML = '<tr><td colspan="10" class="empty">데이터가 없어요. [가져오기] 탭에서 엑셀을 업로드해 보세요.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(s=>{
+    const gLabel = s.group ? `<span class="group-chip g-${s.group}">${(state.groups[s.group]?.name)||s.group+'조'}</span>` : '<span class="pill">-</span>';
+    const gender = s.gender==='M'?'남':(s.gender==='F'?'여':'-');
+    const room = s.room ? state.rooms[s.room]?.no || s.room : '-';
+    return `<tr>
+      <td class="mono">${s.id||''}</td>
+      <td><b>${escapeHtml(s.name||'')}</b></td>
+      <td>${s.class||''}</td>
+      <td>${s.num||''}</td>
+      <td>${gender}</td>
+      <td>${gLabel}</td>
+      <td>${room}</td>
+      <td>${s.bus||''}</td>
+      <td class="mono" style="font-size:11px;color:var(--muted)">${s.tel||''}</td>
+      <td style="text-align:right">
+        <div class="cell-actions" style="justify-content:flex-end">
+          <button class="btn sm ghost" onclick="openStudentModal('${s.id}')">수정</button>
+          <button class="btn sm ghost" onclick="deleteStudent('${s.id}')" style="color:var(--danger)">삭제</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openStudentModal(id){
+  editingStudentId = id||null;
+  if(id){
+    const s = state.students[id];
+    if(!s) return;
+    document.getElementById('stModalTitle').textContent = `학생 수정 (${id})`;
+    document.getElementById('stId').value = s.id||'';
+    document.getElementById('stId').disabled = true;
+    document.getElementById('stName').value = s.name||'';
+    document.getElementById('stClass').value = s.class||'';
+    document.getElementById('stNum').value = s.num||'';
+    document.getElementById('stGender').value = s.gender||'';
+    document.getElementById('stBus').value = s.bus||'';
+    document.getElementById('stTel').value = s.tel||'';
+    document.getElementById('stBirth').value = s.birth||'';
+    document.getElementById('stNote').value = s.note||'';
+  } else {
+    document.getElementById('stModalTitle').textContent = '학생 추가';
+    document.getElementById('stId').disabled = false;
+    ['stId','stName','stClass','stNum','stGender','stBus','stTel','stBirth','stNote'].forEach(id=>{
+      document.getElementById(id).value = '';
+    });
+  }
+  document.getElementById('studentModal').classList.add('show');
+}
+function closeStudentModal(){
+  document.getElementById('studentModal').classList.remove('show');
+}
+function saveStudentModal(){
+  const id = document.getElementById('stId').value.trim();
+  const name = document.getElementById('stName').value.trim();
+  if(!name){ toast('이름은 필수','err'); return; }
+  const clz = parseInt(document.getElementById('stClass').value,10)||null;
+  const num = parseInt(document.getElementById('stNum').value,10)||null;
+  let finalId = id;
+  if(!finalId && clz && num){
+    finalId = '2' + String(clz).padStart(2,'0') + String(num).padStart(2,'0');
+  }
+  if(!finalId){ toast('학번 또는 반·번호가 필요해요','err'); return; }
+  if(!editingStudentId && state.students[finalId]){
+    if(!confirm(`학번 ${finalId}가 이미 있어요. 덮어쓸까요?`)) return;
+  }
+  const targetId = editingStudentId || finalId;
+  const existing = state.students[targetId] || {};
+  state.students[targetId] = {
+    ...existing,
+    id: finalId,
+    name,
+    class: clz,
+    num,
+    gender: document.getElementById('stGender').value || '',
+    bus: parseInt(document.getElementById('stBus').value,10)||null,
+    tel: document.getElementById('stTel').value.trim(),
+    birth: document.getElementById('stBirth').value.trim(),
+    note: document.getElementById('stNote').value.trim()
+  };
+  // 학번이 바뀌었다면 키도 바꿈
+  if(editingStudentId && editingStudentId !== finalId){
+    delete state.students[editingStudentId];
+  }
+  closeStudentModal();
+  saveLocal();
+  render();
+  toast('저장 완료','ok');
+}
+function deleteStudent(id){
+  if(!confirm(`${state.students[id]?.name||id} 학생을 삭제할까요?`)) return;
+  delete state.students[id];
+  saveLocal();
+  render();
+  toast('삭제됨','ok');
+}
+function deleteAllStudents(){
+  if(!confirm('전체 학생을 삭제할까요? (임시저장만 삭제, Firebase는 유지)')) return;
+  state.students = {};
+  saveLocal();
+  render();
+  toast('전체 삭제 완료','ok');
+}
+function bulkAddClass(){
+  const clz = prompt('반 번호를 입력하세요 (1~11)');
+  if(!clz) return;
+  const c = parseInt(clz,10);
+  if(!c || c<1 || c>11){ toast('1~11 사이','err'); return; }
+  const qty = parseInt(prompt('인원 수 (1~35)', '28'),10);
+  if(!qty || qty<1) return;
+  let added = 0;
+  for(let i=1;i<=qty;i++){
+    const id = '2' + String(c).padStart(2,'0') + String(i).padStart(2,'0');
+    if(!state.students[id]){
+      state.students[id] = {id,name:'',class:c,num:i,gender:'',bus:null};
+      added++;
+    }
+  }
+  saveLocal();
+  render();
+  toast(`${c}반 ${added}명 생성`,'ok');
+}
+
+/* ================= 가져오기 ================= */
+let importBuffer = [];
+
+function fillSampleTemplate(){
+  const rows = ['학번\t이름\t반\t번호\t성별\t버스\t연락처'];
+  const names = ['김통영','이통영','박통영','최통영','정통영','강통영','조통영','윤통영','장통영','임통영'];
+  for(let i=0;i<10;i++){
+    const id = '20' + String(1).padStart(2,'0') + String(i+1).padStart(2,'0');
+    rows.push([id, names[i], 1, i+1, i%2===0?'남':'여', 1, `010-${String(1000+i).padStart(4,'0')}-${String(2000+i).padStart(4,'0')}`].join('\t'));
+  }
+  document.getElementById('pasteBox').value = rows.join('\n');
+}
+
+function parsePaste(){
+  const raw = document.getElementById('pasteBox').value.trim();
+  if(!raw){ toast('붙여넣은 내용이 없어요','warn'); return; }
+  const lines = raw.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2){ toast('헤더+데이터 최소 2줄 필요','err'); return; }
+  // 탭 또는 쉼표 감지
+  const delim = lines[0].includes('\t') ? '\t' : ',';
+  const headers = lines[0].split(delim).map(h=>h.trim());
+  const data = lines.slice(1).map(l=>l.split(delim).map(v=>v.trim()));
+  parseAndPreview(headers, data);
+}
+
+function handleFileUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      const wb = XLSX.read(ev.target.result, {type:'binary'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const arr = XLSX.utils.sheet_to_json(sheet, {header:1, defval:''});
+      if(arr.length<2){ toast('데이터가 부족해요','err'); return; }
+      const headers = arr[0].map(h=>String(h||'').trim());
+      const data = arr.slice(1).map(r=>r.map(v=>String(v||'').trim()));
+      parseAndPreview(headers, data);
+    }catch(err){ console.error(err); toast('파일 파싱 실패','err'); }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function parseAndPreview(headers, rows){
+  // 헤더 매핑
+  const map = {};
+  headers.forEach((h,i)=>{
+    const low = h.toLowerCase();
+    if(h.includes('학번')||low==='id'||low==='studentid') map.id=i;
+    else if(h.includes('이름')||low==='name') map.name=i;
+    else if(h.includes('반')&&!h.includes('번')) map.class=i;
+    else if(h.includes('번호')||low==='num'||low==='no') map.num=i;
+    else if(h.includes('성별')||low==='gender'||low==='sex') map.gender=i;
+    else if(h.includes('버스')||low==='bus') map.bus=i;
+    else if(h.includes('연락')||h.includes('전화')||low==='tel'||low==='phone') map.tel=i;
+    else if(h.includes('생년')||h.includes('생일')||low==='birth') map.birth=i;
+    else if(h.includes('비고')||h.includes('특이')||low==='note') map.note=i;
+  });
+  importBuffer = rows.map(r=>{
+    const obj = {};
+    if(map.id!==undefined) obj.id = String(r[map.id]||'').replace(/\D/g,'');
+    if(map.name!==undefined) obj.name = r[map.name]||'';
+    if(map.class!==undefined){
+      const c = String(r[map.class]||'').replace(/\D/g,'');
+      obj.class = c ? parseInt(c,10) : null;
+    }
+    if(map.num!==undefined){
+      const n = String(r[map.num]||'').replace(/\D/g,'');
+      obj.num = n ? parseInt(n,10) : null;
+    }
+    if(map.gender!==undefined){
+      const g = String(r[map.gender]||'').trim();
+      obj.gender = /^m|남/i.test(g) ? 'M' : (/^f|여/i.test(g) ? 'F' : '');
+    }
+    if(map.bus!==undefined){
+      const b = String(r[map.bus]||'').replace(/\D/g,'');
+      obj.bus = b ? parseInt(b,10) : null;
+    }
+    if(map.tel!==undefined) obj.tel = r[map.tel]||'';
+    if(map.birth!==undefined) obj.birth = r[map.birth]||'';
+    if(map.note!==undefined) obj.note = r[map.note]||'';
+    // 학번 자동 생성
+    if(!obj.id && obj.class && obj.num){
+      obj.id = '2' + String(obj.class).padStart(2,'0') + String(obj.num).padStart(2,'0');
+    }
+    return obj;
+  }).filter(o=>o.name||o.id);
+
+  // 미리보기 렌더
+  const card = document.getElementById('previewCard');
+  card.style.display='block';
+  const valid = importBuffer.filter(r=>r.id && r.name).length;
+  document.getElementById('previewMeta').innerHTML = `총 <b>${importBuffer.length}</b>행 중 유효 <b style="color:var(--ok)">${valid}</b>행 · 필드 인식: ${Object.keys(map).join(', ')||'없음'}`;
+  const cols = ['id','name','class','num','gender','bus','tel'];
+  const labels = {id:'학번',name:'이름',class:'반',num:'번호',gender:'성별',bus:'버스',tel:'연락처'};
+  document.getElementById('previewHead').innerHTML = '<tr>' + cols.map(c=>`<th>${labels[c]}</th>`).join('') + '<th>상태</th></tr>';
+  const limit = Math.min(50, importBuffer.length);
+  const rowsHtml = importBuffer.slice(0,limit).map(r=>{
+    const ok = r.id && r.name;
+    const cells = cols.map(c=>`<td>${r[c]===null||r[c]===undefined?'':escapeHtml(String(r[c]))}</td>`).join('');
+    const badge = ok ? '<td><span class="pill" style="color:var(--ok)">✓</span></td>' : '<td><span class="pill" style="color:var(--danger)">누락</span></td>';
+    return `<tr>${cells}${badge}</tr>`;
+  }).join('');
+  const more = importBuffer.length>limit ? `<tr><td colspan="${cols.length+1}" class="empty">... ${importBuffer.length-limit}행 더 있음</td></tr>` : '';
+  document.getElementById('previewBody').innerHTML = rowsHtml + more;
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function commitImport(overwrite){
+  if(importBuffer.length===0){ toast('가져올 데이터가 없어요','warn'); return; }
+  if(overwrite){
+    if(!confirm('기존 학생 데이터를 모두 삭제하고 덮어쓸까요?')) return;
+    state.students = {};
+  }
+  let added=0, updated=0, skipped=0;
+  importBuffer.forEach(r=>{
+    if(!r.id || !r.name){ skipped++; return; }
+    if(state.students[r.id]){
+      state.students[r.id] = {...state.students[r.id], ...r};
+      updated++;
+    } else {
+      state.students[r.id] = r;
+      added++;
+    }
+  });
+  importBuffer = [];
+  document.getElementById('previewCard').style.display='none';
+  document.getElementById('pasteBox').value='';
+  document.getElementById('fileUp').value='';
+  saveLocal();
+  render();
+  toast(`추가 ${added}, 수정 ${updated}${skipped?`, 건너뜀 ${skipped}`:''}`,'ok');
+}
+
+/* ================= 내보내기 ================= */
+function exportExcel(){
+  const list = Object.values(state.students).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  if(list.length===0){ toast('내보낼 데이터 없음','warn'); return; }
+  const data = list.map(s=>({
+    학번:s.id||'', 이름:s.name||'', 반:s.class||'', 번호:s.num||'',
+    성별:s.gender==='M'?'남':(s.gender==='F'?'여':''), 조:s.group||'',
+    방:state.rooms[s.room]?.no||'', 버스:s.bus||'', 연락처:s.tel||'', 비고:s.note||''
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '학생명단');
+  XLSX.writeFile(wb, `통영고_수학여행_학생명단_${dstamp()}.xlsx`);
+  toast('엑셀 다운로드 시작','ok');
+}
+function exportCSV(){
+  const list = Object.values(state.students).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  if(list.length===0){ toast('내보낼 데이터 없음','warn'); return; }
+  const headers = ['학번','이름','반','번호','성별','조','방','버스','연락처','비고'];
+  const rows = list.map(s=>[
+    s.id||'',s.name||'',s.class||'',s.num||'',
+    s.gender==='M'?'남':(s.gender==='F'?'여':''),s.group||'',
+    state.rooms[s.room]?.no||'',s.bus||'',s.tel||'',s.note||''
+  ]);
+  const csv = '\ufeff' + [headers.join(','), ...rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','))].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  downloadBlob(blob, `통영고_학생명단_${dstamp()}.csv`);
+  toast('CSV 다운로드','ok');
+}
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  downloadBlob(blob, `통영고_백업_${dstamp()}.json`);
+  toast('백업 다운로드','ok');
+}
+
+/* ================= 조 편성 ================= */
+function adjustGroups(){
+  const n = parseInt(document.getElementById('groupCount').value,10);
+  if(!n || n<1 || n>30) return;
+  state.groupCount = n;
+  // 조 개수 줄어들면 초과분의 학생들 풀로 돌려보내기
+  Object.values(state.students).forEach(s=>{
+    if(s.group && s.group>n){ delete s.group; }
+  });
+  // 조 메타 정리
+  Object.keys(state.groups).forEach(k=>{
+    if(parseInt(k,10)>n) delete state.groups[k];
+  });
+  saveLocal();
+  renderGroupsUI();
+  fillGroupFilters();
+}
+
+function renderGroupsUI(){
+  // 미배정 풀
+  const search = (document.getElementById('poolSearch')?.value||'').trim().toLowerCase();
+  const pool = Object.values(state.students).filter(s=>!s.group || s.group===0);
+  let poolFiltered = pool;
+  if(search) poolFiltered = pool.filter(s=>(s.name||'').toLowerCase().includes(search) || String(s.id).includes(search));
+  poolFiltered.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  document.getElementById('poolCount').textContent = `${pool.length}명`;
+  const poolEl = document.getElementById('poolList');
+  poolEl.innerHTML = poolFiltered.map(s=>chipHtml(s)).join('') || '<div class="empty">모든 학생이 배정됨</div>';
+  enableDragFrom(poolEl);
+
+  // 조 그리드
+  const grid = document.getElementById('groupsGrid');
+  let html = '';
+  for(let i=1;i<=state.groupCount;i++){
+    const meta = state.groups[i] || {no:i};
+    const members = Object.values(state.students).filter(s=>s.group===i);
+    members.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+    const counts = {M:0,F:0,_:0};
+    members.forEach(m=>{counts[m.gender||'_']++});
+    html += `
+      <div class="group-box" data-dropzone="group" data-group="${i}">
+        <div class="group-head">
+          <div class="group-title">
+            <span class="group-chip g-${i}">${i}</span>
+            <input class="input" style="font-size:12px;padding:4px 8px;min-width:0" placeholder="${i}조" value="${escapeHtml(meta.name||'')}" onchange="updateGroupMeta(${i},'name',this.value)"/>
+          </div>
+          <div class="group-count">${members.length}명 · M${counts.M}/F${counts.F}</div>
+        </div>
+        <input class="input" style="font-size:11px;padding:4px 8px;margin-bottom:6px" placeholder="테마/구역" value="${escapeHtml(meta.theme||'')}" onchange="updateGroupMeta(${i},'theme',this.value)"/>
+        <div class="group-members" data-dropzone="group" data-group="${i}">
+          ${members.map(m=>chipHtml(m, i, meta.leader===m.id)).join('') || '<div style="color:var(--dim);font-size:11px;text-align:center;padding:10px">여기로 드래그</div>'}
+        </div>
+      </div>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll('.group-box, .group-members').forEach(el=>enableDropZone(el));
+  grid.querySelectorAll('.chip').forEach(el=>attachChipDrag(el));
+}
+
+function updateGroupMeta(no, field, val){
+  if(!state.groups[no]) state.groups[no] = {no};
+  state.groups[no][field] = val.trim();
+  saveLocal();
+  fillGroupFilters();
+}
+function setLeader(groupNo, studentId){
+  if(!state.groups[groupNo]) state.groups[groupNo] = {no:groupNo};
+  state.groups[groupNo].leader = state.groups[groupNo].leader===studentId ? null : studentId;
+  saveLocal();
+  renderGroupsUI();
+}
+
+function chipHtml(s, groupNo, isLeader){
+  const gcls = s.gender==='F'?'chip-female':(s.gender==='M'?'chip-male':'');
+  const leaderBtn = groupNo!==undefined ? `<button class="chip-remove" onclick="setLeader(${groupNo},'${s.id}')" title="조장 지정">${isLeader?'⭐':'☆'}</button>` : '';
+  const removeBtn = groupNo!==undefined ? `<button class="chip-remove" onclick="removeFromGroup('${s.id}')" title="풀로 되돌리기">✕</button>` : '';
+  return `<div class="chip ${gcls}" draggable="true" data-id="${s.id}">
+    <div><span class="chip-name">${escapeHtml(s.name||'(이름없음)')}</span> <span class="chip-id">${s.id} ${s.class?`· ${s.class}-${s.num}`:''}</span></div>
+    <div style="display:flex;gap:2px">${leaderBtn}${removeBtn}</div>
+  </div>`;
+}
+function removeFromGroup(id){
+  if(!state.students[id]) return;
+  state.students[id].group = 0;
+  // 조장이었다면 해제
+  Object.values(state.groups).forEach(g=>{if(g.leader===id) g.leader=null});
+  saveLocal();
+  renderGroupsUI();
+}
+
+/* 드래그&드롭 */
+let dragId = null;
+function enableDragFrom(container){
+  container.querySelectorAll('.chip').forEach(el=>attachChipDrag(el));
+  enableDropZone(container);
+}
+function attachChipDrag(el){
+  el.addEventListener('dragstart', e=>{
+    dragId = el.dataset.id;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+    try{ e.dataTransfer.setData('text/plain', dragId); }catch(_){}
+  });
+  el.addEventListener('dragend', ()=>{
+    el.classList.remove('dragging');
+    dragId = null;
+  });
+}
+function enableDropZone(el){
+  el.addEventListener('dragover', e=>{
+    e.preventDefault();
+    e.dataTransfer.dropEffect='move';
+    const zone = e.currentTarget.closest('[data-dropzone]') || e.currentTarget;
+    zone.classList.add('drag-over');
+  });
+  el.addEventListener('dragleave', e=>{
+    e.currentTarget.classList.remove('drag-over');
+  });
+  el.addEventListener('drop', e=>{
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const id = dragId || e.dataTransfer.getData('text/plain');
+    if(!id || !state.students[id]) return;
+    const zone = e.currentTarget.closest('[data-dropzone]') || e.currentTarget;
+    const type = zone.dataset.dropzone;
+    if(type==='pool'){
+      state.students[id].group = 0;
+      Object.values(state.groups).forEach(g=>{if(g.leader===id) g.leader=null});
+    } else if(type==='group'){
+      const gn = parseInt(zone.dataset.group,10);
+      state.students[id].group = gn;
+    } else if(type==='pool-room'){
+      state.students[id].room = null;
+    } else if(type==='room'){
+      const roomId = zone.dataset.room;
+      const room = state.rooms[roomId];
+      if(!room) return;
+      const stu = state.students[id];
+      if(room.gender && stu.gender && room.gender !== stu.gender){
+        if(!confirm(`이 방은 ${room.gender==='M'?'남':'여'}학생 방인데 ${stu.gender==='M'?'남':'여'}학생을 배정하시겠어요?`)) return;
+      }
+      const cur = Object.values(state.students).filter(s=>s.room===roomId).length;
+      if(cur >= (room.cap||4)){
+        if(!confirm(`이 방은 이미 정원(${room.cap}명)을 채웠어요. 그래도 배정할까요?`)) return;
+      }
+      stu.room = roomId;
+    }
+    saveLocal();
+    renderGroupsUI();
+    renderRoomsUI();
+    renderStudents();
+    renderDashboard();
+  });
+}
+
+/* 자동 배정 */
+function clearAllGroups(){
+  if(!confirm('모든 조 배정을 해제할까요?')) return;
+  Object.values(state.students).forEach(s=>{s.group=0});
+  Object.values(state.groups).forEach(g=>{g.leader=null});
+  saveLocal();
+  renderGroupsUI();
+  renderDashboard();
+  toast('조 배정 해제','ok');
+}
+
+function autoAssignGroups(mode){
+  const n = state.groupCount;
+  if(n<1){ toast('조 개수 필요','warn'); return; }
+  if(!confirm(`전체 학생을 ${n}개 조로 자동 배정할까요? 기존 배정은 덮어써져요.`)) return;
+  const students = Object.values(state.students);
+  if(students.length===0){ toast('학생 없음','warn'); return; }
+
+  if(mode==='balanced'){
+    // 단순 균등 분배 (라운드로빈)
+    const shuffled = shuffle([...students]);
+    shuffled.forEach((s,i)=>{s.group = (i%n)+1});
+  } else if(mode==='gender'){
+    // 성별별로 라운드로빈
+    const males = shuffle(students.filter(s=>s.gender==='M'));
+    const females = shuffle(students.filter(s=>s.gender==='F'));
+    const others = shuffle(students.filter(s=>!s.gender));
+    [males,females,others].forEach(arr=>{
+      arr.forEach((s,i)=>{s.group = (i%n)+1});
+    });
+  } else if(mode==='mix'){
+    // 반 섞어서 (같은 반이 한 조에 몰리지 않게)
+    const byClass = {};
+    students.forEach(s=>{
+      const c = s.class||0;
+      if(!byClass[c]) byClass[c]=[];
+      byClass[c].push(s);
+    });
+    Object.values(byClass).forEach(arr=>shuffle(arr));
+    const ordered = [];
+    let hasMore = true;
+    while(hasMore){
+      hasMore = false;
+      for(const c in byClass){
+        if(byClass[c].length>0){
+          ordered.push(byClass[c].shift());
+          hasMore = true;
+        }
+      }
+    }
+    ordered.forEach((s,i)=>{s.group = (i%n)+1});
+  }
+  saveLocal();
+  renderGroupsUI();
+  renderStudents();
+  renderDashboard();
+  toast('자동 배정 완료','ok');
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+/* ================= 방 배정 ================= */
+function addRoom(){
+  const floor = parseInt(document.getElementById('newFloor').value,10);
+  const no = document.getElementById('newRoomNo').value.trim();
+  const cap = parseInt(document.getElementById('newCap').value,10)||4;
+  const gender = document.getElementById('newRoomGender').value;
+  if(!no){ toast('방 번호 입력','err'); return; }
+  const roomId = `R${no}`;
+  if(state.rooms[roomId]){ toast('이미 있는 방 번호','err'); return; }
+  state.rooms[roomId] = {id:roomId, no, floor, cap, gender};
+  document.getElementById('newRoomNo').value='';
+  saveLocal();
+  renderRoomsUI();
+  toast(`방 ${no} 추가`,'ok');
+}
+
+function bulkAddRooms(){
+  const start = parseInt(document.getElementById('bulkStart').value,10);
+  const qty = parseInt(document.getElementById('bulkQty').value,10);
+  const floor = parseInt(document.getElementById('bulkFloor').value,10);
+  const cap = parseInt(document.getElementById('bulkCap').value,10)||4;
+  const gender = document.getElementById('bulkGender').value;
+  if(!start || !qty){ toast('입력 확인','err'); return; }
+  let added=0;
+  for(let i=0;i<qty;i++){
+    const no = String(start+i);
+    const roomId = `R${no}`;
+    if(!state.rooms[roomId]){
+      state.rooms[roomId] = {id:roomId, no, floor, cap, gender};
+      added++;
+    }
+  }
+  saveLocal();
+  renderRoomsUI();
+  toast(`${added}개 방 생성`,'ok');
+}
+
+function deleteRoom(roomId){
+  if(!confirm(`방 ${state.rooms[roomId]?.no}을 삭제할까요? 배정된 학생은 미배정으로 돌아가요.`)) return;
+  Object.values(state.students).forEach(s=>{if(s.room===roomId) s.room=null});
+  delete state.rooms[roomId];
+  saveLocal();
+  renderRoomsUI();
+  renderStudents();
+  renderDashboard();
+}
+
+function clearAllRooms(){
+  if(!confirm('모든 방을 삭제할까요? 배정도 초기화돼요.')) return;
+  state.rooms = {};
+  Object.values(state.students).forEach(s=>{s.room=null});
+  saveLocal();
+  renderRoomsUI();
+  renderStudents();
+  renderDashboard();
+  toast('방 전체 삭제','ok');
+}
+
+function renderRoomsUI(){
+  const search = (document.getElementById('roomPoolSearch')?.value||'').trim().toLowerCase();
+  const genderFlt = document.getElementById('roomPoolGender')?.value||'';
+  const pool = Object.values(state.students).filter(s=>!s.room);
+  let poolFiltered = pool;
+  if(genderFlt) poolFiltered = poolFiltered.filter(s=>s.gender===genderFlt);
+  if(search) poolFiltered = poolFiltered.filter(s=>(s.name||'').toLowerCase().includes(search) || String(s.id).includes(search));
+  poolFiltered.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  const poolEl = document.getElementById('poolRoomList');
+  document.getElementById('poolRoomCount').textContent = `${pool.length}명`;
+  poolEl.innerHTML = poolFiltered.map(s=>chipHtml(s)).join('') || '<div class="empty">모두 배정됨</div>';
+  poolEl.dataset.dropzone='pool-room';
+  enableDragFrom(poolEl);
+
+  // 층별로 그룹
+  const rooms = Object.values(state.rooms).sort((a,b)=>{
+    if(a.floor!==b.floor) return (a.floor||0)-(b.floor||0);
+    return String(a.no).localeCompare(String(b.no));
+  });
+  const grid = document.getElementById('roomsGrid');
+
+  if(rooms.length===0){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">방이 없어요. 위에서 방을 추가해 보세요.</div>';
+    document.getElementById('roomStatsTotal').textContent = '방 0개';
+    document.getElementById('roomStatsAssigned').textContent = '배정 0/0';
+    return;
+  }
+
+  let html = '';
+  let totalCap = 0, totalAssigned = 0;
+  rooms.forEach(r=>{
+    const members = Object.values(state.students).filter(s=>s.room===r.id);
+    members.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+    const over = members.length > (r.cap||4);
+    totalCap += (r.cap||4);
+    totalAssigned += members.length;
+    const genderLabel = r.gender==='M'?'남':(r.gender==='F'?'여':'무관');
+    const memberHtml = members.map(m=>{
+      const gcls = m.gender==='F'?'chip-female':(m.gender==='M'?'chip-male':'');
+      return `<div class="chip ${gcls}" draggable="true" data-id="${m.id}">
+        <div><span class="chip-name">${escapeHtml(m.name||'(이름없음)')}</span> <span class="chip-id">${m.id}</span></div>
+        <button class="chip-remove" onclick="kickFromRoom('${m.id}')" title="방에서 제외">✕</button>
+      </div>`;
+    }).join('') || '<div style="color:var(--dim);font-size:11px;text-align:center;padding:8px">여기로 드래그</div>';
+    html += `
+      <div class="room-card" data-dropzone="room" data-room="${r.id}">
+        <div class="room-head">
+          <div>
+            <div class="room-no">🏨 ${r.no}호</div>
+            <div class="room-floor">${r.floor?r.floor+'층':''} · ${genderLabel}</div>
+          </div>
+          <div>
+            <span class="room-cap ${over?'over':''}">${members.length}/${r.cap||4}</span>
+            <button class="btn sm ghost" onclick="deleteRoom('${r.id}')" style="color:var(--danger);padding:2px 6px;margin-left:4px">×</button>
+          </div>
+        </div>
+        <div class="room-members" data-dropzone="room" data-room="${r.id}">
+          ${memberHtml}
+        </div>
+      </div>`;
+  });
+  grid.innerHTML = html;
+  grid.querySelectorAll('.room-card, .room-members').forEach(el=>enableDropZone(el));
+  grid.querySelectorAll('.chip').forEach(el=>attachChipDrag(el));
+  document.getElementById('roomStatsTotal').textContent = `방 ${rooms.length}개 (정원 ${totalCap})`;
+  document.getElementById('roomStatsAssigned').textContent = `배정 ${totalAssigned}/${Object.keys(state.students).length}`;
+}
+
+function kickFromRoom(id){
+  if(!state.students[id]) return;
+  state.students[id].room = null;
+  saveLocal();
+  renderRoomsUI();
+  renderStudents();
+  renderDashboard();
+}
+
+/* ================= 위치 조회 ================= */
+let locAutoOn = false;
+function toggleAutoRefresh(){
+  locAutoOn = !locAutoOn;
+  const btn = document.getElementById('autoRefreshBtn');
+  if(locAutoOn){
+    btn.textContent = '⏱ 자동 새로고침 ON (30s)';
+    btn.classList.remove('ok');
+    btn.classList.add('primary');
+    locAutoTimer = setInterval(refreshLocations, 30000);
+  } else {
+    btn.textContent = '⏱ 자동 새로고침 OFF';
+    btn.classList.add('ok');
+    btn.classList.remove('primary');
+    clearInterval(locAutoTimer);
+    locAutoTimer=null;
+  }
+}
+
+async function refreshLocations(){
+  if(!fbDb){ toast('Firebase 미연결','err'); return; }
+  try{
+    const snap = await fbDb.ref(`${FB_ROOT}/locations`).once('value');
+    state.locations = snap.val() || {};
+    renderLocations();
+  }catch(e){
+    console.error(e);
+    toast('위치 조회 실패','err');
+  }
+}
+
+function renderLocations(){
+  const search = (document.getElementById('locSearch').value||'').trim().toLowerCase();
+  const fltClass = document.getElementById('locClass').value;
+  const fltGroup = document.getElementById('locGroup').value;
+  const fltAge = document.getElementById('locAge').value;
+  const now = Date.now();
+
+  let ids = Object.keys(state.locations||{});
+  let rows = ids.map(id=>{
+    const loc = state.locations[id];
+    const stu = state.students[id] || {};
+    return {id, loc, stu};
+  });
+  if(search) rows = rows.filter(r=>(r.stu.name||'').toLowerCase().includes(search) || String(r.id).includes(search));
+  if(fltClass) rows = rows.filter(r=>String(r.stu.class)===fltClass);
+  if(fltGroup!==''){
+    const gn = parseInt(fltGroup,10);
+    rows = rows.filter(r=>(r.stu.group||0)===gn);
+  }
+  if(fltAge){
+    rows = rows.filter(r=>{
+      const age = (now - (r.loc.ts||0))/60000;
+      if(fltAge==='stale') return age>=60;
+      return age <= parseInt(fltAge,10);
+    });
+  }
+  rows.sort((a,b)=> (b.loc.ts||0) - (a.loc.ts||0));
+
+  document.getElementById('locCount').textContent = `${rows.length}명`;
+  const grid = document.getElementById('locGrid');
+  if(rows.length===0){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">표시할 위치가 없어요.</div>';
+    return;
+  }
+  grid.innerHTML = rows.map(r=>{
+    const {id, loc, stu} = r;
+    const ageMin = Math.floor((now - (loc.ts||0))/60000);
+    const ageLabel = ageMin<1 ? '방금' : (ageMin<60 ? `${ageMin}분 전` : `${Math.floor(ageMin/60)}시간 전`);
+    const fresh = ageMin < 10;
+    const gChip = stu.group ? `<span class="group-chip g-${stu.group}" style="font-size:10px">${stu.group}조</span>` : '';
+    return `<div class="loc-card">
+      <div class="ln1">
+        <div class="loc-name">${escapeHtml(stu.name||id)} ${gChip}</div>
+        <div class="loc-time" style="color:${fresh?'var(--ok)':'var(--muted)'}">${ageLabel}</div>
+      </div>
+      <div style="color:var(--muted);font-size:11px">${id} ${stu.class?`· ${stu.class}-${stu.num}`:''}</div>
+      <div class="loc-coord">${(loc.lat||0).toFixed(6)}, ${(loc.lng||0).toFixed(6)}${loc.accuracy?` ±${Math.round(loc.accuracy)}m`:''}</div>
+      <div style="margin-top:6px">
+        <a href="https://map.kakao.com/link/map/${encodeURIComponent(stu.name||id)},${loc.lat},${loc.lng}" target="_blank" class="loc-link">🗺 카카오맵 열기</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.google.com/maps?q=${loc.lat},${loc.lng}" target="_blank" class="loc-link">구글</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= Firebase 동기화 ================= */
+async function syncToFirebase(kind){
+  if(!fbDb){ toast('Firebase 미연결','err'); return; }
+  if(!confirm(`${kindLabel(kind)}을(를) Firebase에 업로드할까요? 서버 데이터를 덮어씁니다.`)) return;
+  try{
+    if(kind==='students' || kind==='all'){
+      await fbDb.ref(`${FB_ROOT}/students`).set(state.students);
+    }
+    if(kind==='groups' || kind==='all'){
+      await fbDb.ref(`${FB_ROOT}/groups`).set(state.groups);
+    }
+    if(kind==='rooms' || kind==='all'){
+      await fbDb.ref(`${FB_ROOT}/rooms`).set(state.rooms);
+    }
+    toast(`${kindLabel(kind)} 업로드 완료`,'ok');
+  }catch(e){
+    console.error(e);
+    toast('업로드 실패: '+e.message,'err');
+  }
+}
+
+async function pullFromFirebase(kind){
+  if(!fbDb){ toast('Firebase 미연결','err'); return; }
+  if(!confirm(`서버의 ${kindLabel(kind)}을(를) 가져올까요? 현재 작업 내용이 덮어써집니다.`)) return;
+  try{
+    if(kind==='students' || kind==='all'){
+      const snap = await fbDb.ref(`${FB_ROOT}/students`).once('value');
+      state.students = snap.val() || {};
+    }
+    if(kind==='groups' || kind==='all'){
+      const snap = await fbDb.ref(`${FB_ROOT}/groups`).once('value');
+      state.groups = snap.val() || {};
+    }
+    if(kind==='rooms' || kind==='all'){
+      const snap = await fbDb.ref(`${FB_ROOT}/rooms`).once('value');
+      state.rooms = snap.val() || {};
+    }
+    saveLocal();
+    render();
+    toast(`${kindLabel(kind)} 가져오기 완료`,'ok');
+  }catch(e){
+    console.error(e);
+    toast('가져오기 실패: '+e.message,'err');
+  }
+}
+
+async function fbDelete(kind){
+  if(!fbDb){ toast('Firebase 미연결','err'); return; }
+  if(!confirm(`[위험] 서버의 ${kindLabel(kind)}을(를) 완전히 삭제할까요?`)) return;
+  if(!confirm(`정말이요? 되돌릴 수 없어요.`)) return;
+  try{
+    await fbDb.ref(`${FB_ROOT}/${kind}`).remove();
+    toast('서버 삭제 완료','ok');
+  }catch(e){ toast('삭제 실패: '+e.message,'err'); }
+}
+
+function kindLabel(k){
+  return {students:'학생 명단',groups:'조 편성',rooms:'방 배정',locations:'위치',all:'전체 데이터'}[k]||k;
+}
+
+/* ================= 유틸 ================= */
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+function dstamp(){
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+function toast(msg, type){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type?' '+type:'');
+  setTimeout(()=>{el.className='toast'+(type?' '+type:'')},2500);
+}
+
+// 모달 배경 클릭 닫기
+document.getElementById('studentModal').addEventListener('click', e=>{
+  if(e.target.id==='studentModal') closeStudentModal();
+});
+</script>
+</body>
+</html>
