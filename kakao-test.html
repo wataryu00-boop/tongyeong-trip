@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>카카오 지도 테스트</title>
+<style>
+body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+#map { width: 100%; height: 400px; background: #f0f0f0; border: 2px solid #ddd; margin-top: 20px; }
+#log { background: #1a1a1a; color: #a8e6cf; padding: 15px; font-family: monospace; font-size: 12px; margin-top: 10px; min-height: 200px; white-space: pre-wrap; word-break: break-all; }
+.ok { color: #4ade80; }
+.err { color: #ef4444; }
+.info { color: #60a5fa; }
+h1 { font-size: 20px; }
+.key { background: #ffd; padding: 8px; font-family: monospace; font-size: 13px; border: 1px solid #ccc; }
+</style>
+</head>
+<body>
+
+<h1>🔍 카카오 지도 진단 테스트</h1>
+<p>사용 중인 키: <span class="key">93e97572beb250ebf8f9acd9933f91a6</span></p>
+<p>현재 도메인: <span class="key" id="currentDomain"></span></p>
+
+<div id="log">진단 시작...</div>
+<div id="map"></div>
+
+<script>
+const log = document.getElementById('log');
+const mapDiv = document.getElementById('map');
+const KEY = '93e97572beb250ebf8f9acd9933f91a6';
+
+function addLog(msg, type = 'info') {
+  const d = new Date();
+  const t = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+  log.innerHTML += `\n[${t}] <span class="${type}">${msg}</span>`;
+  console.log(msg);
+}
+
+document.getElementById('currentDomain').textContent = window.location.origin;
+addLog(`✓ 현재 URL: ${window.location.href}`, 'info');
+addLog(`✓ 현재 프로토콜: ${window.location.protocol}`, 'info');
+addLog(`✓ 현재 호스트: ${window.location.hostname}`, 'info');
+
+// 전역 에러 캐처
+window.addEventListener('error', (e) => {
+  if (e.target && e.target.src && e.target.src.includes('kakao')) {
+    addLog(`✗ 카카오 스크립트 로딩 실패: ${e.target.src}`, 'err');
+  }
+}, true);
+
+// 카카오 SDK 로드
+addLog('→ 카카오 SDK 스크립트 로딩 시도...', 'info');
+const script = document.createElement('script');
+script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KEY}&autoload=false`;
+
+const loadStart = Date.now();
+
+script.onload = () => {
+  const elapsed = Date.now() - loadStart;
+  addLog(`✓ 스크립트 파일 로드됨 (${elapsed}ms)`, 'ok');
+
+  if (!window.kakao) {
+    addLog('✗ window.kakao 객체 없음 → 키/도메인 문제', 'err');
+    return;
+  }
+  addLog('✓ window.kakao 객체 존재', 'ok');
+
+  if (!window.kakao.maps) {
+    addLog('✗ kakao.maps 없음 → 키 인증 실패 가능성', 'err');
+    return;
+  }
+  addLog('✓ kakao.maps 객체 존재', 'ok');
+
+  try {
+    kakao.maps.load(() => {
+      addLog('✓ kakao.maps.load() 콜백 실행', 'ok');
+      try {
+        const map = new kakao.maps.Map(mapDiv, {
+          center: new kakao.maps.LatLng(37.5759, 126.9768),
+          level: 5
+        });
+        addLog('✅ 지도 생성 성공! 아래에 지도 표시됨', 'ok');
+      } catch(e) {
+        addLog(`✗ 지도 생성 실패: ${e.message}`, 'err');
+      }
+    });
+  } catch(e) {
+    addLog(`✗ kakao.maps.load 실패: ${e.message}`, 'err');
+  }
+};
+
+script.onerror = (e) => {
+  addLog('✗ script.onerror 발생 — 스크립트 자체를 못 불러옴', 'err');
+  addLog('  → CSP 차단 / 도메인 미등록 / 네트워크 차단 / 확장프로그램 간섭', 'err');
+};
+
+document.head.appendChild(script);
+
+// 15초 타임아웃
+setTimeout(() => {
+  if (!window.kakao || !window.kakao.maps) {
+    addLog('⏱ 15초 타임아웃 — 로딩이 완료되지 않음', 'err');
+  }
+}, 15000);
+</script>
+
+</body>
+</html>
