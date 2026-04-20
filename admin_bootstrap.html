@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<title>통영고 수학여행 — 조·방 데이터 주입</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<style>
+  body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;background:#0b1020;color:#e8ecff;padding:28px;max-width:720px;margin:0 auto;line-height:1.6}
+  h1{font-size:22px;margin-bottom:6px;letter-spacing:-0.02em}
+  .sub{color:#97a0d0;font-size:13px;margin-bottom:24px}
+  .card{background:#161d3a;border:1px solid #2a3566;border-radius:14px;padding:20px;margin-bottom:16px}
+  .btn{padding:12px 20px;background:#7c9cff;border:none;color:#fff;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-right:8px}
+  .btn.ok{background:#10b981}
+  .btn.danger{background:#ef4444}
+  .btn:hover{opacity:.9}
+  pre{background:#0b1020;padding:12px;border-radius:8px;font-size:11px;overflow:auto;max-height:240px;color:#97a0d0}
+  .ok-msg{color:#10b981;font-weight:700;margin-top:12px}
+  .warn-msg{color:#f59e0b;font-weight:700;margin-top:12px}
+  ol{padding-left:20px;color:#97a0d0}
+  ol li{margin-bottom:6px}
+  code{background:#0b1020;padding:2px 6px;border-radius:4px;color:#a78bfa;font-size:12px}
+  a{color:#7c9cff}
+</style>
+</head>
+<body>
+  <h1>🎒 조·방 데이터 주입 도구</h1>
+  <div class="sub">학생 명단 엑셀 업로드 후, 이 페이지의 버튼을 눌러 조·방 배정 데이터를 admin의 임시저장에 주입하세요.</div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0">📋 사용 순서</h3>
+    <ol>
+      <li><b>admin.html을 먼저 열어</b> 로그인하고 <b>[가져오기]</b> 탭에서 엑셀 업로드 → <b>덮어쓰기</b>로 커밋 (학생 303명이 들어가야 함)</li>
+      <li><b>반드시 같은 브라우저·같은 도메인</b>에서 이 페이지를 열기 (그래야 localStorage 공유됨)</li>
+      <li>아래 <b>[주입 실행]</b> 버튼 클릭</li>
+      <li>admin.html 탭으로 돌아가 <b>[🔄 임시저장에서 불러오기]</b> 클릭 → <b>[조 편성]</b>, <b>[방 배정]</b> 탭에서 결과 확인</li>
+      <li>확인 후 <b>[Firebase 동기화]</b> 탭 → <b>[☁️ 전체 한번에 업로드]</b></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0">⚙️ 주입 실행</h3>
+    <div style="color:#97a0d0;font-size:12px;margin-bottom:14px">현재 admin의 localStorage에 저장된 학생 데이터에 조·방 정보를 <b>추가</b>합니다. 학생 데이터는 삭제/변경되지 않아요.</div>
+    <button class="btn" onclick="checkStudents()">👁 현재 학생 수 확인</button>
+    <button class="btn ok" onclick="inject()">✅ 조·방 데이터 주입 실행</button>
+    <button class="btn danger" onclick="resetGroupsRooms()">🗑 조·방만 초기화</button>
+    <div id="msg"></div>
+    <pre id="log" style="margin-top:14px;display:none"></pre>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0">📦 포함된 데이터</h3>
+    <div style="font-size:13px;color:#97a0d0">
+      조 편성: <b style="color:#e8ecff">71개 조</b> (서울 자유여행, 5/7)<br>
+      방 배정: <b style="color:#e8ecff">82개 방</b> (더트리니 호텔, 7~25층)<br>
+      학생 매핑: <b style="color:#e8ecff">303명 전원</b> (조·방 정보 연결)
+    </div>
+  </div>
+
+<script>
+const LS_KEY = "tyh_admin_v1";
+const DATA_URL = "./조편성_방배정_데이터.json";
+
+function setMsg(text, type){
+  const el = document.getElementById('msg');
+  el.className = type==='ok' ? 'ok-msg' : 'warn-msg';
+  el.textContent = text;
+}
+
+function log(obj){
+  const el = document.getElementById('log');
+  el.style.display = 'block';
+  el.textContent = (typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2));
+}
+
+function loadLS(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+function saveLS(obj){
+  obj.ts = Date.now();
+  localStorage.setItem(LS_KEY, JSON.stringify(obj));
+}
+
+function checkStudents(){
+  const data = loadLS();
+  if(!data || !data.students){
+    setMsg('admin.html에 학생 데이터가 없어요. 먼저 admin에서 엑셀 업로드를 해주세요.', 'warn');
+    return;
+  }
+  const count = Object.keys(data.students).length;
+  setMsg(`학생 ${count}명 확인됨. 주입할 준비가 됐어요.`, 'ok');
+  log({학생수:count, 조수:Object.keys(data.groups||{}).length, 방수:Object.keys(data.rooms||{}).length});
+}
+
+async function inject(){
+  const data = loadLS();
+  if(!data || !data.students){
+    setMsg('학생 데이터가 없어요. admin에서 먼저 엑셀 업로드를 진행하세요.', 'warn');
+    return;
+  }
+  const count = Object.keys(data.students).length;
+  if(count < 100){
+    if(!confirm(`현재 학생이 ${count}명뿐이에요. 그래도 진행할까요?`)) return;
+  }
+
+  let payload;
+  try{
+    const res = await fetch(DATA_URL);
+    if(!res.ok) throw new Error('파일 로드 실패: '+res.status);
+    payload = await res.json();
+  }catch(e){
+    setMsg('조·방 JSON 파일을 불러올 수 없어요. 파일이 같은 폴더에 있는지 확인하세요.', 'warn');
+    log(String(e));
+    return;
+  }
+
+  // 주입
+  data.groups = payload.groups;
+  data.rooms = payload.rooms;
+  data.groupCount = Math.max(...Object.keys(payload.groups).map(Number));
+
+  let updated = 0, notfound = 0;
+  for(const [sid, upd] of Object.entries(payload.student_updates)){
+    if(data.students[sid]){
+      data.students[sid] = {...data.students[sid], ...upd};
+      updated++;
+    } else {
+      notfound++;
+    }
+  }
+  saveLS(data);
+  setMsg(`✅ 주입 완료! 학생 ${updated}명 업데이트, 조 ${Object.keys(payload.groups).length}개, 방 ${Object.keys(payload.rooms).length}개.`, 'ok');
+  log({
+    업데이트된_학생: updated,
+    학생_매칭실패: notfound,
+    조: Object.keys(payload.groups).length,
+    방: Object.keys(payload.rooms).length,
+    안내: "admin.html 탭으로 돌아가 [🔄 임시저장에서 불러오기] 버튼을 누르세요."
+  });
+}
+
+function resetGroupsRooms(){
+  if(!confirm('조·방 데이터만 지울까요? (학생 명단은 유지)')) return;
+  const data = loadLS();
+  if(!data){ setMsg('저장된 데이터 없음','warn'); return; }
+  data.groups = {};
+  data.rooms = {};
+  Object.values(data.students||{}).forEach(s=>{s.group=0; s.room=null;});
+  saveLS(data);
+  setMsg('조·방 초기화 완료.', 'ok');
+}
+</script>
+</body>
+</html>
