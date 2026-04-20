@@ -1060,6 +1060,37 @@
     color: var(--ink-3);
     line-height: 1.4;
   }
+  /* 타임라인 지도 버튼 (이벤트에 map이 있을 때만) */
+  .tl-map {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 5px 8px 5px 7px;
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-2);
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+    align-self: flex-start;
+    margin-top: 1px;
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+  .tl-map:active {
+    transform: scale(0.94);
+    background: var(--surface-2);
+  }
+  .tl-map svg {
+    width: 11px;
+    height: 11px;
+    stroke: var(--coral);
+  }
+  .tl-item.now .tl-map {
+    background: var(--surface);
+    border-color: rgba(216, 90, 48, 0.35);
+  }
 
   /* 내 조 세부 코스 카드 (5/7 핵심) */
   .course-card {
@@ -1528,13 +1559,7 @@
           <div class="hello">TONGYEONG 2026</div>
           <div class="name" id="homeGreeting">안녕하세요</div>
         </div>
-        <div class="head-right">
-          <a id="homeroomBtn" class="homeroom-btn disabled" href="#" aria-label="담임 선생님 전화">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span class="hr-name" id="homeroomBtnName">담임</span>
-          </a>
-          <div class="group-badge" id="homeGroupBadge">-조</div>
-        </div>
+        <div class="group-badge" id="homeGroupBadge">-조</div>
       </div>
 
       <!-- D-day -->
@@ -1777,12 +1802,12 @@ const SCHEDULE = [
   {
     day: 1, date: '5월 6일 (수)', dateISO: '2026-05-06', title: '통영 → 에버랜드 → 숙소',
     events: [
-      { time: '07:30', what: '집결 및 인원 확인', note: '열방교회 앞' },
+      { time: '07:30', what: '집결 및 인원 확인', note: '열방교회 앞', map: '통영 열방교회' },
       { time: '08:00', what: '통영 출발', note: '열방교회에서 버스 탑승' },
-      { time: '12:30', what: '에버랜드 자유 활동 시작', note: '중·석식 식사쿠폰 지급' },
-      { time: '20:30', what: '정문 옆 CU편의점 집결', note: '조장 인원 확인' },
+      { time: '12:30', what: '에버랜드 자유 활동 시작', note: '중·석식 식사쿠폰 지급', map: '에버랜드 정문' },
+      { time: '20:30', what: '정문 옆 CU편의점 집결', note: '조장 인원 확인', map: '에버랜드 정문 CU편의점' },
       { time: '21:00', what: '인원 확인 후 숙소로 이동', note: '버스 탑승' },
-      { time: '21:30', what: '숙소 도착', note: '더트리니 호텔 (용인)' }
+      { time: '21:30', what: '숙소 도착', note: '더트리니 호텔 (용인)', map: '더트리니 호텔 용인' }
     ]
   },
   {
@@ -1790,11 +1815,11 @@ const SCHEDULE = [
     events: [
       { time: '07:00', what: '기상 및 아침 식사', note: '호텔 조식 · ~ 08:00' },
       { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인' },
-      { time: '09:30', what: '공연 관람 · 점프', note: '서울 중구 명보아트홀 · ~11:00' },
-      { time: '11:20', what: '서울 자유 여행 시작', note: '명보아트홀에서 조별 출발' },
-      { time: '20:30', what: '경복궁 주차장 집결', note: '조장 인원 확인' },
+      { time: '09:30', what: '공연 관람 · 점프', note: '서울 중구 명보아트홀 · ~11:00', map: '명보아트홀' },
+      { time: '11:20', what: '서울 자유 여행 시작', note: '명보아트홀에서 조별 출발', map: '명보아트홀' },
+      { time: '20:30', what: '경복궁 주차장 집결', note: '조장 인원 확인', map: '경복궁 주차장' },
       { time: '21:00', what: '인원 확인 후 숙소로 이동', note: '버스 탑승' },
-      { time: '22:00', what: '숙소 도착', note: '조별 점호 · 취침' }
+      { time: '22:00', what: '숙소 도착', note: '조별 점호 · 취침', map: '더트리니 호텔 용인' }
     ]
   },
   {
@@ -1802,10 +1827,10 @@ const SCHEDULE = [
     events: [
       { time: '07:00', what: '기상 · 아침 식사 · 짐 정리', note: '~ 08:00' },
       { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인' },
-      { time: '11:00', what: '전주한옥마을 자유 탐방', note: '개별 중식 · ~14:00' },
+      { time: '11:00', what: '전주한옥마을 자유 탐방', note: '개별 중식 · ~14:00', map: '전주한옥마을' },
       { time: '13:50', what: '버스 내린 곳 집결', note: '당일 위치 안내 예정' },
       { time: '14:00', what: '통영으로 출발', note: '인원 확인 후 출발' },
-      { time: '16:30', what: '통영 도착 · 해산', note: '열방교회' }
+      { time: '16:30', what: '통영 도착 · 해산', note: '열방교회', map: '통영 열방교회' }
     ]
   }
 ];
@@ -2288,9 +2313,6 @@ function renderHome() {
   document.getElementById('homeGreeting').textContent = `${s.name}님`;
   document.getElementById('homeGroupBadge').textContent = s.group ? `${s.group}조` : '조 미정';
 
-  // 담임 버튼
-  renderHomeroomBtn();
-
   // D-day
   const dd = getDdayInfo();
   document.getElementById('ddayNum').textContent = dd.num;
@@ -2332,39 +2354,6 @@ function renderHome() {
 }
 
 /* ─────────────────────────────────────────────
-   담임 버튼: 학생 class로 HOMEROOM 찾아서 tel: 링크
-   ───────────────────────────────────────────── */
-function renderHomeroomBtn() {
-  const btn = document.getElementById('homeroomBtn');
-  const nameEl = document.getElementById('homeroomBtnName');
-  if (!btn || !nameEl) return;
-
-  const s = currentStudent;
-  const classNum = s?.classNum; // 숫자 (1~11)
-  const teacher = classNum != null ? HOMEROOM[classNum] : '';
-  const tel = teacher ? normalizeTel(TEACHER_TEL[teacher]) : '';
-
-  if (teacher && tel) {
-    btn.classList.remove('disabled');
-    btn.href = `tel:${tel}`;
-    nameEl.textContent = `${teacher} T.`;
-    btn.setAttribute('aria-label', `${teacher} 선생님 전화`);
-    btn.title = `${teacher} 선생님 (${formatTel(tel)})`;
-  } else if (teacher) {
-    // 이름은 있는데 번호가 없는 경우
-    btn.classList.add('disabled');
-    btn.removeAttribute('href');
-    nameEl.textContent = `${teacher} T.`;
-    btn.title = '전화번호가 등록되지 않았어요';
-  } else {
-    btn.classList.add('disabled');
-    btn.removeAttribute('href');
-    nameEl.textContent = '담임';
-    btn.title = '담임 선생님 정보를 불러오는 중...';
-  }
-}
-
-/* ─────────────────────────────────────────────
    홈 "내 조": 조장 ★ + 이름 + 전화버튼 그리드
    ───────────────────────────────────────────── */
 function renderHomeGroup() {
@@ -2390,8 +2379,6 @@ function renderHomeGroup() {
   labelEl.textContent = `내 조 · ${s.group}조`;
 
   const leaderName = g.leader?.name || '';
-  const teacher = g.teacher || g.area || '';
-  const teacherTel = normalizeTel(TEACHER_TEL[teacher]);
 
   const cardsHTML = g.members.map(m => {
     const isLeader = leaderName && m.name === leaderName;
@@ -2430,17 +2417,6 @@ function renderHomeGroup() {
     return `<div class="${cls}">${nameHTML}${callHTML}</div>`;
   }).join('');
 
-  const footHTML = (teacher || g.theme) ? `
-    <div class="grp-foot">
-      <div>
-        ${teacher ? `<b>인솔</b> ${escapeHtml(teacher)} 선생님` : ''}
-      </div>
-      ${teacher && teacherTel ? `<a class="grp-call" style="width:32px;height:32px" href="tel:${teacherTel}" aria-label="${escapeHtml(teacher)} 선생님 전화">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      </a>` : ''}
-    </div>
-  ` : '';
-
   box.innerHTML = `
     <div class="card">
       <div class="grp-head">
@@ -2451,7 +2427,6 @@ function renderHomeGroup() {
       </div>
       ${g.theme ? `<div class="grp-head-theme" style="margin-bottom:14px">${escapeHtml(g.theme)}</div>` : ''}
       <div class="grp-grid">${cardsHTML}</div>
-      ${footHTML}
     </div>
   `;
 }
@@ -2527,6 +2502,11 @@ function renderSched() {
     const isPast = isToday && i < activeIdx;
     const isNow = isToday && i === activeIdx;
     const cls = isNow ? 'now' : (isPast ? 'past' : '');
+    const mapBtn = e.map ? `
+      <a class="tl-map" href="${kakaoMapLink(e.map)}" target="_blank" rel="noopener" aria-label="${escapeHtml(e.map)} 지도 열기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        지도
+      </a>` : '';
     html += `
       <div class="tl-item ${cls}">
         <div class="tl-time">${e.time}</div>
@@ -2534,6 +2514,7 @@ function renderSched() {
           <div class="tl-what">${escapeHtml(e.what)}</div>
           ${e.note ? `<div class="tl-note">${escapeHtml(e.note)}</div>` : ''}
         </div>
+        ${mapBtn}
       </div>
     `;
   });
