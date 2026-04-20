@@ -1,49 +1,101 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>2026 수학여행 안내 · 통영고등학교 2학년</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#FAFAF7" />
+<title>2026 수학여행 · 통영고</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
+  /* ═══════════════════════════════════════════════════
+     디자인 시스템
+     ═══════════════════════════════════════════════════ */
   :root {
-    --bg: #fafaf7;
-    --surface: #ffffff;
+    /* 배경 */
+    --bg: #FAFAF7;
+    --surface: #FFFFFF;
+    --surface-2: #F4F3EE;
+
+    /* 텍스트 */
     --ink: #1a1a1a;
-    --ink-soft: #555;
-    --ink-mute: #888;
-    --line: #e8e6e0;
-    --line-soft: #f0eeea;
-    --accent: #c8402c;
-    --accent-soft: #faf0ed;
-    --success: #2d6a4f;
-    --warn: #b45309;
+    --ink-2: #5A5A56;
+    --ink-3: #8C8B85;
+
+    /* 테두리 */
+    --line: rgba(0, 0, 0, 0.08);
+    --line-2: rgba(0, 0, 0, 0.14);
+
+    /* 브랜드 · 포인트 */
+    --coral: #D85A30;
+    --coral-ink: #712B13;
+    --coral-bg: #FAECE7;
+
+    --amber: #BA7517;
+    --amber-ink: #633806;
+    --amber-bg: #FAEEDA;
+
+    --blue: #378ADD;
+    --blue-ink: #0C447C;
+    --blue-bg: #E6F1FB;
+
+    --red: #E24B4A;
+    --red-ink: #791F1F;
+    --red-bg: #FCEBEB;
+
+    --green: #639922;
+    --green-ink: #27500A;
+    --green-bg: #EAF3DE;
+
+    /* 간격 */
+    --tab-h: 64px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   html, body {
+    margin: 0;
+    padding: 0;
     background: var(--bg);
     color: var(--ink);
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
-    min-height: 100vh;
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
   }
-  .serif { font-family: 'Gowun Batang', serif; }
-  .app { max-width: 520px; margin: 0 auto; min-height: 100vh; background: var(--surface); position: relative; }
-
-  /* ───── Login ───── */
-  .login {
-    padding: 60px 28px 40px;
+  body {
     min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; }
+  a { color: inherit; text-decoration: none; }
+
+  .serif {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 400;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     로그인
+     ═══════════════════════════════════════════════════ */
+  #login {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 28px;
     background: var(--bg);
   }
   .login-brand {
@@ -52,1836 +104,886 @@
   }
   .login-brand .year {
     font-size: 11px;
-    letter-spacing: 0.3em;
-    color: var(--ink-mute);
-    margin-bottom: 14px;
-    font-weight: 500;
+    color: var(--ink-3);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
   }
   .login-brand h1 {
-    font-family: 'Gowun Batang', serif;
-    font-size: 34px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0 0 8px;
     letter-spacing: -0.02em;
-    margin-bottom: 8px;
   }
   .login-brand .sub {
     font-size: 13px;
-    color: var(--ink-soft);
-    letter-spacing: 0.02em;
+    color: var(--ink-2);
+    font-family: 'Gowun Batang', serif;
   }
-  .login-brand .divider {
-    width: 24px; height: 1px;
-    background: var(--ink);
-    margin: 20px auto;
-  }
-  .login-form {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 32px 24px;
+  .login-brand .emblem {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--coral);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
   .login-form label {
     display: block;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--ink-mute);
-    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--ink-2);
+    margin: 16px 0 6px;
     font-weight: 500;
-    text-transform: uppercase;
   }
   .login-form input {
     width: 100%;
-    padding: 12px 0;
-    border: none;
-    border-bottom: 1px solid var(--line);
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 0.5px solid var(--line-2);
+    border-radius: 12px;
     font-size: 16px;
-    font-family: inherit;
-    background: transparent;
-    margin-bottom: 24px;
+    color: var(--ink);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
   }
-  .login-form input:focus { border-bottom-color: var(--ink); }
+  .login-form input:focus {
+    border-color: var(--coral);
+  }
   .login-form button {
     width: 100%;
-    padding: 14px;
-    background: var(--ink);
-    color: var(--surface);
-    border: none;
-    font-size: 14px;
-    font-family: inherit;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: background 0.2s;
-  }
-  .login-form button:hover { background: var(--accent); }
-  .login-hint {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 12px;
-    color: var(--ink-mute);
-  }
-  .admin-link {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: var(--ink-mute);
-    cursor: pointer;
-    opacity: 0.4;
-    transition: opacity 0.2s;
-  }
-  .admin-link:hover { opacity: 1; color: var(--ink); }
-
-  /* Admin Console */
-  .admin {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 1000;
-    overflow-y: auto;
-  }
-  .admin.active { display: block; }
-  .admin-head {
-    padding: 20px 24px;
-    background: var(--ink);
-    color: var(--surface);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .admin-tag {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    opacity: 0.6;
-    margin-bottom: 4px;
-  }
-  .admin-title {
-    font-family: 'Gowun Batang', serif;
-    font-size: 20px;
-    font-weight: 700;
-  }
-  .admin-close {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.3);
-    color: var(--surface);
-    width: 32px; height: 32px;
-    font-size: 16px;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .admin-body { padding: 20px 16px 60px; max-width: 720px; margin: 0 auto; }
-  .admin-section {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    margin-bottom: 12px;
-  }
-  .admin-section summary {
+    margin-top: 24px;
     padding: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
-    list-style: none;
-    position: relative;
-  }
-  .admin-section summary::after {
-    content: '＋';
-    position: absolute;
-    right: 16px;
-    color: var(--ink-mute);
-    font-size: 18px;
-  }
-  .admin-section[open] summary::after { content: '−'; }
-  .admin-inner {
-    padding: 0 16px 20px;
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-  }
-  .admin-hint {
-    font-size: 12px;
-    color: var(--ink-soft);
-    background: var(--bg);
-    padding: 10px 12px;
-    border-left: 2px solid var(--accent);
-    margin-bottom: 12px;
-    line-height: 1.6;
-  }
-  .admin-hint code {
-    background: var(--surface);
-    padding: 1px 4px;
-    font-size: 11px;
-    border: 1px solid var(--line);
-  }
-  .admin-textarea, .admin-output {
-    width: 100%;
-    min-height: 120px;
-    padding: 10px;
-    border: 1px solid var(--line);
-    font-family: 'SF Mono', Menlo, Consolas, monospace;
-    font-size: 12px;
-    line-height: 1.5;
-    background: var(--bg);
-    resize: vertical;
-    outline: none;
-    margin-bottom: 10px;
-    color: var(--ink);
-  }
-  .admin-textarea:focus { border-color: var(--ink); background: var(--surface); }
-  .admin-output {
-    background: #1a1a1a;
-    color: #a8e6cf;
-    min-height: 100px;
-    margin-top: 10px;
-  }
-  .admin-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-  .admin-btn {
-    padding: 10px 16px;
-    background: var(--ink);
-    color: var(--surface);
+    background: var(--coral);
+    color: #fff;
     border: none;
-    font-size: 12px;
-    font-family: inherit;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: background 0.2s;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: opacity 0.15s;
   }
-  .admin-btn:hover { background: var(--accent); }
-  .admin-btn.ghost {
-    background: var(--surface);
-    color: var(--ink);
-    border: 1px solid var(--ink);
-  }
-  .admin-btn.copy {
-    background: var(--surface);
-    color: var(--ink);
-    border: 1px solid var(--line);
-    width: 100%;
-    margin-top: 4px;
-  }
-  .admin-btn.copy:hover { background: var(--bg); }
-  .admin-status {
-    font-size: 12px;
-    margin-top: 8px;
-    min-height: 16px;
-    color: var(--success);
-  }
-  .admin-status.error { color: var(--accent); }
-  .admin-steps {
-    padding-left: 20px;
+  .login-form button:active { opacity: 0.8; }
+  .login-error {
+    color: var(--red);
     font-size: 13px;
-    line-height: 1.8;
+    margin-top: 14px;
+    text-align: center;
+    min-height: 18px;
   }
-  .admin-steps code {
-    background: var(--bg);
-    padding: 1px 5px;
+  .login-hint {
     font-size: 12px;
-    border: 1px solid var(--line);
-  }
-  .admin-warn {
-    background: #fff8e1;
-    border-left: 2px solid #d4a017;
-    padding: 10px 12px;
-    font-size: 12px;
-    color: #6b4e00;
-    line-height: 1.6;
-    margin-top: 12px;
-  }
-  .admin-locations {
-    padding-left: 20px;
-    font-size: 13px;
-    line-height: 2;
-  }
-  .admin-locations code {
-    background: #1a1a1a;
-    color: #a8e6cf;
-    padding: 2px 6px;
-    font-size: 12px;
-  }
-  kbd {
-    background: var(--bg);
-    border: 1px solid var(--line);
-    padding: 2px 6px;
-    font-size: 11px;
-    font-family: inherit;
+    color: var(--ink-3);
+    text-align: center;
+    margin-top: 32px;
   }
 
-  /* My Records (교사가 나에게 남긴 기록) */
-  .my-record {
-    border: 1px solid var(--line);
-    border-left: 3px solid var(--ink);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    background: var(--surface);
+  /* ═══════════════════════════════════════════════════
+     메인 앱 컨테이너
+     ═══════════════════════════════════════════════════ */
+  #main { display: none; }
+  #main.active { display: block; }
+
+  .app-scroll {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 20px);
   }
-  .my-record.tag-칭찬 { border-left-color: #10b981; background: #f0fdf4; }
-  .my-record.tag-주의 { border-left-color: #f59e0b; background: #fffbeb; }
-  .my-record.tag-건강 { border-left-color: var(--accent); background: var(--accent-soft); }
-  .my-record.tag-관찰 { border-left-color: #60a5fa; }
-  .my-record.tag-기타 { border-left-color: var(--ink-mute); }
-  .my-record.is-all {
-    border-left-style: dashed;
-  }
-  .my-record-head {
+
+  /* 패널 */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ═══════════════════════════════════════════════════
+     상단 헤더 (모든 탭 공통)
+     ═══════════════════════════════════════════════════ */
+  .page-head {
+    padding: 18px 20px 14px;
+    background: var(--bg);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+  }
+  .page-head .h-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .page-head .h-sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+
+  /* 홈 전용 헤더 */
+  .home-head {
+    padding: 22px 20px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .home-head .hello {
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+    margin-bottom: 3px;
+  }
+  .home-head .name {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .home-head .group-badge {
+    background: var(--coral-bg);
+    color: var(--coral-ink);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     공통 카드 · 섹션
+     ═══════════════════════════════════════════════════ */
+  .section {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .section-label {
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .card.flat {
+    background: var(--surface-2);
+    border: none;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     D-day 카드
+     ═══════════════════════════════════════════════════ */
+  .dday-card {
+    background: var(--amber-bg);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dday-label {
+    font-size: 11px;
+    color: var(--amber-ink);
+    opacity: 0.85;
+    letter-spacing: 0.05em;
     margin-bottom: 4px;
   }
-  .my-record-tag {
-    font-size: 10px;
-    padding: 2px 8px;
-    background: var(--ink);
-    color: var(--surface);
+  .dday-num {
+    font-size: 28px;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    color: var(--amber-ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
   }
-  .my-record.tag-칭찬 .my-record-tag { background: #10b981; }
-  .my-record.tag-주의 .my-record-tag { background: #f59e0b; }
-  .my-record.tag-건강 .my-record-tag { background: var(--accent); }
-  .my-record.tag-관찰 .my-record-tag { background: #60a5fa; }
-  .my-record-target {
+  .dday-right {
+    text-align: right;
     font-size: 11px;
-    color: var(--ink-mute);
-    letter-spacing: 0.03em;
-  }
-  .my-record-meta {
-    font-size: 11px;
-    color: var(--ink-mute);
-    margin-bottom: 8px;
-  }
-  .my-record-body {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ink);
-  }
-  .my-record-new {
-    background: var(--accent);
-    color: var(--surface);
-    font-size: 9px;
-    padding: 2px 6px;
-    margin-left: 6px;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-    vertical-align: middle;
+    color: var(--amber-ink);
+    opacity: 0.85;
+    line-height: 1.5;
+    font-family: 'Gowun Batang', serif;
   }
 
-  /* Connection status */
-  .conn-status {
-    position: absolute;
-    top: 62px;
-    right: 24px;
-    font-size: 10px;
-    letter-spacing: 0.03em;
-    font-weight: 500;
-    color: var(--ink-mute);
+  /* ═══════════════════════════════════════════════════
+     긴급 공지 배너
+     ═══════════════════════════════════════════════════ */
+  .alert-banner {
+    background: var(--red-bg);
+    border: 0.5px solid rgba(226, 75, 74, 0.25);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
   }
-  .conn-status.online { color: var(--success); }
-  .conn-status.offline { color: var(--warn); }
-  .conn-status.connecting { color: var(--ink-mute); }
-  .conn-status.error { color: var(--accent); }
+  .alert-banner .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    margin-top: 6px;
+    flex-shrink: 0;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .alert-banner .title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red-ink);
+    margin-bottom: 2px;
+  }
+  .alert-banner .body {
+    font-size: 12px;
+    color: var(--red-ink);
+    line-height: 1.5;
+    opacity: 0.9;
+  }
 
-  /* Announcement banner (top of screen) */
-  .announce-banner {
-    display: none;
-    background: var(--accent);
-    color: var(--surface);
-    animation: slideDown 0.3s ease;
-  }
-  .announce-banner.active { display: block; }
-  @keyframes slideDown {
-    from { transform: translateY(-100%); opacity: 0; }
-    to { transform: none; opacity: 1; }
-  }
-  .announce-banner-inner {
-    padding: 12px 16px;
+  /* ═══════════════════════════════════════════════════
+     내 정보 (2x2 그리드)
+     ═══════════════════════════════════════════════════ */
+  .info-grid {
     display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    gap: 4px 12px;
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
-  .announce-banner-label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    font-weight: 700;
-    grid-column: 1;
+  .info-tile {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 14px;
   }
-  .announce-banner-body {
-    font-size: 14px;
+  .info-tile .k {
+    font-size: 11px;
+    color: var(--ink-2);
+    margin-bottom: 4px;
+  }
+  .info-tile .v {
+    font-size: 15px;
     font-weight: 600;
-    grid-column: 1;
+    letter-spacing: -0.01em;
+  }
+  .info-tile .v-sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     오늘의 일정
+     ═══════════════════════════════════════════════════ */
+  .schedule-list {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .schedule-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 0.5px solid var(--line);
+    transition: background 0.15s;
+  }
+  .schedule-item:last-child { border-bottom: none; }
+  .schedule-item.now {
+    background: var(--blue-bg);
+  }
+  .schedule-item.now .time {
+    color: var(--blue-ink);
+    font-weight: 600;
+  }
+  .schedule-item.past {
+    opacity: 0.45;
+  }
+  .schedule-item .time {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-2);
+    width: 50px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .schedule-item .what {
+    font-size: 13px;
+    color: var(--ink);
+    flex: 1;
+    line-height: 1.5;
+  }
+  .schedule-item .what .note {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .schedule-day-switcher {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .schedule-day-btn {
+    flex: 1;
+    padding: 8px;
+    background: var(--surface-2);
+    border: none;
+    border-radius: 10px;
+    color: var(--ink-2);
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .schedule-day-btn.active {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     위치 공유 토글
+     ═══════════════════════════════════════════════════ */
+  .loc-share {
+    background: var(--surface);
+    border: 0.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .loc-share.on {
+    background: var(--green-bg);
+    border-color: rgba(99, 153, 34, 0.2);
+  }
+  .loc-share .left { flex: 1; min-width: 0; }
+  .loc-share .title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .loc-share.on .title { color: var(--green-ink); }
+  .loc-share .desc {
+    font-size: 11px;
+    color: var(--ink-3);
     line-height: 1.4;
   }
-  .announce-banner-view {
-    grid-row: 1 / span 2;
-    grid-column: 2;
-    background: rgba(255,255,255,0.15);
-    color: var(--surface);
-    border: 1px solid rgba(255,255,255,0.4);
-    padding: 6px 12px;
-    font-size: 11px;
-    font-family: inherit;
+  .loc-share.on .desc { color: var(--green-ink); opacity: 0.8; }
+  .loc-share .status-last {
+    font-size: 10px;
+    color: var(--ink-3);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 토글 스위치 */
+  .switch {
+    position: relative;
+    width: 46px;
+    height: 26px;
+    background: var(--line-2);
+    border-radius: 999px;
+    flex-shrink: 0;
+    transition: background 0.2s;
     cursor: pointer;
-    font-weight: 500;
   }
-  .announce-banner-view:hover { background: rgba(255,255,255,0.25); }
-
-  /* Announcement items */
-  .announce-item {
-    border: 1px solid var(--line);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    background: var(--surface);
-  }
-  .announce-item.new {
-    border-left: 3px solid var(--accent);
-    background: var(--accent-soft);
-  }
-  .announce-item-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-  }
-  .announce-item-title {
-    font-weight: 600;
-    font-size: 15px;
-  }
-  .announce-new-dot {
-    background: var(--accent);
-    color: var(--surface);
-    font-size: 9px;
-    padding: 2px 6px;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-  }
-  .announce-item-time {
-    font-size: 11px;
-    color: var(--ink-mute);
-    margin-bottom: 6px;
-  }
-  .announce-item-body {
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-  }
-  .announce-empty {
-    padding: 40px 20px;
-    text-align: center;
-    color: var(--ink-mute);
-    font-size: 13px;
-  }
-
-  /* Tab dot indicator */
-  .tab-dot {
-    display: none;
-    width: 6px; height: 6px;
-    background: var(--accent);
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    background: #fff;
     border-radius: 50%;
-    margin-left: 3px;
-    vertical-align: middle;
+    transition: transform 0.2s;
   }
-  .tab-dot.has-new { display: inline-block; }
+  .switch.on {
+    background: var(--green);
+  }
+  .switch.on::after {
+    transform: translateX(20px);
+  }
 
-  /* Admin lock screen */
-  .admin-lock {
-    padding: 60px 24px;
-    min-height: 80vh;
+  .loc-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .loc-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--surface-2);
+    border: none;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    transition: background 0.15s;
+  }
+  .loc-btn:active { background: var(--line); }
+
+  /* ═══════════════════════════════════════════════════
+     SOS 버튼
+     ═══════════════════════════════════════════════════ */
+  .sos-main-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    transition: opacity 0.15s;
   }
-  .admin-lock-box {
-    max-width: 360px;
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 36px 28px;
-    text-align: center;
-  }
-  .admin-lock-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-  }
-  .admin-lock-title {
-    font-family: 'Gowun Batang', serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .admin-lock-sub {
-    font-size: 12px;
-    color: var(--ink-mute);
-    margin-bottom: 24px;
-  }
-  .admin-lock-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--line);
-    font-size: 15px;
-    font-family: inherit;
-    margin-bottom: 12px;
-    outline: none;
-    text-align: center;
-  }
-  .admin-lock-input:focus { border-color: var(--ink); }
-  .admin-lock-error {
-    color: var(--accent);
-    font-size: 12px;
-    margin-top: 10px;
-    min-height: 16px;
-  }
+  .sos-main-btn:active { opacity: 0.85; }
 
-  /* Admin extras */
-  .admin-conn {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 10px 14px;
-    font-size: 12px;
-    margin-bottom: 12px;
-    color: var(--ink-soft);
+  /* ═══════════════════════════════════════════════════
+     하단 탭바
+     ═══════════════════════════════════════════════════ */
+  .tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-top: 0.5px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding-bottom: var(--safe-bottom);
+    z-index: 100;
   }
-  #adminConnDot { color: var(--ink-mute); margin-right: 4px; }
-  #adminConnDot.online { color: var(--success); }
-  #adminConnDot.offline { color: var(--warn); }
-  #adminConnDot.error { color: var(--accent); }
-
-  .admin-single-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--line);
-    font-size: 13px;
-    font-family: inherit;
-    background: var(--bg);
-    margin-bottom: 10px;
-    outline: none;
-  }
-  .admin-single-input:focus { border-color: var(--ink); background: var(--surface); }
-
-  .admin-sub-label {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    margin: 20px 0 8px;
-    font-weight: 500;
-  }
-  .admin-announce-list {
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 4px 10px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-  }
-  .admin-announce-list .aa-item {
-    padding: 8px 12px;
-    background: var(--bg);
-    border-left: 2px solid var(--accent);
-    font-size: 12px;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-  }
-  .admin-announce-list .aa-del {
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--ink-mute);
+    gap: 4px;
+    color: var(--ink-3);
     font-size: 10px;
-    padding: 3px 8px;
-    cursor: pointer;
-    font-family: inherit;
+    font-weight: 500;
+    transition: color 0.15s;
+    min-height: var(--tab-h);
   }
-  .admin-announce-list .aa-del:hover {
-    color: var(--accent);
-    border-color: var(--accent);
+  .tab-btn.active { color: var(--coral); }
+  .tab-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2;
   }
-  .login-error {
-    color: var(--accent);
-    font-size: 13px;
-    text-align: center;
-    margin-top: 12px;
-    min-height: 18px;
-  }
-
-  /* ───── Main ───── */
-  .main { display: none; }
-  .main.active { display: block; padding-bottom: 80px; }
-
-  header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 0;
-    background: var(--surface);
-    z-index: 10;
-  }
-  header .greet {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  header .name {
-    font-family: 'Gowun Batang', serif;
-    font-size: 22px;
-    font-weight: 700;
-  }
-  header .meta {
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-top: 4px;
-  }
-  header .logout {
+  .tab-btn .dot-badge {
     position: absolute;
-    top: 24px;
-    right: 24px;
-    font-size: 11px;
-    color: var(--ink-mute);
-    background: none;
-    border: 1px solid var(--line);
-    padding: 6px 10px;
-    cursor: pointer;
-    letter-spacing: 0.05em;
+    top: 8px;
+    transform: translateX(12px);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    border: 1.5px solid #fff;
   }
-
-  /* Tab nav */
-  .tabs {
+  .tab-btn-wrap {
+    position: relative;
     display: flex;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface);
-    position: sticky;
-    top: 78px;
-    z-index: 9;
-    overflow-x: auto;
-    scrollbar-width: none;
+    justify-content: center;
   }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex: 1;
-    min-width: 60px;
-    padding: 14px 8px;
-    font-size: 12px;
-    color: var(--ink-mute);
+
+  /* ═══════════════════════════════════════════════════
+     연결 상태 인디케이터 (작게)
+     ═══════════════════════════════════════════════════ */
+  .conn-pill {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 90;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .conn-pill.show { opacity: 1; }
+  .conn-pill .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+  }
+  .conn-pill.offline .dot { background: var(--red); }
+  .conn-pill.offline { background: var(--red); }
+
+  /* ═══════════════════════════════════════════════════
+     플레이스홀더 (공사 중 탭용)
+     ═══════════════════════════════════════════════════ */
+  .placeholder {
+    padding: 60px 24px;
     text-align: center;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: all 0.2s;
   }
-  .tab.active {
-    color: var(--ink);
-    border-bottom-color: var(--ink);
-    font-weight: 600;
-  }
-
-  /* Content */
-  .panel { display: none; padding: 28px 24px; animation: fadeIn 0.3s ease; }
-  .panel.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  .section-label {
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-  .section-title {
-    font-family: 'Gowun Batang', serif;
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    letter-spacing: -0.02em;
-  }
-
-  /* Info card */
-  .card {
-    border: 1px solid var(--line);
-    padding: 20px;
+  .placeholder .ico {
+    font-size: 36px;
     margin-bottom: 14px;
-    background: var(--surface);
+    opacity: 0.4;
   }
-  .card.highlight {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-  }
-  .card-label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--ink-mute);
-    text-transform: uppercase;
+  .placeholder .title {
+    font-size: 15px;
+    font-weight: 600;
     margin-bottom: 6px;
   }
-  .card-value {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .card-value .big {
-    font-family: 'Gowun Batang', serif;
-    font-size: 28px;
-    letter-spacing: -0.02em;
-  }
-  .card-sub {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-top: 4px;
-  }
-
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  /* My info summary */
-  .my-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border: 1px solid var(--ink);
-    margin-bottom: 24px;
-  }
-  .my-info > div {
-    padding: 16px;
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-  }
-  .my-info > div:nth-child(even) { border-right: none; }
-  .my-info > div:nth-last-child(-n+2) { border-bottom: none; }
-  .my-info .k {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .my-info .v {
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  /* Location sharing card */
-  .location-card {
-    border: 1px solid var(--line);
-    padding: 18px;
-    margin-bottom: 14px;
-    background: var(--surface);
-  }
-  .location-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-  }
-  .location-status {
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 2px;
-    color: var(--ink-soft);
-  }
-  .location-status.on {
-    color: var(--success);
-  }
-  .location-status.error {
-    color: var(--accent);
-  }
-  .location-toggle {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 22px;
-    flex-shrink: 0;
-  }
-  .location-toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    inset: 0;
-    background-color: var(--line);
-    transition: .3s;
-    border-radius: 22px;
-  }
-  .toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .3s;
-    border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  .location-toggle input:checked + .toggle-slider {
-    background-color: var(--success);
-  }
-  .location-toggle input:checked + .toggle-slider:before {
-    transform: translateX(18px);
-  }
-  .location-info {
-    padding: 10px 12px;
-    background: var(--bg);
-    margin-bottom: 12px;
+  .placeholder .desc {
     font-size: 12px;
-  }
-  .location-last {
-    color: var(--ink);
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-  }
-  .location-accuracy {
-    color: var(--ink-mute);
-    margin-top: 2px;
-  }
-  .location-btns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .loc-btn {
-    padding: 10px;
-    border: 1px solid var(--ink);
-    background: var(--surface);
-    color: var(--ink);
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    transition: all 0.15s;
-  }
-  .loc-btn:hover {
-    background: var(--ink);
-    color: var(--surface);
-  }
-  .loc-btn.sos {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .loc-btn.sos:hover {
-    background: var(--accent);
-    color: var(--surface);
-  }
-  .location-hint {
-    font-size: 11px;
-    color: var(--ink-mute);
+    color: var(--ink-3);
     line-height: 1.6;
   }
 
-  /* SOS modal */
-  .sos-modal {
-    display: none;
+  /* ═══════════════════════════════════════════════════
+     토스트
+     ═══════════════════════════════════════════════════ */
+  .toast {
+    position: fixed;
+    bottom: calc(var(--tab-h) + var(--safe-bottom) + 20px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s;
+    z-index: 150;
+    white-space: nowrap;
+    max-width: 90vw;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     SOS 모달
+     ═══════════════════════════════════════════════════ */
+  .modal-bg {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
-    z-index: 999;
+    z-index: 200;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
   }
-  .sos-modal.active { display: flex; }
-  .sos-modal-box {
+  .modal-bg.show { display: flex; }
+  .modal {
     background: var(--surface);
-    max-width: 360px;
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 340px;
     width: 100%;
-    padding: 28px 24px;
-    text-align: center;
-    animation: popIn 0.25s ease;
   }
-  @keyframes popIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+  .modal h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--red-ink);
   }
-  .sos-modal h3 {
-    font-family: 'Gowun Batang', serif;
-    font-size: 20px;
-    margin-bottom: 8px;
-    color: var(--accent);
-  }
-  .sos-modal-body {
+  .modal .desc {
     font-size: 13px;
-    color: var(--ink-soft);
+    color: var(--ink-2);
+    line-height: 1.5;
     margin-bottom: 16px;
-    line-height: 1.6;
   }
-  .sos-modal textarea {
+  .modal textarea {
     width: 100%;
-    min-height: 80px;
-    padding: 10px;
-    border: 1px solid var(--line);
-    font-family: inherit;
+    padding: 12px;
+    border: 0.5px solid var(--line-2);
+    border-radius: 10px;
     font-size: 13px;
-    margin-bottom: 14px;
     resize: vertical;
+    min-height: 80px;
     outline: none;
   }
-  .sos-modal textarea:focus { border-color: var(--accent); }
-  .sos-modal-btns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+  .modal textarea:focus { border-color: var(--red); }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
   }
-  .sos-modal button {
+  .modal-actions button {
+    flex: 1;
     padding: 12px;
     border: none;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .sos-modal button.cancel {
-    background: var(--surface);
-    color: var(--ink);
-    border: 1px solid var(--line);
-  }
-  .sos-modal button.send {
-    background: var(--accent);
-    color: var(--surface);
-  }
-
-  /* Schedule */
-  .day {
-    margin-bottom: 32px;
-  }
-  .day-head {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--ink);
-    margin-bottom: 16px;
-  }
-  .day-num {
-    font-family: 'Gowun Batang', serif;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .day-date {
-    font-size: 12px;
-    color: var(--ink-soft);
-    letter-spacing: 0.05em;
-  }
-  .day-title {
+    border-radius: 10px;
     font-size: 14px;
-    color: var(--ink-soft);
-    margin-left: auto;
-  }
-  .timeline {
-    position: relative;
-  }
-  .event {
-    display: grid;
-    grid-template-columns: 62px 1fr;
-    gap: 16px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .event:last-child { border-bottom: none; }
-  .event .time {
-    font-size: 13px;
     font-weight: 600;
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
   }
-  .event .what {
-    font-size: 14px;
+  .modal-actions .cancel {
+    background: var(--surface-2);
     color: var(--ink);
   }
-  .event .note {
-    font-size: 12px;
-    color: var(--ink-mute);
-    margin-top: 2px;
-  }
-  .event.mine .what::before {
-    content: '● ';
-    color: var(--accent);
-    font-size: 10px;
+  .modal-actions .confirm {
+    background: var(--red);
+    color: #fff;
   }
 
-  /* Safety */
-  .rule {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .rule:last-child { border-bottom: none; }
-  .rule .num {
-    font-family: 'Gowun Batang', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .rule .body {
-    font-size: 14px;
-    line-height: 1.55;
-  }
-  .rule .body strong { font-weight: 600; }
-
-  /* Emergency contacts */
-  .contact {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 16px;
-    border: 1px solid var(--line);
-    margin-bottom: 8px;
-    background: var(--surface);
-    text-decoration: none;
-    color: var(--ink);
-  }
-  .contact .role {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    margin-bottom: 2px;
-  }
-  .contact .nm { font-size: 15px; font-weight: 600; }
-  .contact .tel {
-    font-size: 14px;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-    font-weight: 500;
-  }
-  .contact.urgent {
-    background: var(--accent);
-    color: var(--surface);
-    border-color: var(--accent);
-  }
-  .contact.urgent .role, .contact.urgent .tel { color: rgba(255,255,255,0.8); }
-  .contact.urgent .tel { color: var(--surface); }
-
-  /* Group members */
-  .members {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .member {
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    font-size: 13px;
-  }
-  .member.leader {
-    border-color: var(--ink);
-    background: var(--ink);
-    color: var(--surface);
-  }
-  .member .role-tag {
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    opacity: 0.7;
-    display: block;
-    margin-bottom: 2px;
-  }
-  .member.me {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-
-  /* Course list */
-  .course-item {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .course-item:last-child { border-bottom: none; }
-  .course-item .idx {
-    font-family: 'Gowun Batang', serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .course-item .name {
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .course-item .time-addr {
-    font-size: 12px;
-    color: var(--ink-mute);
-    margin-top: 2px;
-  }
-
-  /* Everland */
-  .pill-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
-  }
-  .pill {
-    font-size: 12px;
-    padding: 4px 10px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--ink-soft);
-  }
-  .pill.mine {
-    background: var(--ink);
-    color: var(--surface);
-    border-color: var(--ink);
-  }
-
-  /* Teacher standby spots */
-    display: grid;
-    grid-template-columns: 40% 60%;
-    border-bottom: 1px solid var(--line);
-    align-items: stretch;
-  }
-  .teacher-spot:last-child { border-bottom: none; }
-  .teacher-spot-zone {
-    padding: 14px 14px;
-    background: var(--bg);
-    font-size: 13px;
-    font-weight: 600;
-    font-family: 'Gowun Batang', serif;
-    border-right: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    line-height: 1.4;
-  }
-  .teacher-spot-names {
-    padding: 14px 14px;
-    font-size: 13px;
-    color: var(--ink-soft);
-    line-height: 1.6;
-    display: flex;
-    align-items: center;
-  }
-
-  /* Roster (조 편성 · 방 배정) */
-  .roster-toggle {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 1px solid var(--ink);
-    margin-bottom: 20px;
-  }
-  .rt-btn {
-    padding: 10px;
-    background: var(--surface);
-    color: var(--ink-soft);
-    border: none;
-    border-right: 1px solid var(--ink);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .rt-btn:last-child { border-right: none; }
-  .rt-btn.active {
-    background: var(--ink);
-    color: var(--surface);
-    font-weight: 600;
-  }
-  .roster-view { display: none; }
-  .roster-view.active { display: block; }
-  .roster-block {
-    border: 1px solid var(--line);
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-  .roster-block.mine {
-    border-color: var(--accent);
-    border-width: 2px;
-  }
-  .roster-block-head {
-    padding: 10px 14px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-  .roster-block.mine .roster-block-head {
-    background: var(--accent-soft);
-  }
-  .roster-block-title {
-    font-family: 'Gowun Batang', serif;
-    font-size: 15px;
-    font-weight: 700;
-  }
-  .roster-block-sub {
-    font-size: 11px;
-    color: var(--ink-mute);
-    letter-spacing: 0.05em;
-  }
-  .roster-members {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-  }
-  .roster-member {
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--line-soft);
-    border-right: 1px solid var(--line-soft);
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 38px;
-  }
-  .roster-member:nth-child(even) { border-right: none; }
-  .roster-member.leader { font-weight: 600; }
-  .roster-member.me {
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 600;
-  }
-  .roster-member .badge {
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    background: var(--ink);
-    color: var(--surface);
-    padding: 1px 5px;
-    font-weight: 500;
-  }
-  .roster-member .id {
-    font-size: 11px;
-    color: var(--ink-mute);
-    font-variant-numeric: tabular-nums;
-    margin-left: auto;
-    font-weight: 400;
-  }
-  .roster-member.me .id { color: var(--accent); }
-
-  .tip-box {
-    background: var(--bg);
-    border-left: 2px solid var(--accent);
-    padding: 14px 16px;
-    margin: 16px 0;
-    font-size: 13px;
-    color: var(--ink-soft);
-    line-height: 1.6;
-  }
-  .tip-box strong { color: var(--ink); }
-
-  /* Floating help */
-  .float-sos {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent);
-    color: var(--surface);
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    box-shadow: 0 6px 20px rgba(200, 64, 44, 0.3);
-    text-decoration: none;
-    display: none;
-    z-index: 20;
-  }
-  .main.active .float-sos { display: block; }
-
-  @media (max-width: 380px) {
-    .my-info .v { font-size: 14px; }
-    .day-num { font-size: 26px; }
+  /* 키보드 올라올 때 하단 탭바 숨기기 (작은 뷰포트) */
+  @media (max-height: 500px) {
+    .tabbar { display: none; }
   }
 </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- LOGIN SCREEN -->
-  <div id="login" class="login">
-    <div class="login-brand">
-      <div class="year">2026 · TONGYEONG HIGH SCHOOL</div>
-      <h1>수학여행 안내</h1>
-      <div class="sub">2학년 · 5월 6일 → 5월 8일</div>
-      <div class="divider"></div>
-      <div class="sub serif">서울 · 용인</div>
-    </div>
-    <div class="login-form">
-      <label>학번 (5자리)</label>
-      <input type="tel" id="inputId" maxlength="5" placeholder="예: 21011 (2학년 10반 11번)" autocomplete="off">
-      <label>이름</label>
-      <input type="text" id="inputName" placeholder="예: 홍길동" autocomplete="off">
-      <button onclick="login()">입장하기</button>
-      <div class="login-error" id="loginError"></div>
-    </div>
-    <div class="login-hint">정보가 다르면 담임선생님께 문의해주세요</div>
-    <div class="admin-link" onclick="openAdmin()">관리자</div>
+<!-- ═══════════════════════════════════════════════════
+     로그인
+═══════════════════════════════════════════════════ -->
+<div id="login">
+  <div class="login-brand">
+    <div class="emblem">T</div>
+    <div class="year">TONGYEONG HIGH · 2026</div>
+    <h1>2학년 수학여행</h1>
+    <div class="sub">5월 6일 ~ 5월 8일 · 서울 · 용인 · 전주</div>
   </div>
-
-  <!-- ADMIN PAGE -->
-  <div id="admin" class="admin">
-    <div class="admin-head">
-      <div>
-        <div class="admin-tag">ADMIN CONSOLE</div>
-        <div class="admin-title">데이터 관리 도구</div>
-      </div>
-      <button class="admin-close" onclick="closeAdmin()">✕</button>
-    </div>
-
-    <!-- 비밀번호 화면 -->
-    <div id="adminLock" class="admin-lock">
-      <div class="admin-lock-box">
-        <div class="admin-lock-icon">🔒</div>
-        <div class="admin-lock-title">관리자 인증</div>
-        <div class="admin-lock-sub">비밀번호를 입력하세요</div>
-        <input type="password" id="adminPwInput" class="admin-lock-input" placeholder="비밀번호" autocomplete="off">
-        <button class="admin-btn" onclick="unlockAdmin()" style="width:100%; padding:14px;">입장</button>
-        <div class="admin-lock-error" id="adminLockError"></div>
-      </div>
-    </div>
-
-    <div class="admin-body" id="adminBody" style="display:none;">
-
-      <div class="admin-conn">
-        <span id="adminConnDot">●</span>
-        <span id="adminConnText">Firebase 상태 확인 중...</span>
-      </div>
-
-      <details class="admin-section" open>
-        <summary>📋 사용 방법</summary>
-        <div class="admin-inner">
-          <ol class="admin-steps">
-            <li>각 섹션에 Excel/스프레드시트의 <strong>표를 복사해서 붙여넣기</strong></li>
-            <li><strong>"Firebase에 업로드"</strong> 버튼 클릭 → 모든 학생 앱이 <strong>실시간 자동 갱신</strong></li>
-            <li>여행 중 변동사항 생기면 다시 업로드하면 됩니다</li>
-            <li>긴급 공지는 <strong>📢 공지 생성</strong> 섹션에서 바로 푸시 가능</li>
-          </ol>
-          <div class="admin-warn">
-            ⚠️ Firebase 설정이 안 되어 있으면 업로드 버튼이 동작하지 않아요. <code>Firebase_설정가이드.md</code> 참고.
-          </div>
-        </div>
-      </details>
-
-      <!-- 📢 긴급 공지 생성 -->
-      <details class="admin-section" open>
-        <summary>📢 긴급 공지 생성 (학생들에게 푸시)</summary>
-        <div class="admin-inner">
-          <div class="admin-hint">
-            제목과 내용을 쓰고 <strong>"공지 전송"</strong> → 모든 학생 앱에 <strong>빨간 배너</strong>가 뜹니다.
-          </div>
-          <input type="text" id="adminAnnounceTitle" class="admin-single-input" placeholder="공지 제목 (예: 저녁 집합 시간 변경)">
-          <textarea id="adminAnnounceBody" class="admin-textarea" placeholder="공지 내용 (선택사항)&#10;예: 오늘 저녁 집합이 20:30 → 21:00으로 변경되었습니다."></textarea>
-          <input type="text" id="adminAnnounceAuthor" class="admin-single-input" placeholder="작성자 (기본: 담임)" value="담임">
-          <div class="admin-btns">
-            <button class="admin-btn" onclick="sendAnnouncement()">📢 공지 전송</button>
-            <button class="admin-btn ghost" onclick="clearAllAnnouncements()">전체 공지 삭제</button>
-          </div>
-          <div id="adminAnnounceStatus" class="admin-status"></div>
-
-          <div class="admin-sub-label">최근 공지 목록</div>
-          <div id="adminAnnounceHistory" class="admin-announce-list"></div>
-        </div>
-      </details>
-
-      <!-- 학생 명부 -->
-      <details class="admin-section">
-        <summary>👥 학생 명부 (STUDENTS)</summary>
-        <div class="admin-inner">
-          <div class="admin-hint">
-            엑셀 컬럼 순서 (탭 구분): <code>학번 | 이름 | 반 | 방번호 | 층 | 조 | 버스</code><br>
-            예시: <code>21011&nbsp;&nbsp;김철수&nbsp;&nbsp;2-10&nbsp;&nbsp;801&nbsp;&nbsp;8층&nbsp;&nbsp;1&nbsp;&nbsp;1호차</code>
-          </div>
-          <textarea id="adminStudentInput" class="admin-textarea" placeholder="21011&#9;김철수&#9;2-10&#9;801&#9;8층&#9;1&#9;1호차&#10;21012&#9;이영호&#9;2-10&#9;801&#9;8층&#9;1&#9;1호차"></textarea>
-          <div class="admin-btns">
-            <button class="admin-btn" onclick="uploadStudents()">🔥 Firebase에 업로드</button>
-            <button class="admin-btn ghost" onclick="loadCurrentStudents()">현재 데이터 불러오기</button>
-          </div>
-          <div id="adminStudentStatus" class="admin-status"></div>
-        </div>
-      </details>
-
-      <!-- 조 편성 -->
-      <details class="admin-section">
-        <summary>🧭 조 편성 (GROUPS)</summary>
-        <div class="admin-inner">
-          <div class="admin-hint">
-            엑셀 컬럼 순서: <code>조번호 | 조이름 | 테마 | 지역 | 조장이름 | 조장연락처 | 조원(쉼표구분) | 저녁집합장소</code>
-          </div>
-          <textarea id="adminGroupInput" class="admin-textarea" placeholder="1&#9;한강의 기적&#9;종로 역사 투어&#9;경복궁·북촌·인사동&#9;김철수&#9;010-1111-2222&#9;김철수,이영호,박민준&#9;광화문역 6번 출구 · 20:30"></textarea>
-          <div class="admin-btns">
-            <button class="admin-btn" onclick="uploadGroups()">🔥 Firebase에 업로드</button>
-            <button class="admin-btn ghost" onclick="loadCurrentGroups()">현재 데이터 불러오기</button>
-          </div>
-          <div id="adminGroupStatus" class="admin-status"></div>
-          <div class="admin-warn" style="margin-top:12px;">
-            ⚠️ 조별 코스 상세는 여기서 완전히 표현하기 어려워요. 기본 뼈대만 업로드되고, 코스 상세는 아래 "고급 편집"에서 직접 JSON 수정 가능.
-          </div>
-        </div>
-      </details>
-
-      <!-- 비상연락처 -->
-      <details class="admin-section">
-        <summary>📞 비상 연락처 (CONTACTS)</summary>
-        <div class="admin-inner">
-          <div class="admin-hint">
-            엑셀 컬럼 순서: <code>역할 | 이름 | 연락처</code>
-          </div>
-          <textarea id="adminContactInput" class="admin-textarea" placeholder="담임 (2-10)&#9;박효덕 선생님&#9;010-0000-0000&#10;인솔단장&#9;교감 선생님&#9;010-1111-1111"></textarea>
-          <div class="admin-btns">
-            <button class="admin-btn" onclick="uploadContacts()">🔥 Firebase에 업로드</button>
-            <button class="admin-btn ghost" onclick="loadCurrentContacts()">현재 데이터 불러오기</button>
-          </div>
-          <div id="adminContactStatus" class="admin-status"></div>
-        </div>
-      </details>
-
-      <!-- 고급: JSON 직접 편집 -->
-      <details class="admin-section">
-        <summary>⚙️ 고급 편집 (JSON 직접 수정)</summary>
-        <div class="admin-inner">
-          <div class="admin-hint">
-            조별 코스처럼 복잡한 구조는 JSON으로 직접 편집할 수 있어요.
-          </div>
-          <select id="adminJsonSelect" class="admin-single-input" onchange="loadJsonEditor()">
-            <option value="">편집할 데이터 선택...</option>
-            <option value="students">학생 명부 (STUDENTS)</option>
-            <option value="groups">조 편성 (GROUPS)</option>
-            <option value="contacts">비상연락처 (CONTACTS)</option>
-          </select>
-          <textarea id="adminJsonEditor" class="admin-textarea" style="min-height:300px;" placeholder="위에서 데이터 선택 시 여기에 JSON이 로드됩니다"></textarea>
-          <div class="admin-btns">
-            <button class="admin-btn" onclick="saveJsonEdit()">🔥 Firebase에 저장</button>
-          </div>
-          <div id="adminJsonStatus" class="admin-status"></div>
-        </div>
-      </details>
-
-      <!-- 초기 데이터 셋업 -->
-      <details class="admin-section">
-        <summary>🚀 초기 설정 (최초 1회)</summary>
-        <div class="admin-inner">
-          <div class="admin-hint">
-            현재 HTML 파일 내의 샘플 데이터를 Firebase로 일괄 업로드합니다. <strong>최초 1회만</strong> 실행하세요.
-          </div>
-          <button class="admin-btn" onclick="initialUpload()">📤 샘플 데이터 전체 업로드</button>
-          <div id="adminInitStatus" class="admin-status"></div>
-          <div class="admin-warn" style="margin-top:10px;">
-            ⚠️ 이미 실제 데이터가 올라가 있으면 덮어써지니 주의!
-          </div>
-        </div>
-      </details>
-
-    </div>
+  <div class="login-form">
+    <label>학번 (5자리)</label>
+    <input type="text" id="inputId" inputmode="numeric" maxlength="5" placeholder="예: 21011" autocomplete="off" />
+    <label>이름</label>
+    <input type="text" id="inputName" placeholder="홍길동" autocomplete="off" />
+    <button onclick="login()">입장하기</button>
+    <div class="login-error" id="loginError"></div>
   </div>
+  <div class="login-hint">정보가 다르면 담임선생님께 문의해주세요</div>
+</div>
 
-  <!-- MAIN APP -->
-  <div id="main" class="main">
-    <header>
-      <div class="greet">HELLO</div>
-      <div class="name" id="studentName">—</div>
-      <div class="meta" id="studentMeta">—</div>
-      <button class="logout" onclick="logout()">로그아웃</button>
-      <div class="conn-status" id="connStatus">● 연결 중...</div>
-    </header>
+<!-- ═══════════════════════════════════════════════════
+     메인 앱
+═══════════════════════════════════════════════════ -->
+<div id="main">
+  <!-- 연결 상태 -->
+  <div id="connPill" class="conn-pill"><span class="dot"></span><span id="connText">연결됨</span></div>
 
-    <!-- 긴급 공지 배너 -->
-    <div id="announceBanner" class="announce-banner"></div>
+  <div class="app-scroll">
 
-    <nav class="tabs">
-      <div class="tab active" data-panel="home">홈</div>
-      <div class="tab" data-panel="announce">공지<span class="tab-dot" id="tabDot"></span></div>
-      <div class="tab" data-panel="schedule">일정</div>
-      <div class="tab" data-panel="group">우리 조</div>
-      <div class="tab" data-panel="seoul">서울투어</div>
-      <div class="tab" data-panel="everland">에버랜드</div>
-      <div class="tab" data-panel="jeonju">전주</div>
-      <div class="tab" data-panel="roster">명단</div>
-      <div class="tab" data-panel="myrecords">내 기록<span class="tab-dot" id="recDot"></span></div>
-      <div class="tab" data-panel="safety">안전·비상</div>
-    </nav>
-
-    <!-- HOME -->
-    <section id="panel-home" class="panel active">
-      <div class="section-label">MY TRIP</div>
-      <h2 class="section-title">내 수학여행 정보</h2>
-
-      <div class="my-info">
+    <!-- 🏠 홈 탭 -->
+    <section class="panel active" id="panel-home">
+      <div class="home-head">
         <div>
-          <div class="k">Room</div>
-          <div class="v" id="infoRoom">—</div>
+          <div class="hello">TONGYEONG 2026</div>
+          <div class="name" id="homeGreeting">안녕하세요</div>
         </div>
-        <div>
-          <div class="k">Floor</div>
-          <div class="v" id="infoFloor">—</div>
-        </div>
-        <div>
-          <div class="k">Group</div>
-          <div class="v" id="infoGroup">—</div>
-        </div>
-        <div>
-          <div class="k">Bus</div>
-          <div class="v" id="infoBus">—</div>
-        </div>
+        <div class="group-badge" id="homeGroupBadge">-조</div>
       </div>
 
-      <div class="card highlight">
-        <div class="card-label">출발 D-DAY</div>
-        <div class="card-value"><span class="big serif" id="dday">D-??</span></div>
-        <div class="card-sub">5월 6일 (수) 오전 7시 30분 · 열방교회 집결</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">숙소</div>
-        <div class="card-value serif">Trinit Hotel Seoul</div>
-        <div class="card-sub">서울 마포구 · 2박 3일</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">우리 조 조장</div>
-        <div class="card-value" id="leaderName">—</div>
-        <div class="card-sub" id="leaderTel">—</div>
-      </div>
-
-      <!-- 위치 공유 카드 -->
-      <div class="location-card" id="locationCard">
-        <div class="location-head">
+      <!-- D-day -->
+      <div class="section">
+        <div class="dday-card" id="ddayCard">
           <div>
-            <div class="card-label">📍 내 위치 공유</div>
-            <div class="location-status" id="locationStatus">위치 공유가 꺼져 있습니다</div>
+            <div class="dday-label">수학여행까지</div>
+            <div class="dday-num" id="ddayNum">D-16</div>
           </div>
-          <label class="location-toggle">
-            <input type="checkbox" id="autoLocationToggle" onchange="toggleAutoLocation()">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="location-info" id="locationInfo" style="display:none;">
-          <div class="location-last" id="locationLast">—</div>
-          <div class="location-accuracy" id="locationAccuracy"></div>
-        </div>
-        <div class="location-btns">
-          <button class="loc-btn" onclick="sendManualLocation()">📍 지금 위치 보내기</button>
-          <button class="loc-btn sos" onclick="sendSOS()">🆘 긴급 호출</button>
-        </div>
-        <div class="location-hint">
-          자동 공유: 앱 켜둔 동안 5분마다 자동 업데이트<br>
-          수동 전송: 한 번 클릭으로 현재 위치 즉시 전송
+          <div class="dday-right" id="ddayRight">5월 6일<br>(수) 출발</div>
         </div>
       </div>
 
-      <div class="tip-box">
-        <strong>📱 앱 사용법</strong><br>
-        상단 탭에서 필요한 정보를 확인하세요. 비상시에는 위의 <strong>🆘 긴급 호출</strong> 버튼이나 화면 하단 빨간 버튼을 눌러 담임선생님께 바로 연락할 수 있습니다.
+      <!-- 긴급 공지 배너 (있을 때만) -->
+      <div class="section" id="alertSection" style="display:none">
+        <div class="alert-banner" id="alertBanner" onclick="switchTab('comm')">
+          <div class="dot"></div>
+          <div style="flex:1;min-width:0">
+            <div class="title" id="alertTitle">-</div>
+            <div class="body" id="alertBody">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 내 정보 -->
+      <div class="section">
+        <div class="section-label">내 정보</div>
+        <div class="info-grid" id="infoGrid">
+          <!-- JS로 채움 -->
+        </div>
+      </div>
+
+      <!-- 오늘의 일정 -->
+      <div class="section">
+        <div class="section-label" id="todayLabel">오늘의 일정</div>
+        <div class="schedule-day-switcher" id="daySwitcher">
+          <button class="schedule-day-btn" data-day="1">5/6 (수)</button>
+          <button class="schedule-day-btn" data-day="2">5/7 (목)</button>
+          <button class="schedule-day-btn" data-day="3">5/8 (금)</button>
+        </div>
+        <div class="schedule-list" id="scheduleList">
+          <!-- JS로 채움 -->
+        </div>
+      </div>
+
+      <!-- 위치 공유 -->
+      <div class="section">
+        <div class="section-label">위치 공유</div>
+        <div class="loc-share" id="locShare">
+          <div class="left">
+            <div class="title" id="locTitle">위치 공유 꺼짐</div>
+            <div class="desc">담임선생님이 내 위치를 확인할 수 있어요</div>
+            <div class="status-last" id="locLast"></div>
+          </div>
+          <div class="switch" id="locSwitch" onclick="toggleAutoLocation()"></div>
+        </div>
+        <div class="loc-actions">
+          <button class="loc-btn" onclick="sendManualLocation()">지금 위치 보내기</button>
+          <button class="loc-btn" onclick="openLocHelp()">도움말</button>
+        </div>
+      </div>
+
+      <!-- SOS -->
+      <div class="section">
+        <button class="sos-main-btn" onclick="openSOS()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+          긴급 도움 요청 (SOS)
+        </button>
+      </div>
+
+      <!-- 로그아웃 (작게, 하단) -->
+      <div class="section" style="text-align:center;padding-top:8px;">
+        <button style="background:none;border:none;font-size:12px;color:var(--ink-3);" onclick="logout()">로그아웃</button>
       </div>
     </section>
 
-    <!-- ANNOUNCEMENTS -->
-    <section id="panel-announce" class="panel">
-      <div class="section-label">ANNOUNCEMENTS</div>
-      <h2 class="section-title">공지사항</h2>
-      <div id="announceList"></div>
-    </section>
-
-    <!-- SCHEDULE -->
-    <section id="panel-schedule" class="panel">
-      <div class="section-label">ITINERARY</div>
-      <h2 class="section-title">전체 일정표</h2>
-      <div id="scheduleList"></div>
-    </section>
-
-    <!-- GROUP -->
-    <section id="panel-group" class="panel">
-      <div class="section-label">MY TEAM</div>
-      <h2 class="section-title">우리 조</h2>
-
-      <div class="card highlight">
-        <div class="card-label" id="groupTag">GROUP —</div>
-        <div class="card-value"><span class="big serif" id="groupName">—</span></div>
-        <div class="card-sub" id="groupTheme">—</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">조장</div>
-        <div class="card-value" id="leaderName2">—</div>
-        <div class="card-sub" id="leaderTel2">—</div>
-      </div>
-
-      <div class="section-label" style="margin-top: 24px;">MEMBERS</div>
-      <div class="members" id="memberList"></div>
-
-      <div class="tip-box">
-        <strong>💡 우리 조 원칙</strong><br>
-        · 조원끼리 항상 2인 이상 함께 이동<br>
-        · 사진·영상은 조별 단톡방에 공유<br>
-        · 집합 시간 10분 전 도착 필수
-      </div>
-    </section>
-
-    <!-- SEOUL TOUR -->
-    <section id="panel-seoul" class="panel">
-      <div class="section-label">DAY 2 · SEOUL</div>
-      <h2 class="section-title">서울 자유투어</h2>
-
-      <div class="card highlight">
-        <div class="card-label">조별 집합 · 출발</div>
-        <div class="card-value serif">08:30 · 경복궁 주차장</div>
-        <div class="card-sub">시간 엄수 · 조장 인원 확인 후 출발</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">우리 조 코스 테마</div>
-        <div class="card-value serif" id="seoulTheme">—</div>
-        <div class="card-sub" id="seoulArea">—</div>
-      </div>
-
-      <div class="section-label" style="margin-top: 20px;">코스 순서</div>
-      <div id="seoulCourse"></div>
-
-      <div class="section-label" style="margin-top: 20px;">🧑‍🏫 선생님 대기 장소</div>
-      <div class="card" style="padding:0; overflow:hidden;">
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">마포구 · 영등포구 일대</div>
-          <div class="teacher-spot-names">김연경 · 김미경 · 최선아 · 박수현 · 강성두</div>
-        </div>
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">종로구 · 중구 일대<br><span style="font-size:11px; color:var(--ink-mute); font-weight:400;">(경복궁 주차장 포함)</span></div>
-          <div class="teacher-spot-names">성화룡 · 강수미 · 김동희 · 진현창 · 박보경</div>
-        </div>
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">강남구 · 송파구 일대</div>
-          <div class="teacher-spot-names">송인식 · 한호연 · 박효덕 · 김혜영 · 최명기</div>
-        </div>
-      </div>
-
-      <div class="tip-box">
-        <strong>⏰ 필수 체크</strong><br>
-        · <strong>저녁 집합:</strong> <span id="seoulMeet">—</span> (<strong>20:30까지 반드시 도착</strong>, 21:00 출발)<br>
-        · 조장은 이동 시작 전·중간·복귀 시 담임께 사진 전송<br>
-        · 지하철 카드 분실 주의, 충전 잊지 말기<br>
-        · 공연 관람(09:30~11:00 점프) 후 자유 투어 시작<br>
-        · 도움이 필요하면 가까운 지역 선생님께 연락
-      </div>
-
-      <div class="card" style="margin-top: 16px;">
-        <div class="card-label">중·석식</div>
-        <div class="card-value">개별 식사</div>
-        <div class="card-sub">조별 계획에 따라 자유 식사 (예산 관리 조장 책임)</div>
-      </div>
-    </section>
-
-    <!-- EVERLAND -->
-    <section id="panel-everland" class="panel">
-      <div class="section-label">DAY 1 · YONGIN</div>
-      <h2 class="section-title">에버랜드</h2>
-
-      <div class="card highlight">
-        <div class="card-label">자유 테마 활동</div>
-        <div class="card-value serif">12:30 — 21:00</div>
-        <div class="card-sub">약 8시간 30분 자유활동 · 중·석식 쿠폰 제공</div>
-      </div>
-
-      <div class="card" style="border-color: var(--accent);">
-        <div class="card-label" style="color: var(--accent);">⚠️ 저녁 집합 (엄수)</div>
-        <div class="card-value serif">20:30 · 정문 옆 CU편의점</div>
-        <div class="card-sub">21:00 출발 · 늦을 시 조장·담임께 즉시 연락</div>
-      </div>
-
-      <div class="section-label" style="margin-top: 20px;">🧑‍🏫 선생님 대기 장소</div>
-      <div class="card" style="padding:0; overflow:hidden;">
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">유로피안 어드벤처</div>
-          <div class="teacher-spot-names">성화룡 · 김연경 · 김미경</div>
-        </div>
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">매직랜드</div>
-          <div class="teacher-spot-names">최선아 · 박수현 · 강성두</div>
-        </div>
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">주토피아</div>
-          <div class="teacher-spot-names">강수미 · 김동희 · 진현창</div>
-        </div>
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">아메리칸 어드벤처</div>
-          <div class="teacher-spot-names">박보경 · 송인식 · 한호연</div>
-        </div>
-        <div class="teacher-spot">
-          <div class="teacher-spot-zone">글로벌 페어</div>
-          <div class="teacher-spot-names">박효덕 · 김혜영 · 최명기</div>
-        </div>
-      </div>
-
-      <div class="tip-box">
-        <strong>🎢 자유활동 수칙</strong><br>
-        · 3명 이상 함께 이동, 단독 행동 금지<br>
-        · 중·석식 쿠폰 사용 가능 식당 확인<br>
-        · 소지품은 로커에 보관 (₩1,000~2,000)<br>
-        · 점심은 12시~1시 피해서 먹기 (붐빔)<br>
-        · 야간 퍼레이드·불꽃놀이 관람 가능 (시간표 현장 확인)<br>
-        · 파크 내 분실물: 정문 안내센터<br>
-        · 도움이 필요하면 가까운 선생님 대기 장소로 이동
-      </div>
-    </section>
-
-    <!-- JEONJU -->
-    <section id="panel-jeonju" class="panel">
-      <div class="section-label">DAY 3 · JEONJU</div>
-      <h2 class="section-title">전주한옥마을</h2>
-
-      <div class="card highlight">
-        <div class="card-label">자유 탐방</div>
-        <div class="card-value serif">11:00 — 14:00</div>
-        <div class="card-sub">3시간 자유 테마 활동 · 개별 중식</div>
-      </div>
-
-      <div class="card" style="border-color: var(--accent);">
-        <div class="card-label" style="color: var(--accent);">⚠️ 집합</div>
-        <div class="card-value serif">13:50 · 버스에서 내린 곳</div>
-        <div class="card-sub">14:00 출발 · 정확한 위치는 당일 안내 예정 · 16:30 열방교회 도착 예정</div>
-      </div>
-
-      <div class="section-label" style="margin-top: 20px;">추천 코스</div>
-      <div class="course-item">
-        <div class="idx serif">01</div>
+    <!-- 📅 일정 탭 (플레이스홀더) -->
+    <section class="panel" id="panel-sched">
+      <div class="page-head">
         <div>
-          <div class="name">경기전</div>
-          <div class="time-addr">태조 이성계 어진 봉안 · 한복 인생샷 명소</div>
+          <div class="h-sub">SCHEDULE</div>
+          <div class="h-title">일정</div>
         </div>
       </div>
-      <div class="course-item">
-        <div class="idx serif">02</div>
-        <div>
-          <div class="name">전동성당</div>
-          <div class="time-addr">한국 3대 성당 · 경기전 바로 맞은편</div>
-        </div>
-      </div>
-      <div class="course-item">
-        <div class="idx serif">03</div>
-        <div>
-          <div class="name">한옥마을 골목길</div>
-          <div class="time-addr">태조로·은행로 · 전통찻집·공방 탐방</div>
-        </div>
-      </div>
-      <div class="course-item">
-        <div class="idx serif">04</div>
-        <div>
-          <div class="name">오목대</div>
-          <div class="time-addr">한옥마을 전경 한눈에 · 전망 포인트</div>
-        </div>
-      </div>
-
-      <div class="section-label" style="margin-top: 20px;">먹거리 BEST</div>
-      <div class="pill-group">
-        <span class="pill">전주비빔밥</span>
-        <span class="pill">콩나물국밥</span>
-        <span class="pill">수제초코파이</span>
-        <span class="pill">문꼬치</span>
-        <span class="pill">길거리 꼬치</span>
-        <span class="pill">한옥마을 아이스크림</span>
-        <span class="pill">PNB 풍년제과</span>
-      </div>
-
-      <div class="tip-box">
-        <strong>🏯 전주 꿀팁</strong><br>
-        · 주차장에서 한옥마을까지 도보 5분<br>
-        · 한옥마을 전체는 도보 1시간이면 충분<br>
-        · 점심은 일찍(11~12시) 먹으면 줄 짧음<br>
-        · 기념품은 경기전 주변 상점가에<br>
-        · <strong>13:50까지 버스에서 내린 곳 집합</strong> · 14:00 정시 출발<br>
-        · 귀가길 5시간 소요
+      <div class="placeholder">
+        <div class="ico">📅</div>
+        <div class="title">일정 탭은 다음 업데이트에서 완성됩니다</div>
+        <div class="desc">3일 전체 일정 + 내 조 코스가 날짜별로<br>한 눈에 보여질 예정이에요.</div>
       </div>
     </section>
 
-    <!-- ROSTER (조 편성 · 방 배정) -->
-    <section id="panel-roster" class="panel">
-      <div class="section-label">ROSTER</div>
-      <h2 class="section-title">조 편성 · 방 배정</h2>
-
-      <div class="roster-toggle">
-        <button class="rt-btn active" data-view="group">조 편성</button>
-        <button class="rt-btn" data-view="room">방 배정</button>
-      </div>
-
-      <div id="rosterGroup" class="roster-view active"></div>
-      <div id="rosterRoom" class="roster-view"></div>
-
-      <div class="tip-box" style="margin-top: 20px;">
-        <strong>💡 확인 방법</strong><br>
-        · 본인이 속한 조·방은 <span style="color:var(--accent); font-weight:600;">빨간 테두리</span>로 표시<br>
-        · 조장은 <span style="background:var(--ink); color:white; padding:1px 6px; font-size:11px;">LEADER</span> 뱃지<br>
-        · 오류 있으면 담임선생님께 즉시 문의
-      </div>
-    </section>
-
-    <!-- MY RECORDS (교사 기록 열람) -->
-    <section id="panel-myrecords" class="panel">
-      <div class="section-label">FROM TEACHERS</div>
-      <h2 class="section-title">내 기록</h2>
-      <div class="tip-box" style="margin-bottom:16px;">
-        <strong>📝 이 탭에는</strong><br>
-        · 선생님이 나에게 남긴 기록 (학생 열람 허용된 것만)<br>
-        · 전체 학생 대상 기록<br>
-        <span style="color:var(--ink-mute); font-size:11px;">※ 교사 전용 기록은 여기에 표시되지 않습니다</span>
-      </div>
-      <div id="myRecordList"></div>
-    </section>
-
-    <section id="panel-safety" class="panel">
-      <div class="section-label">EMERGENCY</div>
-      <h2 class="section-title">비상 연락망</h2>
-
-      <a class="contact urgent" href="tel:119">
+    <!-- 📍 장소 탭 (플레이스홀더) -->
+    <section class="panel" id="panel-place">
+      <div class="page-head">
         <div>
-          <div class="role">긴급 / 응급</div>
-          <div class="nm">119 · 112</div>
+          <div class="h-sub">PLACES</div>
+          <div class="h-title">장소</div>
         </div>
-        <div class="tel">📞</div>
-      </a>
-
-      <div id="contactList"></div>
-
-      <div class="section-label" style="margin-top: 32px;">SAFETY RULES</div>
-      <h2 class="section-title">안전 수칙</h2>
-
-      <div id="rulesList"></div>
-
-      <div class="tip-box" style="margin-top: 24px;">
-        <strong>🏥 숙소 주변 병원</strong><br>
-        <strong>서울세브란스병원</strong> · 마포구 / 02-2228-0114<br>
-        <strong>홍익병원</strong> · 양천구 / 02-2693-5555<br>
-        이송 전 반드시 담임선생님께 먼저 연락
+      </div>
+      <div class="placeholder">
+        <div class="ico">📍</div>
+        <div class="title">장소 탭은 다음 업데이트에서 완성됩니다</div>
+        <div class="desc">에버랜드 교사 배치 · 서울 자유여행 코스<br>전주한옥마을 정보가 들어갑니다.</div>
       </div>
     </section>
 
-    <a class="float-sos" href="tel:010-0000-0000" id="sosBtn">🆘 담임 긴급연락</a>
-  </div>
+    <!-- 📢 소통 탭 (플레이스홀더) -->
+    <section class="panel" id="panel-comm">
+      <div class="page-head">
+        <div>
+          <div class="h-sub">COMMUNICATION</div>
+          <div class="h-title">소통</div>
+        </div>
+      </div>
+      <div class="placeholder">
+        <div class="ico">📢</div>
+        <div class="title">소통 탭은 다음 업데이트에서 완성됩니다</div>
+        <div class="desc">공지사항 · 담임의 기록 · 전체 명단이<br>들어갑니다.</div>
+      </div>
+    </section>
+
+    <!-- 🆘 비상 탭 (플레이스홀더) -->
+    <section class="panel" id="panel-help">
+      <div class="page-head">
+        <div>
+          <div class="h-sub">SAFETY</div>
+          <div class="h-title">비상</div>
+        </div>
+      </div>
+      <div class="placeholder">
+        <div class="ico">🆘</div>
+        <div class="title">비상 탭은 다음 업데이트에서 완성됩니다</div>
+        <div class="desc">비상 연락처 · 안전 수칙 · 요양호 정보가<br>들어갑니다.</div>
+      </div>
+    </section>
+
+  </div><!-- /.app-scroll -->
+
+  <!-- 하단 탭바 -->
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+      <div class="tab-btn-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+      </div>
+      <span>홈</span>
+    </button>
+    <button class="tab-btn" data-tab="sched" onclick="switchTab('sched')">
+      <div class="tab-btn-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <span>일정</span>
+    </button>
+    <button class="tab-btn" data-tab="place" onclick="switchTab('place')">
+      <div class="tab-btn-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <span>장소</span>
+    </button>
+    <button class="tab-btn" data-tab="comm" onclick="switchTab('comm')">
+      <div class="tab-btn-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="dot-badge" id="commBadge" style="display:none"></span>
+      </div>
+      <span>소통</span>
+    </button>
+    <button class="tab-btn" data-tab="help" onclick="switchTab('help')">
+      <div class="tab-btn-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>
+      </div>
+      <span>비상</span>
+    </button>
+  </nav>
 </div>
 
 <!-- SOS 모달 -->
-<div id="sosModal" class="sos-modal">
-  <div class="sos-modal-box">
-    <h3>🆘 긴급 호출</h3>
-    <div class="sos-modal-body">
-      모든 선생님께 <strong>현재 위치와 함께 긴급 호출</strong>이 전송됩니다.<br>
-      상황을 간단히 적어주세요.
-    </div>
-    <textarea id="sosMessage" placeholder="예: 길을 잃었어요 / 몸이 아파요 / 일행과 떨어졌어요"></textarea>
-    <div class="sos-modal-btns">
+<div class="modal-bg" id="sosModal">
+  <div class="modal">
+    <h3>🆘 긴급 도움 요청</h3>
+    <div class="desc">담임선생님께 현재 위치와 함께 즉시 전송됩니다. 상황을 간단히 적어주세요.</div>
+    <textarea id="sosMsg" placeholder="예) 다쳤어요 / 일행을 놓쳤어요 / 몸이 아파요"></textarea>
+    <div class="modal-actions">
       <button class="cancel" onclick="closeSOS()">취소</button>
-      <button class="send" onclick="confirmSOS()">전송</button>
+      <button class="confirm" onclick="sendSOS()">전송</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
 /* ═══════════════════════════════════════════════════
-   ⚙️ FIREBASE 설정 — 선생님이 초기 1회 설정
-   Firebase_설정가이드.md 파일의 4-5단계 참고
+   Firebase 설정
    ═══════════════════════════════════════════════════ */
-
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyB6I4tsGTDT1jo9XWMWa3riLp3AMiB7zHA",
   authDomain: "tongyeong-h.firebaseapp.com",
@@ -1891,196 +993,148 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "413183012977",
   appId: "1:413183012977:web:d691733599f54bd704ebd0"
 };
-
-const ADMIN_PASSWORD = 'vkejr317';
-
-const FIREBASE_PATH = 'field-trip-2026'; // Firebase 데이터 저장 경로
+const FIREBASE_PATH = 'field-trip-2026';
 
 /* ═══════════════════════════════════════════════════
-   SAMPLE DATA — Firebase 연결 실패 시 fallback으로 사용
+   여행 설정
    ═══════════════════════════════════════════════════ */
-
-let TRIP_CONFIG = {
-  departureDate: '2026-05-06',
-  homeroomTeacher: { name: '박효덕', tel: '010-0000-0000' }
+const TRIP_CONFIG = {
+  departDate: new Date('2026-05-06T08:00:00+09:00'),
+  returnDate: new Date('2026-05-08T16:30:00+09:00'),
+  days: ['2026-05-06', '2026-05-07', '2026-05-08']
 };
 
-// 조별 정보 (자유투어 / 에버랜드 동선 포함)
-let GROUPS = {
-  '1': {
-    name: '한강의 기적',
-    theme: '종로·광화문 역사 투어',
-    area: '경복궁·북촌·인사동 일대',
-    leader: { name: '김철수', tel: '010-1111-2222' },
-    members: ['김철수', '이영호', '박민준', '정서윤', '최지후', '강도윤'],
-    seoul: {
-      meet: '광화문역 6번 출구 · 20:30',
-      course: [
-        { name: '공연 · 점프 (경향아트힐)', time: '09:30 - 11:00', addr: '서울 중구 · 전체 공통' },
-        { name: '경복궁', time: '11:30 - 13:00', addr: '종로구 사직로 161' },
-        { name: '점심 · 삼청동', time: '13:00 - 14:30', addr: '삼청동 맛집거리' },
-        { name: '북촌한옥마을', time: '14:30 - 16:30', addr: '종로구 계동길' },
-        { name: '인사동 쌈지길', time: '16:30 - 18:30', addr: '종로구 인사동길 44' },
-        { name: '석식 · 광화문 주변', time: '18:30 - 20:00', addr: '개별 식당' }
-      ]
-    },
-    everland: '사파리월드 → 티익스프레스 → 중식(글로벌페어) → 아마존 익스프레스 → 장미원 → 석식 → 야간 퍼레이드'
-  },
-  '2': {
-    name: '미술관 크루',
-    theme: '홍대·합정 문화 투어',
-    area: '홍대·합정·망원 일대',
-    leader: { name: '이민서', tel: '010-2222-3333' },
-    members: ['이민서', '김다온', '박예준', '윤서아', '장하준', '임채원'],
-    seoul: {
-      meet: '홍대입구역 9번 출구 · 20:30',
-      course: [
-        { name: '공연 · 점프 (경향아트힐)', time: '09:30 - 11:00', addr: '서울 중구 · 전체 공통' },
-        { name: '합정 망원시장', time: '11:30 - 13:00', addr: '마포구 포은로8길' },
-        { name: '점심 · 홍대 맛집', time: '13:00 - 14:30', addr: '홍대 맛집거리' },
-        { name: '당인리 카페거리', time: '14:30 - 16:30', addr: '마포구 토정로' },
-        { name: 'KT&G 상상마당', time: '16:30 - 18:30', addr: '마포구 어울마당로 65' },
-        { name: '석식 · 홍대', time: '18:30 - 20:00', addr: '개별 식당' }
-      ]
-    },
-    everland: '티익스프레스 → 중식(글로벌페어) → 렛츠트위스트 → 판다월드 → 사파리월드 → 석식 → 야간 퍼레이드'
-  },
-  '3': {
-    name: '명동 픽셀',
-    theme: '남산·명동 투어',
-    area: '남산·명동·동대문 일대',
-    leader: { name: '최준서', tel: '010-3333-4444' },
-    members: ['최준서', '강수아', '한도윤', '서민지', '조은우', '백지호'],
-    seoul: {
-      meet: '명동역 6번 출구 · 20:30',
-      course: [
-        { name: '공연 · 점프 (경향아트힐)', time: '09:30 - 11:00', addr: '서울 중구 · 전체 공통' },
-        { name: '남산 케이블카', time: '11:30 - 13:00', addr: '중구 소파로 83' },
-        { name: '점심 · 명동교자', time: '13:00 - 14:30', addr: '중구 명동10길 29' },
-        { name: 'N서울타워 전망대', time: '14:30 - 16:30', addr: '용산구 남산공원길' },
-        { name: '명동 쇼핑', time: '16:30 - 18:30', addr: '명동 상권' },
-        { name: '석식 · 명동', time: '18:30 - 20:00', addr: '개별 식당' }
-      ]
-    },
-    everland: '아마존 익스프레스 → 사파리월드 → 중식(글로벌페어) → 장미원 → 티익스프레스 → 석식 → 야간 퍼레이드'
-  },
-  '4': {
-    name: '한강 런웨이',
-    theme: '여의도·한강 투어',
-    area: '여의도·용산 일대',
-    leader: { name: '오시우', tel: '010-4444-5555' },
-    members: ['오시우', '문하린', '신예성', '황다은', '노승현', '구하윤'],
-    seoul: {
-      meet: '용산역 1번 출구 · 20:30',
-      course: [
-        { name: '공연 · 점프 (경향아트힐)', time: '09:30 - 11:00', addr: '서울 중구 · 전체 공통' },
-        { name: '여의도 한강공원', time: '11:30 - 13:00', addr: '영등포구 여의동로 330' },
-        { name: '점심 · 더현대 식당가', time: '13:00 - 14:30', addr: '더현대 지하1층' },
-        { name: '더현대 서울', time: '14:30 - 16:30', addr: '영등포구 여의대로 108' },
-        { name: '용산 아이파크몰', time: '16:30 - 18:30', addr: '용산구 한강대로23길' },
-        { name: '석식 · 용산', time: '18:30 - 20:00', addr: '개별 식당' }
-      ]
-    },
-    everland: '사파리월드 → 티익스프레스 → 중식(글로벌페어) → 렛츠트위스트 → 아마존 익스프레스 → 석식 → 야간 퍼레이드'
-  }
-};
-
-// 학생 정보 (sample) — 학번 5자리: 학년(2) + 반(2) + 번호(2 or 1)
-// 실제: 21011 = 2학년 10반 11번
-let STUDENTS = {
-  // 2학년 10반 샘플
-  '21011': { name: '김철수', class: '2-10', room: '801', floor: '8층', group: '1', bus: '1호차' },
-  '21012': { name: '이영호', class: '2-10', room: '801', floor: '8층', group: '1', bus: '1호차' },
-  '21013': { name: '박민준', class: '2-10', room: '802', floor: '8층', group: '1', bus: '1호차' },
-  '21014': { name: '이민서', class: '2-10', room: '803', floor: '8층', group: '2', bus: '1호차' },
-  '21015': { name: '김다온', class: '2-10', room: '803', floor: '8층', group: '2', bus: '1호차' },
-  '21016': { name: '최준서', class: '2-10', room: '804', floor: '8층', group: '3', bus: '2호차' },
-  '21017': { name: '강수아', class: '2-10', room: '805', floor: '8층', group: '3', bus: '2호차' },
-  '21018': { name: '오시우', class: '2-10', room: '806', floor: '8층', group: '4', bus: '2호차' },
-  '21019': { name: '문하린', class: '2-10', room: '807', floor: '8층', group: '4', bus: '2호차' },
-  // 다른 반 샘플 (실제 데이터로 교체 예정)
-  '20101': { name: '홍길동', class: '2-1', room: '901', floor: '9층', group: '1', bus: '1호차' },
-  '20201': { name: '유관순', class: '2-2', room: '902', floor: '9층', group: '2', bus: '1호차' }
-  // ... 전체 303명 실제 데이터로 교체
-};
-
-// 전체 일정
-let SCHEDULE = [
+/* ═══════════════════════════════════════════════════
+   일정 데이터 (PDF 실제 계획 기반)
+   ═══════════════════════════════════════════════════ */
+const SCHEDULE = [
   {
-    day: 1, date: '5월 6일 (수)', title: '통영 → 에버랜드 → 숙소',
+    day: 1, date: '5월 6일 (수)', dateISO: '2026-05-06', title: '통영 → 에버랜드 → 숙소',
     events: [
       { time: '07:30', what: '집결 및 인원 확인', note: '열방교회 앞' },
       { time: '08:00', what: '통영 출발', note: '열방교회에서 버스 탑승' },
-      { time: '12:30', what: '에버랜드 도착 · 자유 테마 활동 시작', note: '중·석식 식사쿠폰 지급' },
-      { time: '20:30', what: '집합 (정문 옆 CU편의점)', note: '시간 엄수 · 조장 인원 확인' },
+      { time: '12:30', what: '에버랜드 자유 활동 시작', note: '중·석식 식사쿠폰 지급' },
+      { time: '20:30', what: '정문 옆 CU편의점 집결', note: '조장 인원 확인' },
       { time: '21:00', what: '인원 확인 후 숙소로 이동', note: '버스 탑승' },
-      { time: '21:30', what: '숙소 도착', note: '방 배정 확인 · 조별 점호' }
+      { time: '21:30', what: '숙소 도착', note: '더트리니 호텔 (용인)' }
     ]
   },
   {
-    day: 2, date: '5월 7일 (목)', title: '서울 공연 관람 · 자유투어',
+    day: 2, date: '5월 7일 (목)', dateISO: '2026-05-07', title: '서울 공연 · 자유 여행',
     events: [
-      { time: '07:00', what: '기상 및 아침 식사', note: '~ 08:00' },
-      { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인 후 이동' },
-      { time: '09:30', what: '공연 관람 · 점프', note: '서울 중구 경향아트힐 · 11:00까지' },
-      { time: '11:20', what: '서울 자유 여행 시작', note: '경복궁 주차장에서 조별 출발 · 개별 중·석식' },
-      { time: '20:30', what: '집합 (20:30까지 도착 엄수)', note: '조별 지정 장소' },
+      { time: '07:00', what: '기상 및 아침 식사', note: '호텔 조식 · ~ 08:00' },
+      { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인' },
+      { time: '09:30', what: '공연 관람 · 점프', note: '서울 중구 경향아트힐 · ~11:00' },
+      { time: '11:20', what: '서울 자유 여행 시작', note: '경복궁 주차장에서 조별 출발' },
+      { time: '20:30', what: '조별 지정 장소 집결', note: '조장 인원 확인' },
       { time: '21:00', what: '인원 확인 후 숙소로 이동', note: '버스 탑승' },
       { time: '22:00', what: '숙소 도착', note: '조별 점호 · 취침' }
     ]
   },
   {
-    day: 3, date: '5월 8일 (금)', title: '전주한옥마을 → 통영',
+    day: 3, date: '5월 8일 (금)', dateISO: '2026-05-08', title: '전주한옥마을 → 통영',
     events: [
       { time: '07:00', what: '기상 · 아침 식사 · 짐 정리', note: '~ 08:00' },
-      { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인 후 이동' },
-      { time: '11:00', what: '전주한옥마을 도착 · 자유 탐방', note: '개별 중식' },
-      { time: '13:50', what: '집합 (13:50까지 도착 엄수)', note: '버스에서 내린 곳 · 당일 위치 안내' },
+      { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인' },
+      { time: '11:00', what: '전주한옥마을 자유 탐방', note: '개별 중식 · ~14:00' },
+      { time: '13:50', what: '버스 내린 곳 집결', note: '당일 위치 안내 예정' },
       { time: '14:00', what: '통영으로 출발', note: '인원 확인 후 출발' },
-      { time: '16:30', what: '통영 도착 · 해산', note: '열방교회에서 학부모 인계' }
+      { time: '16:30', what: '통영 도착 · 해산', note: '열방교회' }
     ]
   }
 ];
 
-// 안전수칙
-let RULES = [
-  { body: '<strong>단독 행동 금지.</strong> 반드시 2인 이상, 조별 이동이 원칙입니다.' },
-  { body: '<strong>집합시간 10분 전 도착.</strong> 늦을 경우 즉시 조장·담임께 연락.' },
-  { body: '<strong>음주·흡연·유흥업소 출입 절대 금지.</strong> 적발 시 귀가 조치 및 징계.' },
-  { body: '<strong>숙소 외 이탈 금지.</strong> 점호 이후 객실 밖 이동은 사전 승인 필수.' },
-  { body: '<strong>개인 물품 관리 철저.</strong> 지갑·휴대폰·여권은 항상 몸에 지니기.' },
-  { body: '<strong>호텔 내 뛰거나 소란 금지.</strong> 다른 투숙객에게 피해 주지 않기.' },
-  { body: '<strong>아프면 즉시 알리기.</strong> 참지 말고 조장 또는 담임께 바로 연락.' },
-  { body: '<strong>귀중품·현금은 최소한으로.</strong> 분실 시 본인 책임.' }
-];
-
-// 비상 연락처
-let CONTACTS = [
-  { role: '담임 (2-10)', name: '박효덕 선생님', tel: '010-0000-0000', urgent: false },
-  { role: '인솔단장', name: '교감 선생님', tel: '010-1111-1111', urgent: false },
-  { role: '보건 담당', name: '보건선생님', tel: '010-2222-2222', urgent: false },
-  { role: '숙소 프론트', name: 'Trinit Hotel', tel: '02-0000-0000', urgent: false },
-  { role: '1호차 기사님', name: '—', tel: '010-3333-3333', urgent: false },
-  { role: '2호차 기사님', name: '—', tel: '010-4444-4444', urgent: false }
-];
-
-let ANNOUNCEMENTS = []; // 긴급 공지 (Firebase에서 로드)
-let RECORDS = []; // 교사 기록 (Firebase에서 로드)
-
 /* ═══════════════════════════════════════════════════
-   FIREBASE 연동
+   상태 (Firebase에서 로드)
    ═══════════════════════════════════════════════════ */
+let STUDENTS = {};
+let GROUPS = {};
+let CONTACTS = [];
+let ANNOUNCEMENTS = [];
+let RECORDS = [];
 
 let db = null;
 let firebaseReady = false;
 let seenAnnouncementIds = new Set();
 let seenRecordIds = new Set();
+let currentStudent = null;
+let currentTab = 'home';
+let currentDaySelected = null;  // 스케줄에서 보여줄 day (null=자동)
 
+/* ═══════════════════════════════════════════════════
+   유틸
+   ═══════════════════════════════════════════════════ */
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+function toast(msg, dur) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur || 2200);
+}
+
+function todayISO() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+function getCurrentTripDay() {
+  // 여행 중이면 해당 day(1,2,3), 출발 전이면 1, 귀가 후면 3 반환
+  const today = todayISO();
+  for (let i = 0; i < TRIP_CONFIG.days.length; i++) {
+    if (TRIP_CONFIG.days[i] === today) return i + 1;
+  }
+  const now = Date.now();
+  if (now < TRIP_CONFIG.departDate.getTime()) return 1;
+  return 3;
+}
+
+function getDdayInfo() {
+  // 출발 전: D-n, 여행 중: "여행 n일차", 귀가 후: "다녀왔습니다"
+  const now = new Date();
+  const depart = TRIP_CONFIG.departDate;
+  const ret = TRIP_CONFIG.returnDate;
+  const todayStr = todayISO();
+
+  if (now < depart) {
+    // 자정 기준 일수 계산
+    const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const depart0 = new Date(depart.getFullYear(), depart.getMonth(), depart.getDate());
+    const days = Math.round((depart0 - today0) / (1000 * 60 * 60 * 24));
+    return {
+      label: '수학여행까지',
+      num: days === 0 ? 'D-DAY' : 'D-' + days,
+      right: '5월 6일<br>(수) 출발',
+      theme: 'amber'
+    };
+  }
+  if (now <= ret) {
+    const day = getCurrentTripDay();
+    return {
+      label: '현재',
+      num: `여행 ${day}일차`,
+      right: SCHEDULE[day - 1].date.replace(' ', '<br>'),
+      theme: 'coral'
+    };
+  }
+  return {
+    label: '수학여행',
+    num: '다녀왔어요',
+    right: '수고하셨습니다',
+    theme: 'amber'
+  };
+}
+
+/* ═══════════════════════════════════════════════════
+   Firebase 초기화 + 어댑터
+   ═══════════════════════════════════════════════════ */
 function initFirebase() {
-  if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.databaseURL) {
-    console.log('Firebase 미설정 — 샘플 데이터로 실행됩니다.');
+  if (!FIREBASE_CONFIG.databaseURL) {
     showConnectionStatus('offline');
-    // localStorage 캐시에서 복원 시도
     loadFromCache();
     return;
   }
@@ -2090,64 +1144,48 @@ function initFirebase() {
     firebaseReady = true;
     showConnectionStatus('connecting');
 
-    // ═══════════════════════════════════════════════════════════════
-    // admin.html이 올린 Firebase 데이터 → student.html 기대 형식 어댑터
-    // admin 구조: students/{학번}.class(숫자), group(숫자), bus(숫자), room('R방번호')
-    //             rooms/{R방번호}.no, floor, cap, gender  (방 메타)
-    //             groups/{번호}.name, theme, area, leader(학번), teacher
-    // student 기대: class='2-10', group='1', bus='1호차', room='2501', floor='8층'
-    //               GROUPS[n].leader={name,tel}, members=[이름...]
-    // ═══════════════════════════════════════════════════════════════
     let _rawStudents = null, _rawGroups = null, _rawRooms = null, _rawContacts = null;
 
     function _rebuildFromRaw() {
-      // 1) ROOMS lookup 준비 (방ID → 방 메타)
       const roomById = _rawRooms || {};
 
-      // 2) STUDENTS 변환
       if (_rawStudents) {
         const out = {};
         Object.entries(_rawStudents).forEach(([sid, st]) => {
           if (!st || !st.name) return;
-          // class: 10 (숫자) → '2-10' (학년-반)
           const classStr = (st.class !== undefined && st.class !== null && st.class !== '')
             ? `2-${st.class}` : '';
-          // bus: 10 (숫자) → '10호차'
           const busStr = (st.bus !== undefined && st.bus !== null && st.bus !== '')
             ? `${st.bus}호차` : '';
-          // group: 61 (숫자) → '61' (문자열)
           const groupStr = (st.group !== undefined && st.group !== null && st.group !== 0 && st.group !== '')
             ? String(st.group) : '';
-          // room: 'R2501' → '2501', 층도 rooms에서 가져옴
           let roomStr = '', floorStr = '';
           if (st.room && roomById[st.room]) {
             roomStr = String(roomById[st.room].no || '');
             floorStr = roomById[st.room].floor ? `${roomById[st.room].floor}층` : '';
           } else if (st.room) {
-            // rooms 메타가 아직 안 왔거나 key 형식이 다른 경우: 'R' 프리픽스만 제거
             roomStr = String(st.room).replace(/^R/, '');
           }
           out[sid] = {
             name: st.name,
             class: classStr,
+            classNum: st.class,
+            num: st.num,
             room: roomStr,
             floor: floorStr,
             group: groupStr,
             bus: busStr,
-            // 확장 필드 (필요 시 UI에서 쓸 수 있게 보존)
             tel: st.tel || '',
             gender: st.gender || '',
-            num: st.num
+            note: st.note || ''
           };
         });
         STUDENTS = out;
         saveToCache('STUDENTS', STUDENTS);
       }
 
-      // 3) GROUPS 변환
       if (_rawGroups) {
         const out = {};
-        // members를 채우려면 students가 필요 — 각 조번호에 해당하는 학생들을 찾음
         const membersByGroup = {};
         if (_rawStudents) {
           Object.entries(_rawStudents).forEach(([sid, st]) => {
@@ -2156,7 +1194,6 @@ function initFirebase() {
             if (!membersByGroup[gk]) membersByGroup[gk] = [];
             membersByGroup[gk].push({ id: sid, name: st.name, tel: st.tel || '' });
           });
-          // 학번순 정렬
           Object.keys(membersByGroup).forEach(gk => {
             membersByGroup[gk].sort((a, b) => a.id.localeCompare(b.id));
           });
@@ -2166,7 +1203,6 @@ function initFirebase() {
           if (!g) return;
           const gStr = String(gkey);
           const memberObjs = membersByGroup[gStr] || [];
-          // leader 변환: 학번 → {name, tel}
           let leaderObj = { name: '', tel: '' };
           if (g.leader && _rawStudents && _rawStudents[g.leader]) {
             leaderObj = {
@@ -2174,32 +1210,26 @@ function initFirebase() {
               tel: _rawStudents[g.leader].tel || ''
             };
           } else if (g.leader && typeof g.leader === 'object') {
-            // 이미 {name, tel} 구조라면 그대로
             leaderObj = g.leader;
           }
           out[gStr] = {
+            no: gStr,
             name: g.name || `${gStr}조`,
             theme: g.theme || '',
             area: g.area || g.teacher || '',
+            teacher: g.teacher || '',
             leader: leaderObj,
-            members: memberObjs.map(m => m.name),
-            seoul: g.seoul || { meet: g.meet_point || '', course: [] },
-            everland: g.everland || ''
+            members: memberObjs
           };
         });
         GROUPS = out;
         saveToCache('GROUPS', GROUPS);
       }
 
-      // 4) CONTACTS: admin이 배열/객체 어떤 형태로 올리든 배열로 정규화
       if (_rawContacts !== null) {
         let arr = [];
-        if (Array.isArray(_rawContacts)) {
-          arr = _rawContacts.filter(Boolean);
-        } else if (typeof _rawContacts === 'object') {
-          arr = Object.values(_rawContacts).filter(Boolean);
-        }
-        // 기본 필드 보정
+        if (Array.isArray(_rawContacts)) arr = _rawContacts.filter(Boolean);
+        else if (typeof _rawContacts === 'object') arr = Object.values(_rawContacts).filter(Boolean);
         arr = arr.map(c => ({
           role: c.role || '',
           name: c.name || '',
@@ -2215,7 +1245,6 @@ function initFirebase() {
       rerenderIfLoggedIn();
     }
 
-    // 실시간 동기화 설정 — 각 경로를 받아서 어댑터를 통해 변환
     db.ref(FIREBASE_PATH + '/students').on('value', snap => {
       _rawStudents = snap.val();
       _rebuildFromRaw();
@@ -2238,7 +1267,8 @@ function initFirebase() {
         .map(([id, a]) => ({ id, ...a }))
         .sort((a, b) => (b.ts || 0) - (a.ts || 0));
       saveToCache('ANNOUNCEMENTS', ANNOUNCEMENTS);
-      renderAnnouncements();
+      renderAlertBanner();
+      updateCommBadge();
     });
     db.ref(FIREBASE_PATH + '/records').on('value', snap => {
       const v = snap.val() || {};
@@ -2246,15 +1276,13 @@ function initFirebase() {
         .map(([id, r]) => ({ id, ...r }))
         .sort((a, b) => (b.ts || 0) - (a.ts || 0));
       saveToCache('RECORDS', RECORDS);
-      renderMyRecords();
+      updateCommBadge();
     });
 
-    // 연결 상태 모니터링
     db.ref('.info/connected').on('value', snap => {
       showConnectionStatus(snap.val() ? 'online' : 'offline');
     });
 
-    // localStorage 복원 (오프라인 대비)
     loadFromCache();
   } catch (e) {
     console.error('Firebase 초기화 실패:', e);
@@ -2264,23 +1292,29 @@ function initFirebase() {
 }
 
 function showConnectionStatus(state) {
-  const el = document.getElementById('connStatus');
-  if (!el) return;
-  const states = {
-    online: { text: '● 실시간 연결됨', class: 'online' },
-    offline: { text: '● 오프라인 (캐시 사용)', class: 'offline' },
-    connecting: { text: '● 연결 중...', class: 'connecting' },
-    error: { text: '● 연결 실패', class: 'error' }
-  };
-  const s = states[state] || states.offline;
-  el.textContent = s.text;
-  el.className = 'conn-status ' + s.class;
+  const pill = document.getElementById('connPill');
+  const text = document.getElementById('connText');
+  if (!pill || !text) return;
+
+  if (state === 'online') {
+    // 온라인은 잠깐 보여주고 숨김
+    pill.className = 'conn-pill show';
+    text.textContent = '실시간 연결';
+    setTimeout(() => pill.classList.remove('show'), 2000);
+  } else if (state === 'offline') {
+    pill.className = 'conn-pill show offline';
+    text.textContent = '오프라인';
+  } else if (state === 'connecting') {
+    pill.className = 'conn-pill show';
+    text.textContent = '연결 중...';
+  } else if (state === 'error') {
+    pill.className = 'conn-pill show offline';
+    text.textContent = '연결 실패';
+  }
 }
 
 function saveToCache(key, data) {
-  try {
-    localStorage.setItem('ft_' + key, JSON.stringify(data));
-  } catch (e) { /* quota exceeded 무시 */ }
+  try { localStorage.setItem('ft_' + key, JSON.stringify(data)); } catch (e) {}
 }
 
 function loadFromCache() {
@@ -2296,390 +1330,22 @@ function loadFromCache() {
     if (a) ANNOUNCEMENTS = JSON.parse(a);
     if (r) RECORDS = JSON.parse(r);
 
-    // 이미 본 공지·기록 ID 복원
     const seen = localStorage.getItem('ft_seenAnnouncements');
     if (seen) seenAnnouncementIds = new Set(JSON.parse(seen));
     const seenR = localStorage.getItem('ft_seenRecords');
     if (seenR) seenRecordIds = new Set(JSON.parse(seenR));
-  } catch (e) { /* noop */ }
+  } catch (e) {}
 }
 
 function rerenderIfLoggedIn() {
   if (currentStudent && document.getElementById('main').classList.contains('active')) {
-    renderApp();
-  }
-}
-
-function renderAnnouncements() {
-  const banner = document.getElementById('announceBanner');
-  const list = document.getElementById('announceList');
-  if (!banner || !list) return;
-
-  // 24시간 이내 & 안 본 공지
-  const now = Date.now();
-  const fresh = ANNOUNCEMENTS.filter(a => {
-    const age = now - (a.ts || 0);
-    return age < 24 * 60 * 60 * 1000 && !seenAnnouncementIds.has(a.id);
-  });
-
-  // 상단 배너 (새 공지)
-  if (fresh.length > 0 && currentStudent) {
-    const a = fresh[0];
-    banner.innerHTML = `
-      <div class="announce-banner-inner">
-        <div class="announce-banner-label">📢 긴급 공지 ${fresh.length > 1 ? `(+${fresh.length - 1})` : ''}</div>
-        <div class="announce-banner-body">${escapeHtml(a.title)}</div>
-        <button class="announce-banner-view" onclick="viewAnnouncements()">자세히 보기</button>
-      </div>
-    `;
-    banner.classList.add('active');
-  } else {
-    banner.classList.remove('active');
-  }
-
-  // 전체 공지 목록 (명단 탭 위에 표시)
-  if (ANNOUNCEMENTS.length === 0) {
-    list.innerHTML = '<div class="announce-empty">아직 공지가 없습니다</div>';
-  } else {
-    list.innerHTML = ANNOUNCEMENTS.map(a => {
-      const date = new Date(a.ts || 0);
-      const timeStr = `${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
-      const isNew = (now - (a.ts || 0)) < 24*60*60*1000 && !seenAnnouncementIds.has(a.id);
-      return `
-        <div class="announce-item ${isNew ? 'new' : ''}">
-          <div class="announce-item-head">
-            <span class="announce-item-title">${escapeHtml(a.title)}</span>
-            ${isNew ? '<span class="announce-new-dot">NEW</span>' : ''}
-          </div>
-          <div class="announce-item-time">${timeStr} · ${escapeHtml(a.author || '담임')}</div>
-          ${a.body ? `<div class="announce-item-body">${escapeHtml(a.body).replace(/\n/g, '<br>')}</div>` : ''}
-        </div>
-      `;
-    }).join('');
-  }
-}
-
-function viewAnnouncements() {
-  // 공지 탭으로 이동 + 모두 '본 것'으로 표시
-  ANNOUNCEMENTS.forEach(a => seenAnnouncementIds.add(a.id));
-  localStorage.setItem('ft_seenAnnouncements', JSON.stringify([...seenAnnouncementIds]));
-
-  // 공지 탭 활성화
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelector('.tab[data-panel="announce"]').classList.add('active');
-  document.getElementById('panel-announce').classList.add('active');
-
-  // 배너 숨기기
-  document.getElementById('announceBanner').classList.remove('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  renderAnnouncements();
-}
-
-// 내게 해당되는 교사 기록만 필터링 + 렌더링
-function renderMyRecords() {
-  const list = document.getElementById('myRecordList');
-  if (!list || !currentStudent) return;
-
-  // 학생이 볼 수 있는 기록만:
-  // 1) visibility === 'shared' AND (targetId === 내 학번 OR targetId === '__all')
-  const myRecords = RECORDS.filter(r => {
-    if (r.visibility !== 'shared') return false;
-    return r.targetId === currentStudent.id || r.targetId === '__all';
-  });
-
-  // 탭 뱃지 (읽지 않은 기록)
-  const now = Date.now();
-  const unreadCount = myRecords.filter(r =>
-    !seenRecordIds.has(r.id) && (now - (r.ts || 0)) < 7*24*60*60*1000
-  ).length;
-  const recDot = document.getElementById('recDot');
-  if (recDot) {
-    recDot.className = 'tab-dot' + (unreadCount > 0 ? ' has-new' : '');
-  }
-
-  if (myRecords.length === 0) {
-    list.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--ink-mute); font-size:13px;">아직 선생님이 남긴 기록이 없습니다</div>';
-    return;
-  }
-
-  list.innerHTML = myRecords.map(r => {
-    const d = new Date(r.ts || 0);
-    const t = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    const isAll = r.targetId === '__all';
-    const isUnread = !seenRecordIds.has(r.id) && (now - (r.ts || 0)) < 7*24*60*60*1000;
-    return `<div class="my-record tag-${r.tag || '기타'} ${isAll ? 'is-all' : ''}">
-      <div class="my-record-head">
-        <span class="my-record-tag">${r.tag || '기타'}</span>
-        <span class="my-record-target">
-          ${isAll ? '🌐 전체 학생 대상' : '👤 나에게'}
-          ${isUnread ? '<span class="my-record-new">NEW</span>' : ''}
-        </span>
-      </div>
-      <div class="my-record-meta">${t} · ${escapeHtml(r.author || '선생님')} 선생님</div>
-      <div class="my-record-body">${escapeHtml(r.body || '').replace(/\n/g, '<br>')}</div>
-    </div>`;
-  }).join('');
-}
-
-// 내 기록 탭 클릭 시 모두 '본 것'으로 표시
-function markMyRecordsAsRead() {
-  if (!currentStudent) return;
-  const myRecords = RECORDS.filter(r =>
-    r.visibility === 'shared' &&
-    (r.targetId === currentStudent.id || r.targetId === '__all')
-  );
-  myRecords.forEach(r => seenRecordIds.add(r.id));
-  localStorage.setItem('ft_seenRecords', JSON.stringify([...seenRecordIds]));
-  renderMyRecords();
-}
-
-function escapeHtml(s) {
-  if (!s) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-// 페이지 로드 시 Firebase 초기화
-window.addEventListener('DOMContentLoaded', initFirebase);
-
-/* ═══════════════════════════════════════════════════
-   📍 위치 공유 기능
-   ═══════════════════════════════════════════════════ */
-
-let autoLocationInterval = null;
-let lastLocationUpdate = 0;
-const LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000; // 5분
-
-function getCurrentLocation() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('이 브라우저는 위치 정보를 지원하지 않습니다'));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        accuracy: Math.round(pos.coords.accuracy),
-        ts: Date.now()
-      }),
-      err => {
-        const messages = {
-          1: '위치 권한이 거부되었습니다. 브라우저 설정에서 허용해주세요.',
-          2: '위치를 확인할 수 없습니다. 잠시 후 다시 시도해주세요.',
-          3: '위치 확인 시간 초과. 다시 시도해주세요.'
-        };
-        reject(new Error(messages[err.code] || err.message));
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
-  });
-}
-
-async function sendLocationToFirebase(loc, trigger = 'manual') {
-  if (!currentStudent) return;
-  if (!firebaseReady || !db) {
-    updateLocationStatus('error', '❌ Firebase 연결 안 됨');
-    return false;
-  }
-  try {
-    const s = currentStudent;
-    await db.ref(FIREBASE_PATH + '/locations/' + s.id).set({
-      ...loc,
-      name: s.name,
-      class: s.class,
-      group: s.group,
-      room: s.room,
-      trigger
-    });
-    return true;
-  } catch (e) {
-    console.error('위치 전송 실패:', e);
-    updateLocationStatus('error', '❌ 전송 실패');
-    return false;
-  }
-}
-
-async function sendManualLocation() {
-  updateLocationStatus('on', '위치 확인 중...');
-  try {
-    const loc = await getCurrentLocation();
-    const ok = await sendLocationToFirebase(loc, 'manual');
-    if (ok) {
-      lastLocationUpdate = Date.now();
-      updateLocationStatus('on', '✅ 위치 전송 완료');
-      updateLocationInfo(loc);
-      saveLocationCache(loc);
-    }
-  } catch (e) {
-    updateLocationStatus('error', '❌ ' + e.message);
-  }
-}
-
-async function autoLocationTick() {
-  try {
-    const loc = await getCurrentLocation();
-    const ok = await sendLocationToFirebase(loc, 'auto');
-    if (ok) {
-      lastLocationUpdate = Date.now();
-      updateLocationStatus('on', '● 자동 공유 중');
-      updateLocationInfo(loc);
-      saveLocationCache(loc);
-    }
-  } catch (e) {
-    updateLocationStatus('error', '❌ ' + e.message);
-  }
-}
-
-function toggleAutoLocation() {
-  const toggle = document.getElementById('autoLocationToggle');
-  if (toggle.checked) {
-    startAutoLocation();
-  } else {
-    stopAutoLocation();
-  }
-}
-
-function startAutoLocation() {
-  if (autoLocationInterval) return;
-  updateLocationStatus('on', '● 자동 공유 중');
-  localStorage.setItem('ft_autoLocation', '1');
-  autoLocationTick(); // 즉시 첫 전송
-  autoLocationInterval = setInterval(autoLocationTick, LOCATION_UPDATE_INTERVAL);
-}
-
-function stopAutoLocation() {
-  if (autoLocationInterval) {
-    clearInterval(autoLocationInterval);
-    autoLocationInterval = null;
-  }
-  localStorage.setItem('ft_autoLocation', '0');
-  updateLocationStatus('off', '위치 공유가 꺼져 있습니다');
-}
-
-function updateLocationStatus(state, msg) {
-  const el = document.getElementById('locationStatus');
-  if (!el) return;
-  el.className = 'location-status ' + (state === 'on' ? 'on' : state === 'error' ? 'error' : '');
-  el.textContent = msg;
-}
-
-function updateLocationInfo(loc) {
-  const info = document.getElementById('locationInfo');
-  const last = document.getElementById('locationLast');
-  const acc = document.getElementById('locationAccuracy');
-  if (!info || !last) return;
-
-  const d = new Date(loc.ts);
-  const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
-  last.textContent = `마지막 업데이트: ${timeStr}`;
-  acc.textContent = `정확도: ±${loc.accuracy}m`;
-  info.style.display = 'block';
-}
-
-function saveLocationCache(loc) {
-  try {
-    localStorage.setItem('ft_lastLocation', JSON.stringify(loc));
-  } catch (e) { /* noop */ }
-}
-
-function loadLocationCache() {
-  try {
-    const cached = localStorage.getItem('ft_lastLocation');
-    if (cached) {
-      const loc = JSON.parse(cached);
-      // 30분 이내 데이터만 표시
-      if (Date.now() - loc.ts < 30 * 60 * 1000) {
-        updateLocationInfo(loc);
-      }
-    }
-  } catch (e) { /* noop */ }
-}
-
-// 로그인 후 자동 공유 상태 복원
-function restoreLocationSettings() {
-  const auto = localStorage.getItem('ft_autoLocation') === '1';
-  if (auto) {
-    document.getElementById('autoLocationToggle').checked = true;
-    startAutoLocation();
-  }
-  loadLocationCache();
-}
-
-/* ═══════════════════════════════════════════════════
-   🆘 SOS 긴급 호출
-   ═══════════════════════════════════════════════════ */
-
-function sendSOS() {
-  document.getElementById('sosModal').classList.add('active');
-  document.getElementById('sosMessage').value = '';
-  setTimeout(() => document.getElementById('sosMessage').focus(), 100);
-}
-
-function closeSOS() {
-  document.getElementById('sosModal').classList.remove('active');
-}
-
-async function confirmSOS() {
-  if (!currentStudent) return;
-  if (!firebaseReady || !db) {
-    alert('Firebase 연결이 안 되어 있어 전송할 수 없습니다. 직접 담임선생님께 전화해주세요.');
-    return;
-  }
-
-  const msg = document.getElementById('sosMessage').value.trim();
-  const btn = document.querySelector('.sos-modal button.send');
-  btn.textContent = '전송 중...';
-  btn.disabled = true;
-
-  try {
-    let loc = null;
-    try {
-      loc = await getCurrentLocation();
-    } catch (e) {
-      // 위치 못 받아도 SOS는 일단 보냄
-      console.warn('SOS 위치 확인 실패:', e);
-    }
-
-    const s = currentStudent;
-    const sosData = {
-      studentId: s.id,
-      name: s.name,
-      class: s.class,
-      group: s.group,
-      room: s.room,
-      message: msg || '(내용 없음)',
-      ts: Date.now(),
-      resolved: false,
-      ...(loc ? { lat: loc.lat, lng: loc.lng, accuracy: loc.accuracy } : {})
-    };
-    await db.ref(FIREBASE_PATH + '/sos').push().set(sosData);
-
-    // 위치도 업데이트
-    if (loc) {
-      await sendLocationToFirebase(loc, 'sos');
-    }
-
-    btn.textContent = '✅ 전송됨';
-    setTimeout(() => {
-      closeSOS();
-      btn.textContent = '전송';
-      btn.disabled = false;
-      alert('🆘 긴급 호출이 모든 선생님께 전송되었습니다.\n침착하게 한 곳에 머물러 주세요.');
-    }, 800);
-  } catch (e) {
-    btn.textContent = '전송';
-    btn.disabled = false;
-    alert('전송 실패: ' + e.message + '\n직접 담임선생님께 전화해주세요.');
+    renderHome();
   }
 }
 
 /* ═══════════════════════════════════════════════════
-   APP LOGIC
+   로그인 / 로그아웃
    ═══════════════════════════════════════════════════ */
-
-let currentStudent = null;
-
 function login() {
   const id = document.getElementById('inputId').value.trim();
   const name = document.getElementById('inputName').value.trim();
@@ -2689,7 +1355,6 @@ function login() {
     err.textContent = '학번과 이름을 모두 입력해주세요';
     return;
   }
-
   const student = STUDENTS[id];
   if (!student) {
     err.textContent = '학번이 존재하지 않습니다';
@@ -2702,14 +1367,17 @@ function login() {
 
   currentStudent = { id, ...student };
   err.textContent = '';
-  renderApp();
+
   document.getElementById('login').style.display = 'none';
   document.getElementById('main').classList.add('active');
+
+  renderHome();
   restoreLocationSettings();
 }
 
 function logout() {
-  stopAutoLocation(); // 자동 위치 추적 중지
+  if (!confirm('로그아웃 하시겠어요?')) return;
+  stopAutoLocation();
   currentStudent = null;
   document.getElementById('login').style.display = 'flex';
   document.getElementById('main').classList.remove('active');
@@ -2717,566 +1385,414 @@ function logout() {
   document.getElementById('inputName').value = '';
 }
 
-function renderApp() {
+/* ═══════════════════════════════════════════════════
+   탭 전환
+   ═══════════════════════════════════════════════════ */
+function switchTab(name) {
+  currentTab = name;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'panel-' + name);
+  });
+  // 스크롤 위로
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  if (name === 'home') renderHome();
+  if (name === 'comm') markCommAsSeen();
+}
+
+/* ═══════════════════════════════════════════════════
+   🏠 홈 탭 렌더링
+   ═══════════════════════════════════════════════════ */
+function renderHome() {
+  if (!currentStudent) return;
   const s = currentStudent;
-  const g = GROUPS[s.group];
 
-  // Header
-  document.getElementById('studentName').textContent = s.name + ' 학생';
-  document.getElementById('studentMeta').textContent = `${s.class} · ${s.id} · ${s.bus}`;
-
-  // My info
-  document.getElementById('infoRoom').textContent = s.room + '호';
-  document.getElementById('infoFloor').textContent = s.floor;
-  document.getElementById('infoGroup').textContent = s.group + '조 · ' + g.name;
-  document.getElementById('infoBus').textContent = s.bus;
+  // 인사 + 조 뱃지
+  document.getElementById('homeGreeting').textContent = `${s.name}님`;
+  document.getElementById('homeGroupBadge').textContent = s.group ? `${s.group}조` : '조 미정';
 
   // D-day
-  const dep = new Date(TRIP_CONFIG.departureDate);
-  const today = new Date(); today.setHours(0,0,0,0);
-  const diff = Math.ceil((dep - today) / (1000 * 60 * 60 * 24));
-  document.getElementById('dday').textContent = diff > 0 ? `D-${diff}` : (diff === 0 ? 'D-DAY' : `D+${-diff}`);
+  const dd = getDdayInfo();
+  document.getElementById('ddayNum').textContent = dd.num;
+  document.getElementById('ddayRight').innerHTML = dd.right;
+  const ddayCard = document.getElementById('ddayCard');
+  if (dd.theme === 'coral') {
+    ddayCard.style.background = 'var(--coral-bg)';
+    ddayCard.querySelector('.dday-label').style.color = 'var(--coral-ink)';
+    ddayCard.querySelector('.dday-num').style.color = 'var(--coral-ink)';
+    ddayCard.querySelector('.dday-right').style.color = 'var(--coral-ink)';
+  }
 
-  // Leader
-  document.getElementById('leaderName').textContent = g.leader.name;
-  document.getElementById('leaderTel').innerHTML = `<a href="tel:${g.leader.tel}" style="color:var(--accent);text-decoration:none">${g.leader.tel}</a>`;
-  document.getElementById('leaderName2').textContent = g.leader.name;
-  document.getElementById('leaderTel2').innerHTML = `<a href="tel:${g.leader.tel}" style="color:var(--accent);text-decoration:none">${g.leader.tel}</a>`;
-
-  // Group
-  document.getElementById('groupTag').textContent = `GROUP ${s.group}`;
-  document.getElementById('groupName').textContent = g.name;
-  document.getElementById('groupTheme').textContent = g.theme;
-
-  // Members
-  const ml = document.getElementById('memberList');
-  ml.innerHTML = g.members.map(m => {
-    const isLeader = m === g.leader.name;
-    const isMe = m === s.name;
-    const cls = isLeader ? 'leader' : (isMe ? 'me' : '');
-    const tag = isLeader ? '<span class="role-tag">LEADER</span>' : (isMe ? '<span class="role-tag">ME</span>' : '');
-    return `<div class="member ${cls}">${tag}${m}</div>`;
-  }).join('');
-
-  // Schedule
-  const sl = document.getElementById('scheduleList');
-  sl.innerHTML = SCHEDULE.map(day => `
-    <div class="day">
-      <div class="day-head">
-        <div class="day-num serif">DAY ${day.day}</div>
-        <div class="day-date">${day.date}</div>
-        <div class="day-title">${day.title}</div>
-      </div>
-      <div class="timeline">
-        ${day.events.map(e => `
-          <div class="event">
-            <div class="time">${e.time}</div>
-            <div>
-              <div class="what">${e.what}</div>
-              ${e.note ? `<div class="note">${e.note}</div>` : ''}
-            </div>
-          </div>
-        `).join('')}
-      </div>
+  // 내 정보 그리드
+  const groupMeta = GROUPS[s.group];
+  const teacher = groupMeta?.teacher || groupMeta?.area || '';
+  document.getElementById('infoGrid').innerHTML = `
+    <div class="info-tile">
+      <div class="k">반</div>
+      <div class="v">${escapeHtml(s.class || '-')} <span class="v-sub">· ${s.num || '-'}번</span></div>
     </div>
-  `).join('');
-
-  // Seoul tour
-  document.getElementById('seoulTheme').textContent = g.theme;
-  document.getElementById('seoulArea').textContent = g.area;
-  document.getElementById('seoulMeet').textContent = g.seoul.meet;
-  document.getElementById('seoulCourse').innerHTML = g.seoul.course.map((c, i) => `
-    <div class="course-item">
-      <div class="idx serif">${String(i+1).padStart(2,'0')}</div>
-      <div>
-        <div class="name">${c.name}</div>
-        <div class="time-addr">${c.time} · ${c.addr}</div>
-      </div>
+    <div class="info-tile">
+      <div class="k">버스</div>
+      <div class="v">${escapeHtml(s.bus || '-')}</div>
     </div>
-  `).join('');
+    <div class="info-tile">
+      <div class="k">방</div>
+      <div class="v">${s.room ? s.room + '호' : '미정'} ${s.floor ? '<span class="v-sub">· ' + escapeHtml(s.floor) + '</span>' : ''}</div>
+    </div>
+    <div class="info-tile">
+      <div class="k">조</div>
+      <div class="v">${s.group ? s.group + '조' : '미정'}${teacher ? ' <span class="v-sub">· ' + escapeHtml(teacher) + '</span>' : ''}</div>
+    </div>
+  `;
 
-  // Everland — (추천 동선/어트랙션 섹션은 제거됨)
+  // 오늘의 일정
+  renderDayScheduleHome(currentDaySelected || getCurrentTripDay());
+  renderAlertBanner();
+  updateCommBadge();
+}
 
-  // Roster — 조 편성
-  const groupRoster = {};
-  Object.entries(STUDENTS).forEach(([id, st]) => {
-    if (!groupRoster[st.group]) groupRoster[st.group] = [];
-    groupRoster[st.group].push({ id, ...st });
+function renderDayScheduleHome(day) {
+  // 탭 active 상태
+  document.querySelectorAll('#daySwitcher .schedule-day-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.day, 10) === day);
   });
-  // 조 번호 순으로 정렬, 각 조 내에서는 학번 순
-  const sortedGroupKeys = Object.keys(groupRoster).sort((a, b) => Number(a) - Number(b));
-  document.getElementById('rosterGroup').innerHTML = sortedGroupKeys.map(gKey => {
-    const g = GROUPS[gKey];
-    const members = groupRoster[gKey].sort((a, b) => a.id.localeCompare(b.id));
-    const isMyGroup = gKey === s.group;
+  const isToday = day === getCurrentTripDay() && (new Date() >= TRIP_CONFIG.departDate) && (new Date() <= TRIP_CONFIG.returnDate);
+  document.getElementById('todayLabel').textContent = isToday ? '오늘의 일정' : SCHEDULE[day - 1].date + ' 일정';
+
+  const sched = SCHEDULE[day - 1];
+  const now = new Date();
+  const isTripActive = (now >= TRIP_CONFIG.departDate) && (now <= TRIP_CONFIG.returnDate);
+  const isThisDayToday = sched.dateISO === todayISO() && isTripActive;
+
+  // "현재 진행 중" 판정: 이 날이 오늘이고, 이 이벤트와 다음 이벤트 사이의 시간일 때
+  const nowHHMM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  let activeIdx = -1;
+  if (isThisDayToday) {
+    for (let i = 0; i < sched.events.length; i++) {
+      if (sched.events[i].time <= nowHHMM) activeIdx = i;
+    }
+  }
+
+  document.getElementById('scheduleList').innerHTML = sched.events.map((e, i) => {
+    const isPast = isThisDayToday && i < activeIdx;
+    const isNow = isThisDayToday && i === activeIdx;
+    const cls = isNow ? 'now' : (isPast ? 'past' : '');
     return `
-      <div class="roster-block ${isMyGroup ? 'mine' : ''}">
-        <div class="roster-block-head">
-          <div class="roster-block-title">${gKey}조 · ${g ? g.name : '—'}</div>
-          <div class="roster-block-sub">${members.length}명</div>
-        </div>
-        <div class="roster-members">
-          ${members.map(m => {
-            const isLeader = g && m.name === g.leader.name;
-            const isMe = m.id === s.id;
-            const cls = isMe ? 'me' : (isLeader ? 'leader' : '');
-            const badge = isLeader ? '<span class="badge">LEADER</span>' : '';
-            return `<div class="roster-member ${cls}">${badge}${m.name}<span class="id">${m.id}</span></div>`;
-          }).join('')}
-        </div>
+      <div class="schedule-item ${cls}">
+        <div class="time">${e.time}</div>
+        <div class="what">${escapeHtml(e.what)}${e.note ? `<span class="note">${escapeHtml(e.note)}</span>` : ''}</div>
       </div>
     `;
   }).join('');
+}
 
-  // Roster — 방 배정
-  const roomRoster = {};
-  Object.entries(STUDENTS).forEach(([id, st]) => {
-    if (!roomRoster[st.room]) roomRoster[st.room] = [];
-    roomRoster[st.room].push({ id, ...st });
+// day 버튼 수동 전환
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#daySwitcher .schedule-day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentDaySelected = parseInt(btn.dataset.day, 10);
+      renderDayScheduleHome(currentDaySelected);
+    });
   });
-  const sortedRoomKeys = Object.keys(roomRoster).sort();
-  document.getElementById('rosterRoom').innerHTML = sortedRoomKeys.map(rKey => {
-    const members = roomRoster[rKey].sort((a, b) => a.id.localeCompare(b.id));
-    const floor = members[0].floor;
-    const isMyRoom = rKey === s.room;
-    return `
-      <div class="roster-block ${isMyRoom ? 'mine' : ''}">
-        <div class="roster-block-head">
-          <div class="roster-block-title">${rKey}호</div>
-          <div class="roster-block-sub">${floor} · ${members.length}명</div>
-        </div>
-        <div class="roster-members">
-          ${members.map(m => {
-            const isMe = m.id === s.id;
-            return `<div class="roster-member ${isMe ? 'me' : ''}">${m.name}<span class="id">${m.id}</span></div>`;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  }).join('');
+});
 
-  // Contacts
-  document.getElementById('contactList').innerHTML = CONTACTS.map(c => `
-    <a class="contact" href="tel:${c.tel}">
-      <div>
-        <div class="role">${c.role}</div>
-        <div class="nm">${c.name}</div>
-      </div>
-      <div class="tel">${c.tel}</div>
-    </a>
-  `).join('');
-
-  // Rules
-  document.getElementById('rulesList').innerHTML = RULES.map((r, i) => `
-    <div class="rule">
-      <div class="num serif">${String(i+1).padStart(2,'0')}</div>
-      <div class="body">${r.body}</div>
-    </div>
-  `).join('');
-
-  // SOS
-  document.getElementById('sosBtn').href = `tel:${TRIP_CONFIG.homeroomTeacher.tel}`;
-
-  // 공지사항·내 기록 렌더링
-  renderAnnouncements();
-  renderMyRecords();
-}
-
-// ═══════════════════════════════════════════════════
-// ADMIN CONSOLE (관리자 도구) — Firebase 통합
-// ═══════════════════════════════════════════════════
-
-let adminUnlocked = false;
-
-function openAdmin() {
-  document.getElementById('admin').classList.add('active');
-  if (adminUnlocked) {
-    showAdminBody();
-  } else {
-    document.getElementById('adminLock').style.display = 'flex';
-    document.getElementById('adminBody').style.display = 'none';
-    setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+/* ═══════════════════════════════════════════════════
+   공지 · 기록 배너 / 배지
+   ═══════════════════════════════════════════════════ */
+function renderAlertBanner() {
+  // 24시간 이내 & 안 본 공지 중 가장 최근
+  const now = Date.now();
+  const fresh = ANNOUNCEMENTS.filter(a => {
+    const age = now - (a.ts || 0);
+    return age < 24 * 60 * 60 * 1000 && !seenAnnouncementIds.has(a.id);
+  });
+  const section = document.getElementById('alertSection');
+  if (fresh.length === 0) {
+    section.style.display = 'none';
+    return;
   }
+  const latest = fresh[0];
+  document.getElementById('alertTitle').textContent = latest.title || '긴급 공지';
+  document.getElementById('alertBody').textContent = latest.body || '';
+  section.style.display = 'block';
 }
 
-function closeAdmin() {
-  document.getElementById('admin').classList.remove('active');
+function updateCommBadge() {
+  const now = Date.now();
+  const unreadA = ANNOUNCEMENTS.filter(a => !seenAnnouncementIds.has(a.id) && (now - (a.ts||0) < 7*24*60*60*1000)).length;
+  // 학생 본인에게 공개된 & 안 읽은 기록
+  const myId = currentStudent?.id;
+  const unreadR = myId ? RECORDS.filter(r =>
+    r.visibility === 'shared' &&
+    (r.targetId === myId || r.targetId === '__all') &&
+    !seenRecordIds.has(r.id)
+  ).length : 0;
+
+  const total = unreadA + unreadR;
+  const badge = document.getElementById('commBadge');
+  if (!badge) return;
+  badge.style.display = total > 0 ? 'block' : 'none';
 }
 
-function unlockAdmin() {
-  const pw = document.getElementById('adminPwInput').value;
-  const errEl = document.getElementById('adminLockError');
-  if (pw === ADMIN_PASSWORD) {
-    adminUnlocked = true;
-    document.getElementById('adminPwInput').value = '';
-    errEl.textContent = '';
-    showAdminBody();
-  } else {
-    errEl.textContent = '비밀번호가 틀립니다';
-    document.getElementById('adminPwInput').value = '';
-  }
+function markCommAsSeen() {
+  // 소통 탭을 열면 모두 읽음 처리
+  ANNOUNCEMENTS.forEach(a => seenAnnouncementIds.add(a.id));
+  const myId = currentStudent?.id;
+  RECORDS.forEach(r => {
+    if (r.visibility === 'shared' && (r.targetId === myId || r.targetId === '__all')) {
+      seenRecordIds.add(r.id);
+    }
+  });
+  localStorage.setItem('ft_seenAnnouncements', JSON.stringify([...seenAnnouncementIds]));
+  localStorage.setItem('ft_seenRecords', JSON.stringify([...seenRecordIds]));
+  updateCommBadge();
+  renderAlertBanner();
 }
 
-function showAdminBody() {
-  document.getElementById('adminLock').style.display = 'none';
-  document.getElementById('adminBody').style.display = 'block';
-  updateAdminConnStatus();
-  renderAdminAnnounceHistory();
+/* ═══════════════════════════════════════════════════
+   위치 공유
+   ═══════════════════════════════════════════════════ */
+let autoLocationInterval = null;
+let lastLocationUpdate = 0;
+const LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000;
+
+function getCurrentLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('이 기기는 위치를 지원하지 않습니다'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        accuracy: Math.round(pos.coords.accuracy),
+        ts: Date.now()
+      }),
+      err => {
+        const msg = {
+          1: '위치 권한이 거부되었습니다. 브라우저 설정에서 허용해주세요.',
+          2: '위치를 확인할 수 없습니다.',
+          3: '위치 확인 시간 초과'
+        };
+        reject(new Error(msg[err.code] || err.message));
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  });
 }
 
-function updateAdminConnStatus() {
-  const dot = document.getElementById('adminConnDot');
-  const txt = document.getElementById('adminConnText');
-  if (!dot || !txt) return;
-  if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.databaseURL) {
-    dot.className = 'error';
-    txt.textContent = 'Firebase 미설정 (Firebase_설정가이드.md 참고)';
-  } else if (firebaseReady) {
-    dot.className = 'online';
-    txt.textContent = 'Firebase 연결됨 · 경로: /' + FIREBASE_PATH;
-  } else {
-    dot.className = 'error';
-    txt.textContent = 'Firebase 초기화 실패';
-  }
-}
-
-// 엑셀 표 파싱 (탭 구분 우선)
-function parseTable(raw) {
-  return raw.trim().split('\n')
-    .map(line => line.split('\t').map(c => c.trim()))
-    .filter(row => row.length > 0 && row[0]);
-}
-
-function setStatus(id, msg, isError) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.className = 'admin-status' + (isError ? ' error' : '');
-}
-
-function checkFirebaseReady(statusId) {
-  if (!firebaseReady || !db) {
-    setStatus(statusId, '❌ Firebase가 연결되지 않았습니다. 설정을 확인하세요.', true);
+async function sendLocationToFirebase(loc, trigger) {
+  if (!currentStudent || !firebaseReady || !db) return false;
+  try {
+    const s = currentStudent;
+    await db.ref(FIREBASE_PATH + '/locations/' + s.id).set({
+      ...loc,
+      name: s.name,
+      class: s.class,
+      group: s.group,
+      room: s.room,
+      trigger: trigger || 'manual'
+    });
+    return true;
+  } catch (e) {
+    console.error('위치 전송 실패:', e);
     return false;
   }
-  return true;
 }
 
-// ─── 학생 명부 업로드 ───
-function uploadStudents() {
-  if (!checkFirebaseReady('adminStudentStatus')) return;
-  const raw = document.getElementById('adminStudentInput').value;
-  if (!raw.trim()) {
-    setStatus('adminStudentStatus', '❌ 붙여넣은 내용이 없습니다', true);
-    return;
-  }
+async function sendManualLocation() {
+  setLocState('sending', '위치 확인 중...');
   try {
-    const rows = parseTable(raw);
-    const obj = {};
-    rows.forEach(r => {
-      const [id, name, cls, room, floor, group, bus] = r;
-      if (!id || !name) return;
-      obj[id] = {
-        name, class: cls || '', room: room || '',
-        floor: floor || '', group: String(group || ''), bus: bus || ''
-      };
-    });
-    const count = Object.keys(obj).length;
-    if (count === 0) throw new Error('파싱된 학생이 없습니다');
-
-    setStatus('adminStudentStatus', `업로드 중... (${count}명)`);
-    db.ref(FIREBASE_PATH + '/students').set(obj)
-      .then(() => setStatus('adminStudentStatus', `✅ ${count}명 업로드 완료. 모든 학생 앱에 즉시 반영됩니다.`))
-      .catch(e => setStatus('adminStudentStatus', '❌ 업로드 실패: ' + e.message, true));
-  } catch (e) {
-    setStatus('adminStudentStatus', '❌ 파싱 실패: ' + e.message, true);
-  }
-}
-
-function loadCurrentStudents() {
-  if (!STUDENTS || Object.keys(STUDENTS).length === 0) {
-    setStatus('adminStudentStatus', '불러올 데이터가 없습니다', true);
-    return;
-  }
-  const lines = Object.entries(STUDENTS).map(([id, s]) =>
-    [id, s.name, s.class, s.room, s.floor, s.group, s.bus].join('\t')
-  );
-  document.getElementById('adminStudentInput').value = lines.join('\n');
-  setStatus('adminStudentStatus', `✅ 현재 ${lines.length}명 불러옴`);
-}
-
-// ─── 조 편성 업로드 ───
-function uploadGroups() {
-  if (!checkFirebaseReady('adminGroupStatus')) return;
-  const raw = document.getElementById('adminGroupInput').value;
-  if (!raw.trim()) {
-    setStatus('adminGroupStatus', '❌ 붙여넣은 내용이 없습니다', true);
-    return;
-  }
-  try {
-    const rows = parseTable(raw);
-    const obj = {};
-    rows.forEach(r => {
-      const [num, name, theme, area, leaderName, leaderTel, members, meet] = r;
-      if (!num || !name) return;
-      const memberArr = (members || '').split(/[,，]/).map(m => m.trim()).filter(m => m);
-      // 기존 코스/에버랜드 동선 유지 (있으면)
-      const existing = (GROUPS[num]) || {};
-      obj[num] = {
-        name,
-        theme: theme || '',
-        area: area || '',
-        leader: { name: leaderName || '', tel: leaderTel || '' },
-        members: memberArr,
-        seoul: {
-          meet: meet || '',
-          course: existing.seoul?.course || [
-            { name: '공연 · 점프 (경향아트힐)', time: '09:30 - 11:00', addr: '서울 중구 · 전체 공통' }
-          ]
-        },
-        everland: existing.everland || ''
-      };
-    });
-    const count = Object.keys(obj).length;
-    if (count === 0) throw new Error('파싱된 조가 없습니다');
-
-    setStatus('adminGroupStatus', `업로드 중... (${count}개 조)`);
-    db.ref(FIREBASE_PATH + '/groups').set(obj)
-      .then(() => setStatus('adminGroupStatus', `✅ ${count}개 조 업로드 완료. 기존 코스 상세는 유지됩니다.`))
-      .catch(e => setStatus('adminGroupStatus', '❌ 업로드 실패: ' + e.message, true));
-  } catch (e) {
-    setStatus('adminGroupStatus', '❌ 파싱 실패: ' + e.message, true);
-  }
-}
-
-function loadCurrentGroups() {
-  if (!GROUPS || Object.keys(GROUPS).length === 0) {
-    setStatus('adminGroupStatus', '불러올 데이터가 없습니다', true);
-    return;
-  }
-  const lines = Object.entries(GROUPS).map(([num, g]) =>
-    [num, g.name, g.theme, g.area, g.leader?.name || '', g.leader?.tel || '',
-      (g.members || []).join(','), g.seoul?.meet || ''].join('\t')
-  );
-  document.getElementById('adminGroupInput').value = lines.join('\n');
-  setStatus('adminGroupStatus', `✅ 현재 ${lines.length}개 조 불러옴`);
-}
-
-// ─── 비상연락처 업로드 ───
-function uploadContacts() {
-  if (!checkFirebaseReady('adminContactStatus')) return;
-  const raw = document.getElementById('adminContactInput').value;
-  if (!raw.trim()) {
-    setStatus('adminContactStatus', '❌ 붙여넣은 내용이 없습니다', true);
-    return;
-  }
-  try {
-    const rows = parseTable(raw);
-    const arr = [];
-    rows.forEach(r => {
-      const [role, name, tel] = r;
-      if (!role) return;
-      arr.push({ role, name: name || '—', tel: tel || '', urgent: false });
-    });
-    if (arr.length === 0) throw new Error('파싱된 연락처가 없습니다');
-
-    setStatus('adminContactStatus', `업로드 중... (${arr.length}개)`);
-    db.ref(FIREBASE_PATH + '/contacts').set(arr)
-      .then(() => setStatus('adminContactStatus', `✅ ${arr.length}개 연락처 업로드 완료.`))
-      .catch(e => setStatus('adminContactStatus', '❌ 업로드 실패: ' + e.message, true));
-  } catch (e) {
-    setStatus('adminContactStatus', '❌ 파싱 실패: ' + e.message, true);
-  }
-}
-
-function loadCurrentContacts() {
-  if (!CONTACTS || CONTACTS.length === 0) {
-    setStatus('adminContactStatus', '불러올 데이터가 없습니다', true);
-    return;
-  }
-  const lines = CONTACTS.map(c => [c.role, c.name, c.tel].join('\t'));
-  document.getElementById('adminContactInput').value = lines.join('\n');
-  setStatus('adminContactStatus', `✅ 현재 ${lines.length}개 연락처 불러옴`);
-}
-
-// ─── 공지 전송 ───
-function sendAnnouncement() {
-  if (!checkFirebaseReady('adminAnnounceStatus')) return;
-  const title = document.getElementById('adminAnnounceTitle').value.trim();
-  const body = document.getElementById('adminAnnounceBody').value.trim();
-  const author = document.getElementById('adminAnnounceAuthor').value.trim() || '담임';
-
-  if (!title) {
-    setStatus('adminAnnounceStatus', '❌ 공지 제목을 입력하세요', true);
-    return;
-  }
-
-  const ref = db.ref(FIREBASE_PATH + '/announcements').push();
-  ref.set({
-    title,
-    body: body || '',
-    author,
-    ts: Date.now()
-  }).then(() => {
-    document.getElementById('adminAnnounceTitle').value = '';
-    document.getElementById('adminAnnounceBody').value = '';
-    setStatus('adminAnnounceStatus', `✅ "${title}" 전송 완료. 모든 학생 앱에 빨간 배너가 표시됩니다.`);
-  }).catch(e => setStatus('adminAnnounceStatus', '❌ 전송 실패: ' + e.message, true));
-}
-
-function clearAllAnnouncements() {
-  if (!checkFirebaseReady('adminAnnounceStatus')) return;
-  if (!confirm('모든 공지를 삭제하시겠어요? (되돌릴 수 없음)')) return;
-  db.ref(FIREBASE_PATH + '/announcements').remove()
-    .then(() => setStatus('adminAnnounceStatus', '✅ 모든 공지가 삭제되었습니다.'))
-    .catch(e => setStatus('adminAnnounceStatus', '❌ 삭제 실패: ' + e.message, true));
-}
-
-function deleteOneAnnouncement(id) {
-  if (!checkFirebaseReady('adminAnnounceStatus')) return;
-  if (!confirm('이 공지를 삭제할까요?')) return;
-  db.ref(FIREBASE_PATH + '/announcements/' + id).remove()
-    .then(() => setStatus('adminAnnounceStatus', '✅ 공지 1건 삭제 완료'))
-    .catch(e => setStatus('adminAnnounceStatus', '❌ 삭제 실패: ' + e.message, true));
-}
-
-function renderAdminAnnounceHistory() {
-  const el = document.getElementById('adminAnnounceHistory');
-  if (!el) return;
-  if (!ANNOUNCEMENTS || ANNOUNCEMENTS.length === 0) {
-    el.innerHTML = '<div style="font-size:12px; color:var(--ink-mute); padding:10px;">아직 공지가 없습니다</div>';
-    return;
-  }
-  el.innerHTML = ANNOUNCEMENTS.map(a => {
-    const d = new Date(a.ts || 0);
-    const t = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    return `<div class="aa-item">
-      <span><strong>${escapeHtml(a.title)}</strong> <span style="color:var(--ink-mute)">· ${t}</span></span>
-      <button class="aa-del" onclick="deleteOneAnnouncement('${a.id}')">삭제</button>
-    </div>`;
-  }).join('');
-}
-
-// 공지 업데이트될 때마다 admin 히스토리도 자동 갱신
-// (renderAnnouncements에서 호출하도록 훅 걸기)
-const _origRenderAnnouncements = renderAnnouncements;
-renderAnnouncements = function() {
-  _origRenderAnnouncements.apply(this, arguments);
-  if (adminUnlocked) renderAdminAnnounceHistory();
-  // 탭 뱃지 업데이트
-  const tabDot = document.getElementById('tabDot');
-  if (tabDot) {
-    const hasNew = ANNOUNCEMENTS.some(a =>
-      (Date.now() - (a.ts || 0)) < 24*60*60*1000 && !seenAnnouncementIds.has(a.id)
-    );
-    tabDot.className = 'tab-dot' + (hasNew ? ' has-new' : '');
-  }
-};
-
-// ─── JSON 직접 편집 ───
-function loadJsonEditor() {
-  const type = document.getElementById('adminJsonSelect').value;
-  const editor = document.getElementById('adminJsonEditor');
-  if (!type) { editor.value = ''; return; }
-  let data;
-  if (type === 'students') data = STUDENTS;
-  else if (type === 'groups') data = GROUPS;
-  else if (type === 'contacts') data = CONTACTS;
-  editor.value = JSON.stringify(data, null, 2);
-  setStatus('adminJsonStatus', `✅ ${type} 로드됨 (${Array.isArray(data) ? data.length : Object.keys(data).length}개)`);
-}
-
-function saveJsonEdit() {
-  if (!checkFirebaseReady('adminJsonStatus')) return;
-  const type = document.getElementById('adminJsonSelect').value;
-  const raw = document.getElementById('adminJsonEditor').value;
-  if (!type) {
-    setStatus('adminJsonStatus', '❌ 편집할 데이터를 먼저 선택하세요', true);
-    return;
-  }
-  try {
-    const parsed = JSON.parse(raw);
-    db.ref(FIREBASE_PATH + '/' + type).set(parsed)
-      .then(() => setStatus('adminJsonStatus', `✅ ${type} 저장 완료`))
-      .catch(e => setStatus('adminJsonStatus', '❌ 저장 실패: ' + e.message, true));
-  } catch (e) {
-    setStatus('adminJsonStatus', '❌ JSON 문법 오류: ' + e.message, true);
-  }
-}
-
-// ─── 초기 데이터 전체 업로드 ───
-function initialUpload() {
-  if (!checkFirebaseReady('adminInitStatus')) return;
-  if (!confirm('현재 HTML 내장 샘플 데이터를 Firebase로 전부 업로드합니다. 기존 데이터가 있으면 덮어쓰기 됩니다. 진행할까요?')) return;
-
-  setStatus('adminInitStatus', '업로드 중...');
-  const payload = {
-    students: STUDENTS,
-    groups: GROUPS,
-    contacts: CONTACTS
-  };
-
-  Promise.all([
-    db.ref(FIREBASE_PATH + '/students').set(STUDENTS),
-    db.ref(FIREBASE_PATH + '/groups').set(GROUPS),
-    db.ref(FIREBASE_PATH + '/contacts').set(CONTACTS),
-    db.ref(FIREBASE_PATH + '/meta/initializedAt').set(Date.now())
-  ]).then(() => {
-    setStatus('adminInitStatus', '✅ 초기 데이터 전체 업로드 완료!');
-  }).catch(e => {
-    setStatus('adminInitStatus', '❌ 업로드 실패: ' + e.message, true);
-  });
-}
-
-// 엔터 키로 관리자 비밀번호 입력
-document.addEventListener('DOMContentLoaded', () => {
-  const pwInput = document.getElementById('adminPwInput');
-  if (pwInput) {
-    pwInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') unlockAdmin();
-    });
-  }
-});
-
-// Tab switching
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // "내 기록" 탭 클릭 시 모두 읽음 처리
-    if (tab.dataset.panel === 'myrecords') {
-      markMyRecordsAsRead();
+    const loc = await getCurrentLocation();
+    const ok = await sendLocationToFirebase(loc, 'manual');
+    if (ok) {
+      lastLocationUpdate = Date.now();
+      saveLocationCache(loc);
+      renderLocState();
+      toast('✅ 위치가 전송되었어요');
+    } else {
+      toast('전송 실패 — 다시 시도해주세요');
+      renderLocState();
     }
-    // 공지 탭 클릭 시 공지 읽음 처리 + 배너 숨기기
-    if (tab.dataset.panel === 'announce') {
-      ANNOUNCEMENTS.forEach(a => seenAnnouncementIds.add(a.id));
-      localStorage.setItem('ft_seenAnnouncements', JSON.stringify([...seenAnnouncementIds]));
-      const banner = document.getElementById('announceBanner');
-      if (banner) banner.classList.remove('active');
-      renderAnnouncements();
+  } catch (e) {
+    toast(e.message);
+    renderLocState();
+  }
+}
+
+async function autoLocationTick() {
+  try {
+    const loc = await getCurrentLocation();
+    const ok = await sendLocationToFirebase(loc, 'auto');
+    if (ok) {
+      lastLocationUpdate = Date.now();
+      saveLocationCache(loc);
+      renderLocState();
     }
-  });
+  } catch (e) {
+    // 자동 공유는 조용히 실패 (토스트 X)
+  }
+}
+
+function toggleAutoLocation() {
+  const on = localStorage.getItem('ft_autoLocation') === '1';
+  if (on) stopAutoLocation();
+  else startAutoLocation();
+}
+
+function startAutoLocation() {
+  if (autoLocationInterval) return;
+  localStorage.setItem('ft_autoLocation', '1');
+  autoLocationTick();
+  autoLocationInterval = setInterval(autoLocationTick, LOCATION_UPDATE_INTERVAL);
+  renderLocState();
+  toast('자동 공유를 켰어요 (5분마다)');
+}
+
+function stopAutoLocation() {
+  if (autoLocationInterval) clearInterval(autoLocationInterval);
+  autoLocationInterval = null;
+  localStorage.setItem('ft_autoLocation', '0');
+  renderLocState();
+}
+
+function setLocState(state, msg) {
+  // 'sending' 상태일 때만 title에 메시지 표시
+  const titleEl = document.getElementById('locTitle');
+  if (state === 'sending') titleEl.textContent = msg;
+}
+
+function renderLocState() {
+  const on = localStorage.getItem('ft_autoLocation') === '1';
+  const card = document.getElementById('locShare');
+  const sw = document.getElementById('locSwitch');
+  const title = document.getElementById('locTitle');
+  const lastEl = document.getElementById('locLast');
+
+  if (on) {
+    card.classList.add('on');
+    sw.classList.add('on');
+    title.textContent = '자동 공유 중 (5분마다)';
+  } else {
+    card.classList.remove('on');
+    sw.classList.remove('on');
+    title.textContent = '위치 공유 꺼짐';
+  }
+
+  if (lastLocationUpdate > 0) {
+    const d = new Date(lastLocationUpdate);
+    lastEl.textContent = `마지막 전송 · ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  } else {
+    lastEl.textContent = '';
+  }
+}
+
+function saveLocationCache(loc) {
+  try { localStorage.setItem('ft_lastLocation', JSON.stringify(loc)); } catch(e) {}
+}
+
+function loadLocationCache() {
+  try {
+    const cached = localStorage.getItem('ft_lastLocation');
+    if (cached) {
+      const loc = JSON.parse(cached);
+      if (Date.now() - loc.ts < 30 * 60 * 1000) {
+        lastLocationUpdate = loc.ts;
+        renderLocState();
+      }
+    }
+  } catch(e) {}
+}
+
+function restoreLocationSettings() {
+  const auto = localStorage.getItem('ft_autoLocation') === '1';
+  if (auto) startAutoLocation();
+  else renderLocState();
+  loadLocationCache();
+}
+
+function openLocHelp() {
+  alert('📍 위치 공유 안내\n\n• 자동 공유를 켜면 5분마다 현재 위치가 담임선생님께 자동 전송됩니다.\n• 위치는 오직 인솔 교사만 볼 수 있습니다.\n• 위치 권한을 거부한 경우, 브라우저 주소창 왼쪽 자물쇠 아이콘에서 허용해주세요.\n• 배터리 절약을 위해 필요할 때만 켜도 괜찮아요.');
+}
+
+/* ═══════════════════════════════════════════════════
+   🆘 SOS
+   ═══════════════════════════════════════════════════ */
+function openSOS() {
+  document.getElementById('sosModal').classList.add('show');
+  document.getElementById('sosMsg').value = '';
+  setTimeout(() => document.getElementById('sosMsg').focus(), 100);
+}
+
+function closeSOS() {
+  document.getElementById('sosModal').classList.remove('show');
+}
+
+async function sendSOS() {
+  if (!currentStudent) return;
+  if (!firebaseReady || !db) {
+    alert('Firebase 연결이 안 되어 전송할 수 없습니다.\n담임선생님께 바로 전화해주세요.');
+    return;
+  }
+
+  const msg = document.getElementById('sosMsg').value.trim();
+  const btn = document.querySelector('#sosModal .confirm');
+  btn.textContent = '전송 중...';
+  btn.disabled = true;
+
+  try {
+    let loc = null;
+    try { loc = await getCurrentLocation(); } catch(e) {}
+
+    const s = currentStudent;
+    await db.ref(FIREBASE_PATH + '/sos').push().set({
+      studentId: s.id,
+      name: s.name,
+      class: s.class,
+      group: s.group,
+      room: s.room,
+      message: msg || '(내용 없음)',
+      ts: Date.now(),
+      resolved: false,
+      ...(loc ? { lat: loc.lat, lng: loc.lng, accuracy: loc.accuracy } : {})
+    });
+    if (loc) await sendLocationToFirebase(loc, 'sos');
+
+    btn.textContent = '✅ 전송됨';
+    setTimeout(() => {
+      closeSOS();
+      btn.textContent = '전송';
+      btn.disabled = false;
+      alert('🆘 긴급 호출이 모든 선생님께 전송되었습니다.\n침착하게 한 곳에 머물러 주세요.');
+    }, 800);
+  } catch (e) {
+    btn.textContent = '전송';
+    btn.disabled = false;
+    alert('전송 실패: ' + e.message + '\n담임선생님께 바로 전화해주세요.');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   엔터키 · 초기화
+   ═══════════════════════════════════════════════════ */
+document.addEventListener('keypress', e => {
+  if (e.key === 'Enter' && document.getElementById('login').style.display !== 'none') {
+    login();
+  }
 });
 
-// Roster toggle (조 편성 ↔ 방 배정)
-document.querySelectorAll('.rt-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.rt-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.roster-view').forEach(v => v.classList.remove('active'));
-    btn.classList.add('active');
-    const view = btn.dataset.view;
-    document.getElementById(view === 'group' ? 'rosterGroup' : 'rosterRoom').classList.add('active');
+window.addEventListener('DOMContentLoaded', () => {
+  initFirebase();
+  // 모달 배경 클릭하면 닫기
+  document.getElementById('sosModal').addEventListener('click', e => {
+    if (e.target.id === 'sosModal') closeSOS();
   });
-});
-
-// Enter key submit
-document.getElementById('inputName').addEventListener('keypress', e => {
-  if (e.key === 'Enter') login();
 });
 </script>
+
 </body>
 </html>
