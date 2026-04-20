@@ -2090,21 +2090,147 @@ function initFirebase() {
     firebaseReady = true;
     showConnectionStatus('connecting');
 
-    // 실시간 동기화 설정
-    db.ref(FIREBASE_PATH + '/students').on('value', snap => {
-      const v = snap.val();
-      if (v) { STUDENTS = v; saveToCache('STUDENTS', v); }
+    // ═══════════════════════════════════════════════════════════════
+    // admin.html이 올린 Firebase 데이터 → student.html 기대 형식 어댑터
+    // admin 구조: students/{학번}.class(숫자), group(숫자), bus(숫자), room('R방번호')
+    //             rooms/{R방번호}.no, floor, cap, gender  (방 메타)
+    //             groups/{번호}.name, theme, area, leader(학번), teacher
+    // student 기대: class='2-10', group='1', bus='1호차', room='2501', floor='8층'
+    //               GROUPS[n].leader={name,tel}, members=[이름...]
+    // ═══════════════════════════════════════════════════════════════
+    let _rawStudents = null, _rawGroups = null, _rawRooms = null, _rawContacts = null;
+
+    function _rebuildFromRaw() {
+      // 1) ROOMS lookup 준비 (방ID → 방 메타)
+      const roomById = _rawRooms || {};
+
+      // 2) STUDENTS 변환
+      if (_rawStudents) {
+        const out = {};
+        Object.entries(_rawStudents).forEach(([sid, st]) => {
+          if (!st || !st.name) return;
+          // class: 10 (숫자) → '2-10' (학년-반)
+          const classStr = (st.class !== undefined && st.class !== null && st.class !== '')
+            ? `2-${st.class}` : '';
+          // bus: 10 (숫자) → '10호차'
+          const busStr = (st.bus !== undefined && st.bus !== null && st.bus !== '')
+            ? `${st.bus}호차` : '';
+          // group: 61 (숫자) → '61' (문자열)
+          const groupStr = (st.group !== undefined && st.group !== null && st.group !== 0 && st.group !== '')
+            ? String(st.group) : '';
+          // room: 'R2501' → '2501', 층도 rooms에서 가져옴
+          let roomStr = '', floorStr = '';
+          if (st.room && roomById[st.room]) {
+            roomStr = String(roomById[st.room].no || '');
+            floorStr = roomById[st.room].floor ? `${roomById[st.room].floor}층` : '';
+          } else if (st.room) {
+            // rooms 메타가 아직 안 왔거나 key 형식이 다른 경우: 'R' 프리픽스만 제거
+            roomStr = String(st.room).replace(/^R/, '');
+          }
+          out[sid] = {
+            name: st.name,
+            class: classStr,
+            room: roomStr,
+            floor: floorStr,
+            group: groupStr,
+            bus: busStr,
+            // 확장 필드 (필요 시 UI에서 쓸 수 있게 보존)
+            tel: st.tel || '',
+            gender: st.gender || '',
+            num: st.num
+          };
+        });
+        STUDENTS = out;
+        saveToCache('STUDENTS', STUDENTS);
+      }
+
+      // 3) GROUPS 변환
+      if (_rawGroups) {
+        const out = {};
+        // members를 채우려면 students가 필요 — 각 조번호에 해당하는 학생들을 찾음
+        const membersByGroup = {};
+        if (_rawStudents) {
+          Object.entries(_rawStudents).forEach(([sid, st]) => {
+            if (!st || !st.group) return;
+            const gk = String(st.group);
+            if (!membersByGroup[gk]) membersByGroup[gk] = [];
+            membersByGroup[gk].push({ id: sid, name: st.name, tel: st.tel || '' });
+          });
+          // 학번순 정렬
+          Object.keys(membersByGroup).forEach(gk => {
+            membersByGroup[gk].sort((a, b) => a.id.localeCompare(b.id));
+          });
+        }
+
+        Object.entries(_rawGroups).forEach(([gkey, g]) => {
+          if (!g) return;
+          const gStr = String(gkey);
+          const memberObjs = membersByGroup[gStr] || [];
+          // leader 변환: 학번 → {name, tel}
+          let leaderObj = { name: '', tel: '' };
+          if (g.leader && _rawStudents && _rawStudents[g.leader]) {
+            leaderObj = {
+              name: _rawStudents[g.leader].name || '',
+              tel: _rawStudents[g.leader].tel || ''
+            };
+          } else if (g.leader && typeof g.leader === 'object') {
+            // 이미 {name, tel} 구조라면 그대로
+            leaderObj = g.leader;
+          }
+          out[gStr] = {
+            name: g.name || `${gStr}조`,
+            theme: g.theme || '',
+            area: g.area || g.teacher || '',
+            leader: leaderObj,
+            members: memberObjs.map(m => m.name),
+            seoul: g.seoul || { meet: g.meet_point || '', course: [] },
+            everland: g.everland || ''
+          };
+        });
+        GROUPS = out;
+        saveToCache('GROUPS', GROUPS);
+      }
+
+      // 4) CONTACTS: admin이 배열/객체 어떤 형태로 올리든 배열로 정규화
+      if (_rawContacts !== null) {
+        let arr = [];
+        if (Array.isArray(_rawContacts)) {
+          arr = _rawContacts.filter(Boolean);
+        } else if (typeof _rawContacts === 'object') {
+          arr = Object.values(_rawContacts).filter(Boolean);
+        }
+        // 기본 필드 보정
+        arr = arr.map(c => ({
+          role: c.role || '',
+          name: c.name || '',
+          tel: c.tel || '',
+          urgent: !!c.urgent
+        }));
+        if (arr.length > 0) {
+          CONTACTS = arr;
+          saveToCache('CONTACTS', CONTACTS);
+        }
+      }
+
       rerenderIfLoggedIn();
+    }
+
+    // 실시간 동기화 설정 — 각 경로를 받아서 어댑터를 통해 변환
+    db.ref(FIREBASE_PATH + '/students').on('value', snap => {
+      _rawStudents = snap.val();
+      _rebuildFromRaw();
     });
     db.ref(FIREBASE_PATH + '/groups').on('value', snap => {
-      const v = snap.val();
-      if (v) { GROUPS = v; saveToCache('GROUPS', v); }
-      rerenderIfLoggedIn();
+      _rawGroups = snap.val();
+      _rebuildFromRaw();
+    });
+    db.ref(FIREBASE_PATH + '/rooms').on('value', snap => {
+      _rawRooms = snap.val();
+      _rebuildFromRaw();
     });
     db.ref(FIREBASE_PATH + '/contacts').on('value', snap => {
-      const v = snap.val();
-      if (v) { CONTACTS = v; saveToCache('CONTACTS', v); }
-      rerenderIfLoggedIn();
+      _rawContacts = snap.val();
+      _rebuildFromRaw();
     });
     db.ref(FIREBASE_PATH + '/announcements').on('value', snap => {
       const v = snap.val() || {};
