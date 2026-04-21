@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 <style>
 :root {
   --bg: #0f0f0f;
@@ -770,6 +771,178 @@ header button:hover {
   border-color: var(--accent);
 }
 
+/* ═══════════════════════════════════════════════════
+   📷 학생 사진 섹션 (교사 조회 전용)
+   ═══════════════════════════════════════════════════ */
+.photos-section {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.photos-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.photos-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.photos-count {
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.photos-filter {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.photos-filter::-webkit-scrollbar { display: none; }
+.tpf-btn {
+  flex-shrink: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+}
+.tpf-btn.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.t-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.t-photo-cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface-2);
+}
+.t-photo-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.t-photo-cell:active { opacity: 0.85; }
+.t-photo-cell .tpc-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(251, 191, 36, 0.95);
+  color: #111;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1.5px 5px;
+  border-radius: 4px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+.t-photo-cell .tpc-badge.memo {
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+}
+.t-photo-cell .tpc-time {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 6px;
+  font-size: 9px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%);
+  font-weight: 500;
+}
+.photos-loading, .photos-empty {
+  grid-column: 1 / -1;
+  padding: 28px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+
+/* 사진 뷰어 (전체화면) */
+.t-photo-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  display: none;
+  flex-direction: column;
+  z-index: 300;
+}
+.t-photo-viewer.show { display: flex; }
+.tpv-topbar {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #fff;
+}
+.tpv-meta {
+  font-size: 13px;
+  font-weight: 500;
+}
+.tpv-meta-sub {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+.tpv-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+.tpv-img {
+  flex: 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  padding: 0 8px;
+}
+.tpv-actions {
+  padding: 14px 18px 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.tpv-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+.tpv-btn:active { opacity: 0.8; }
+
 .empty {
   padding: 40px 20px;
   text-align: center;
@@ -975,6 +1148,21 @@ header button:hover {
       <div class="modal-body" id="smBody"></div>
     </div>
   </div>
+
+  <!-- 사진 전체화면 뷰어 -->
+  <div id="tPhotoViewer" class="t-photo-viewer" onclick="tClosePhotoViewer(event)">
+    <div class="tpv-topbar">
+      <div>
+        <div class="tpv-meta" id="tpvMeta">-</div>
+        <div class="tpv-meta-sub" id="tpvMetaSub">-</div>
+      </div>
+      <button class="tpv-close" onclick="tClosePhotoViewer()" aria-label="닫기">✕</button>
+    </div>
+    <img class="tpv-img" id="tpvImg" />
+    <div class="tpv-actions">
+      <a class="tpv-btn" id="tpvDownload" download>⬇ 원본 저장</a>
+    </div>
+  </div>
 </div>
 
 <!-- Kakao Map SDK (will be loaded dynamically with key) -->
@@ -1049,6 +1237,14 @@ let currentMapFilter = 'all';
 let teacherLocationInterval = null;
 let seenSOSIds = new Set();
 
+// 사진 조회 상태
+let storage = null;
+let storageReady = false;
+let tCurrentPhotos = [];        // 현재 모달에 표시 중인 사진 목록
+let tCurrentStudentId = null;   // 현재 모달에 띄운 학생 ID
+let tCurrentStudentName = '';   // 현재 모달에 띄운 학생 이름
+let tPhotoFilter = 'all';       // all | qr | memo
+
 // ═══════════════════════════════════════════════════
 // Firebase 초기화
 // ═══════════════════════════════════════════════════
@@ -1063,6 +1259,15 @@ function initFirebase() {
     db = firebase.database();
     firebaseReady = true;
     setConn('connecting', '연결 중...');
+
+    // Storage 초기화 (사진 조회용)
+    try {
+      storage = firebase.storage();
+      storageReady = true;
+    } catch (e) {
+      console.error('Storage 초기화 실패:', e);
+      storageReady = false;
+    }
 
     // ═══════════════════════════════════════════════════════════════
     // admin.html이 올린 Firebase 데이터 → teacher.html 기대 형식 어댑터
@@ -1857,6 +2062,10 @@ function showStudentDetail(studentId) {
   const loc = LOCATIONS[studentId];
   const g = GROUPS[s.group] || {};
 
+  tCurrentStudentId = studentId;
+  tCurrentStudentName = s.name;
+  tPhotoFilter = 'all';
+
   document.getElementById('smTitle').textContent = s.name;
 
   let locHtml = '<div class="detail-loc"><div class="detail-loc-title">위치 정보 없음</div><div style="font-size:12px; color:var(--ink-mute);">학생이 아직 위치를 공유하지 않았습니다</div></div>';
@@ -1892,12 +2101,171 @@ function showStudentDetail(studentId) {
     </div>
     ${locHtml}
     <div class="detail-actions">${actions.join('')}</div>
+
+    <div class="photos-section">
+      <div class="photos-head">
+        <div class="photos-title">
+          📷 학생 사진
+          <span class="photos-count" id="tPhotosCount">조회 중...</span>
+        </div>
+      </div>
+      <div class="photos-filter" id="tPhotosFilter">
+        <button class="tpf-btn active" data-tpfilter="all">전체 <span id="tpfCountAll">0</span></button>
+        <button class="tpf-btn" data-tpfilter="qr">★ QR <span id="tpfCountQr">0</span></button>
+        <button class="tpf-btn" data-tpfilter="memo">기록 <span id="tpfCountMemo">0</span></button>
+      </div>
+      <div class="t-photo-grid" id="tPhotoGrid">
+        <div class="photos-loading">불러오는 중...</div>
+      </div>
+    </div>
   `;
   document.getElementById('studentModal').classList.add('active');
+
+  // 사진 비동기 로드
+  tLoadStudentPhotos(studentId);
+
+  // 필터 버튼 이벤트
+  document.querySelectorAll('#tPhotosFilter .tpf-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tPhotoFilter = btn.dataset.tpfilter;
+      document.querySelectorAll('#tPhotosFilter .tpf-btn').forEach(b =>
+        b.classList.toggle('active', b === btn)
+      );
+      tRenderPhotoGrid();
+    });
+  });
 }
 
 function closeStudentModal() {
   document.getElementById('studentModal').classList.remove('active');
+  tCurrentStudentId = null;
+  tCurrentPhotos = [];
+}
+
+// ═══════════════════════════════════════════════════
+// 📷 학생 사진 조회 (교사 전용)
+// ═══════════════════════════════════════════════════
+
+// 파일명에서 태그·타임스탬프 파싱
+function tParsePhotoName(name) {
+  const m = name.match(/^(qr|memo)_(\d+)_/);
+  if (!m) return { tag: 'memo', ts: 0 };
+  return { tag: m[1], ts: parseInt(m[2], 10) };
+}
+
+async function tLoadStudentPhotos(studentId) {
+  if (!storageReady) {
+    const grid = document.getElementById('tPhotoGrid');
+    if (grid) grid.innerHTML = '<div class="photos-empty">Storage 연결 실패</div>';
+    return;
+  }
+  // 요청한 학생이 바뀌면 응답 버리기 (race condition 방지)
+  const reqId = studentId;
+  const path = `field-trip-2026/photos/${studentId}`;
+
+  try {
+    const result = await storage.ref(path).listAll();
+    if (tCurrentStudentId !== reqId) return;
+
+    if (result.items.length === 0) {
+      tCurrentPhotos = [];
+      tRenderPhotoGrid();
+      return;
+    }
+
+    // URL 병렬 조회
+    const items = await Promise.all(result.items.map(async ref => {
+      try {
+        const url = await ref.getDownloadURL();
+        const info = tParsePhotoName(ref.name);
+        return { name: ref.name, tag: info.tag, ts: info.ts, url };
+      } catch (e) {
+        return null;
+      }
+    }));
+    if (tCurrentStudentId !== reqId) return;
+
+    tCurrentPhotos = items.filter(Boolean).sort((a, b) => b.ts - a.ts);
+    tRenderPhotoGrid();
+  } catch (e) {
+    console.error('사진 조회 실패:', e);
+    if (tCurrentStudentId !== reqId) return;
+    const grid = document.getElementById('tPhotoGrid');
+    if (grid) grid.innerHTML = `<div class="photos-empty">조회 실패: ${e.message || '오류'}</div>`;
+  }
+}
+
+function tRenderPhotoGrid() {
+  const grid = document.getElementById('tPhotoGrid');
+  if (!grid) return;
+
+  // 카운트
+  const qrN = tCurrentPhotos.filter(p => p.tag === 'qr').length;
+  const memoN = tCurrentPhotos.filter(p => p.tag === 'memo').length;
+  const totalN = tCurrentPhotos.length;
+  const setTxt = (id, v) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = v;
+  };
+  setTxt('tpfCountAll', totalN);
+  setTxt('tpfCountQr', qrN);
+  setTxt('tpfCountMemo', memoN);
+  setTxt('tPhotosCount', totalN === 0 ? '(없음)' : `총 ${totalN}장 · QR ${qrN} · 기록 ${memoN}`);
+
+  // 필터
+  const filtered = tPhotoFilter === 'all'
+    ? tCurrentPhotos
+    : tCurrentPhotos.filter(p => p.tag === tPhotoFilter);
+
+  if (filtered.length === 0) {
+    const msg = totalN === 0
+      ? '이 학생은 아직 사진을 올리지 않았어요'
+      : tPhotoFilter === 'qr' ? 'QR 식권이 없어요' : '기록 사진이 없어요';
+    grid.innerHTML = `<div class="photos-empty">${msg}</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((p, idx) => {
+    const d = new Date(p.ts);
+    const timeStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const badge = p.tag === 'qr'
+      ? '<div class="tpc-badge">★ QR</div>'
+      : '<div class="tpc-badge memo">기록</div>';
+    return `
+      <div class="t-photo-cell" onclick="tOpenPhotoViewer(${idx})">
+        <img src="${p.url}" alt="사진" loading="lazy" />
+        ${badge}
+        <div class="tpc-time">${timeStr}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function tOpenPhotoViewer(filteredIdx) {
+  const filtered = tPhotoFilter === 'all'
+    ? tCurrentPhotos
+    : tCurrentPhotos.filter(p => p.tag === tPhotoFilter);
+  const p = filtered[filteredIdx];
+  if (!p) return;
+  const d = new Date(p.ts);
+  const timeStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  const tagStr = p.tag === 'qr' ? '★ QR 식권' : '기록';
+  document.getElementById('tpvMeta').textContent = `${tCurrentStudentName} · ${tagStr}`;
+  document.getElementById('tpvMetaSub').textContent = timeStr;
+  document.getElementById('tpvImg').src = p.url;
+  const dl = document.getElementById('tpvDownload');
+  dl.href = p.url;
+  // 다운로드 파일명 커스텀
+  const ext = (p.name.split('.').pop() || 'jpg');
+  dl.setAttribute('download', `${tCurrentStudentName}_${p.tag}_${p.ts}.${ext}`);
+  document.getElementById('tPhotoViewer').classList.add('show');
+}
+
+function tClosePhotoViewer(evt) {
+  if (evt && evt.target && evt.target.id !== 'tPhotoViewer' && !evt.target.classList.contains('tpv-close')) {
+    return;
+  }
+  document.getElementById('tPhotoViewer').classList.remove('show');
 }
 
 // ═══════════════════════════════════════════════════
