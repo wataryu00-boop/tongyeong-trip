@@ -1665,27 +1665,52 @@ const TEACHER_WHITELIST = {
 
 const FIREBASE_PATH = 'field-trip-2026';
 
-// 조별 마커 색상 (1~6조까지 지원)
-const GROUP_COLORS = {
-  '1': '#ef4444', '2': '#f59e0b', '3': '#10b981',
-  '4': '#3b82f6', '5': '#a855f7', '6': '#ec4899'
-};
+// 기본 회색 — "전체 보기" 상태일 때 모든 마커 공통 색
+const NEUTRAL_COLOR = '#9ca3af';
+
+// 교사 마커 색 (ENABLE_TEACHER_LOCATION_SHARING=true일 때만 사용)
 const TEACHER_COLOR = '#60a5fa';
 
-// 반별 마커 색상 (2-1 ~ 2-11)
-const CLASS_COLORS = {
-  '1':  '#ef4444',  // 빨강
-  '2':  '#f97316',  // 주황
-  '3':  '#f59e0b',  // 호박
-  '4':  '#84cc16',  // 라임
-  '5':  '#10b981',  // 에메랄드
-  '6':  '#14b8a6',  // 틸
-  '7':  '#06b6d4',  // 시안
-  '8':  '#3b82f6',  // 블루
-  '9':  '#8b5cf6',  // 바이올렛
-  '10': '#a855f7',  // 퍼플
-  '11': '#ec4899'   // 핑크
-};
+// 상대 구분용 30색 팔레트
+// — 다크 배경(#1a1a1a)에서도 또렷하게 보이는 중명도 색만 선별
+// — 인접 인덱스끼리 색상환상 최대한 떨어지게 배열해서 1..N 순으로 뽑아도 구분력 유지
+const PALETTE_30 = [
+  '#ef4444', // 0  red
+  '#3b82f6', // 1  blue
+  '#10b981', // 2  emerald
+  '#f59e0b', // 3  amber
+  '#a855f7', // 4  purple
+  '#ec4899', // 5  pink
+  '#06b6d4', // 6  cyan
+  '#84cc16', // 7  lime
+  '#f97316', // 8  orange
+  '#8b5cf6', // 9  violet
+  '#14b8a6', // 10 teal
+  '#eab308', // 11 yellow
+  '#22c55e', // 12 green
+  '#0ea5e9', // 13 sky
+  '#d946ef', // 14 fuchsia
+  '#f43f5e', // 15 rose
+  '#0891b2', // 16 dark cyan
+  '#65a30d', // 17 dark lime
+  '#c084fc', // 18 light purple
+  '#fb923c', // 19 light orange
+  '#34d399', // 20 light emerald
+  '#fbbf24', // 21 light amber
+  '#818cf8', // 22 indigo
+  '#f472b6', // 23 light pink
+  '#67e8f9', // 24 light cyan
+  '#fcd34d', // 25 pale amber
+  '#86efac', // 26 pale green
+  '#93c5fd', // 27 pale blue
+  '#fda4af', // 28 pale rose
+  '#d8b4fe'  // 29 pale purple
+];
+
+// 팔레트에서 N번째 색 반환 (순환)
+function paletteColor(idx) {
+  return PALETTE_30[idx % PALETTE_30.length];
+}
 
 // 기본 지도 중심 (서울 광화문)
 const DEFAULT_CENTER = { lat: 37.5759, lng: 126.9768 };
@@ -2152,24 +2177,64 @@ function updateMapMarkers() {
   Object.values(infoWindows).forEach(i => i.close && i.close());
   infoWindows = {};
 
-  // 조별 뷰: 반 필터가 걸려 있으면 표시 가능한 조 번호 집합을 미리 계산
-  const visibleGroupSet = (currentMapView === 'group' && currentClassFilter !== 'all')
-    ? new Set(getVisibleGroupKeys())
-    : null;
+  if (currentMapView === 'class') {
+    // ─── 반별 뷰 ─────────────────────────────────────────
+    // 전체(반 필터 없음) → 모든 학생 회색
+    // 특정 반 필터 → 해당 반 학생들에게 상대 색 부여 (학번순 인덱스 기반)
+    const isFiltered = currentClassMapFilter !== 'all';
 
-  Object.entries(LOCATIONS).forEach(([studentId, loc]) => {
-    if (!loc.lat || !loc.lng) return;
-    const student = STUDENTS[studentId] || { name: loc.name, group: loc.group };
+    // 반 필터가 걸렸으면 해당 반 학생들의 정렬된 학번 리스트로 colorMap 생성
+    let colorMap = null;
+    if (isFiltered) {
+      const targetClass = String(currentClassMapFilter);
+      const studentsInClass = Object.keys(STUDENTS)
+        .filter(sid => String(classNoFromStudentId(sid)) === targetClass)
+        .sort();
+      colorMap = {};
+      studentsInClass.forEach((sid, idx) => {
+        colorMap[sid] = paletteColor(idx);
+      });
+    }
 
-    if (currentMapView === 'class') {
-      // 반별 뷰 — 반 필터로만 거름 (조 필터 없음)
+    Object.entries(LOCATIONS).forEach(([studentId, loc]) => {
+      if (!loc.lat || !loc.lng) return;
+      const student = STUDENTS[studentId] || { name: loc.name, group: loc.group };
       const classNo = classNoFromStudentId(studentId);
-      if (currentClassMapFilter !== 'all' && String(classNo) !== String(currentClassMapFilter)) return;
-      const color = CLASS_COLORS[String(classNo)] || '#888';
+      if (isFiltered && String(classNo) !== String(currentClassMapFilter)) return;
+
+      const color = colorMap ? (colorMap[studentId] || NEUTRAL_COLOR) : NEUTRAL_COLOR;
       const marker = createStudentMarker(loc, student, color);
       markers[studentId] = marker;
-    } else {
-      // 조별 뷰 (기본)
+    });
+  } else {
+    // ─── 조별 뷰 ─────────────────────────────────────────
+    // 전체(반/조 필터 없음) → 모두 회색
+    // 반 필터 걸림 → 해당 반의 조들에 상대 색 부여
+    // 조 필터 걸림(반은 없어도) → 선택된 조만 팔레트 0번 색으로 강조
+    const hasClassFilter = currentClassFilter !== 'all';
+    const hasGroupFilter = currentMapFilter.startsWith('g');
+
+    // 색 매핑: group number -> color
+    let groupColorMap = null;
+    if (hasClassFilter) {
+      // 반 필터가 걸려 있으면 해당 반 조들에 팔레트 색 분배
+      const visibleGroups = getVisibleGroupKeys();  // 반 필터 적용된 정렬된 배열
+      groupColorMap = {};
+      visibleGroups.forEach((gno, idx) => {
+        groupColorMap[gno] = paletteColor(idx);
+      });
+    } else if (hasGroupFilter) {
+      // 반 필터 없이 조만 선택한 경우 — 그 조만 강조색, 나머지는 (어차피 숨겨질 예정)
+      const gno = currentMapFilter.replace('g', '');
+      groupColorMap = { [gno]: paletteColor(0) };
+    }
+
+    const visibleGroupSet = hasClassFilter ? new Set(Object.keys(groupColorMap)) : null;
+
+    Object.entries(LOCATIONS).forEach(([studentId, loc]) => {
+      if (!loc.lat || !loc.lng) return;
+      const student = STUDENTS[studentId] || { name: loc.name, group: loc.group };
+
       // 반 필터 — 학생의 조가 해당 반 조 목록에 없으면 숨김
       if (visibleGroupSet && !visibleGroupSet.has(String(student.group))) return;
 
@@ -2180,11 +2245,13 @@ function updateMapMarkers() {
       }
       if (currentMapFilter === 'teachers') return;
 
-      const color = GROUP_COLORS[student.group] || '#888';
+      const color = groupColorMap
+        ? (groupColorMap[student.group] || NEUTRAL_COLOR)
+        : NEUTRAL_COLOR;
       const marker = createStudentMarker(loc, student, color);
       markers[studentId] = marker;
-    }
-  });
+    });
+  }
 
   updateStats();
 }
@@ -2813,7 +2880,6 @@ function renderStudentList() {
   }
 
   el.innerHTML = list.map(s => {
-    const color = GROUP_COLORS[s.group] || '#888';
     let locHtml = '<span class="none">위치 없음</span>';
     if (s.loc && s.loc.ts) {
       const min = Math.round((Date.now() - s.loc.ts) / 60000);
@@ -2823,7 +2889,7 @@ function renderStudentList() {
     }
     return `<div class="student-item" onclick="showStudentDetail('${s.id}')">
       <div class="si-main">
-        <div class="group-badge" style="background:${color}">${s.group || '?'}</div>
+        <div class="group-badge" style="background:${NEUTRAL_COLOR}">${s.group || '?'}</div>
         <div class="si-info">
           <div class="nm">${s.name}</div>
           <div class="meta">${s.class || ''} · ${s.id} · ${s.room || '?'}호</div>
@@ -2848,7 +2914,6 @@ function renderGroupList() {
   }
   el.innerHTML = groupKeys.map(k => {
     const g = GROUPS[k];
-    const color = GROUP_COLORS[k] || '#888';
     const members = Object.entries(STUDENTS).filter(([_, s]) => s.group === k);
     const active = members.filter(([id]) => {
       const loc = LOCATIONS[id];
@@ -2859,7 +2924,7 @@ function renderGroupList() {
     const hasRealName = displayName !== `${k}조`;
     return `<div class="group-card">
       <div class="group-card-head">
-        <span class="dot" style="background:${color}"></span>
+        <span class="dot" style="background:${NEUTRAL_COLOR}"></span>
         <span class="gname">${escapeHtml(displayName)}${hasRealName ? ` <span style="color:var(--ink-mute); font-weight:400; font-size:12px;">· ${k}조</span>` : ''}</span>
         <span class="gcount">${active}/${members.length}명 활동</span>
       </div>
