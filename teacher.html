@@ -2619,6 +2619,11 @@ function lookupTeacher(email) {
 
 // 초기 로드 시 Auth 상태 감지 — 로그인 유지
 function initAuthListener() {
+  // ★ 로그인 상태를 브라우저 localStorage에 저장 — 앱·브라우저 재시작 후에도 유지
+  //    (Firebase 기본값이지만 명시적으로 설정해 Safari ITP나 기타 제약 환경 보완)
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch(e => console.warn('Auth persistence 설정 실패 (세션 단위 유지):', e));
+
   // 리디렉트 로그인 결과 먼저 처리 (모바일에서 돌아왔을 때)
   firebase.auth().getRedirectResult().then(result => {
     if (result && result.user) {
@@ -2639,6 +2644,9 @@ function initAuthListener() {
 
   firebase.auth().onAuthStateChanged(async (user) => {
     if (user) {
+      // 이미 로그인 처리된 상태면 재처리 방지
+      if (currentTeacher && currentTeacher.uid === user.uid) return;
+
       // 이미 로그인된 상태 (이전 세션 유지 or 리디렉트 복귀)
       const info = lookupTeacher(user.email);
       if (!info) {
@@ -2648,8 +2656,10 @@ function initAuthListener() {
         return;
       }
       await completeLogin(user, info);
+    } else {
+      // 로그아웃 상태 — 로그인 화면 유지
+      currentTeacher = null;
     }
-    // 로그아웃 상태면 그냥 로그인 화면 유지
   });
 }
 
@@ -2680,6 +2690,9 @@ async function signInWithGoogle() {
   btn.disabled = true;
 
   try {
+    // 명시적으로 LOCAL persistence 재확인 (브라우저 재시작 후에도 로그인 유지)
+    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
     const provider = new firebase.auth.GoogleAuthProvider();
     // 항상 계정 선택 화면 표시 (여러 계정 있는 경우 대비)
     provider.setCustomParameters({ prompt: 'select_account' });
@@ -3546,6 +3559,8 @@ function showStudentDetail(studentId) {
   // 학생 본인 연락처
   if (s.tel) {
     actions.push(`<a class="detail-action" href="tel:${s.tel}">📞 ${escapeHtml(s.name)}</a>`);
+  } else {
+    actions.push(`<span class="detail-action" style="opacity:0.45; cursor:not-allowed;">📞 ${escapeHtml(s.name)} (번호 없음)</span>`);
   }
   // 조장 연락처 — 학생 본인이 조장이면 중복이므로 생략
   const isLeader = g.leaderId && g.leaderId === studentId;
