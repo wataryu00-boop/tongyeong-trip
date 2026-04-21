@@ -2249,6 +2249,8 @@
     justify-content: space-between;
     gap: 12px;
     color: #fff;
+    position: relative;
+    z-index: 2;
   }
   .pv-meta {
     font-size: 13px;
@@ -2268,19 +2270,14 @@
     align-items: center;
     justify-content: center;
   }
-  .pv-img-wrap {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 8px;
-    overflow: hidden;
-  }
   .pv-img {
+    flex: 1;
     max-width: 100%;
-    max-height: 100%;
+    min-height: 0;
     object-fit: contain;
+    padding: 0 8px;
+    position: relative;
+    z-index: 1;
   }
   .pv-actions {
     flex-shrink: 0;
@@ -2288,7 +2285,9 @@
     display: flex;
     justify-content: center;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.85);
+    position: relative;
+    z-index: 10;
   }
   .pv-btn {
     background: rgba(255, 255, 255, 0.15);
@@ -2301,6 +2300,8 @@
     cursor: pointer;
     font-family: inherit;
     white-space: nowrap;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255,255,255,0.1);
   }
   .pv-btn.danger {
     background: var(--danger, #ef4444);
@@ -2642,10 +2643,8 @@
         <div class="pv-meta" id="pvMeta">-</div>
         <button class="pv-close" onclick="closeViewer()" aria-label="닫기">✕</button>
       </div>
-      <div class="pv-img-wrap">
-        <img class="pv-img" id="pvImg" />
-      </div>
-      <div class="pv-actions">
+      <img class="pv-img" id="pvImg" />
+      <div class="pv-actions" onclick="event.stopPropagation()">
         <button class="pv-btn" id="pvSaveBtn" onclick="saveCurrentPhoto()">💾 저장 · 공유</button>
         <button class="pv-btn danger" onclick="deleteCurrentPhoto()">🗑 삭제</button>
       </div>
@@ -5299,7 +5298,10 @@ function closeViewer(evt) {
 // 사진 저장·공유 (iOS Safari: Web Share API / 데스크톱: blob 다운로드 폴백)
 async function saveCurrentPhoto() {
   const p = currentViewerPhoto;
-  if (!p) return;
+  if (!p) {
+    toast('진단: currentViewerPhoto가 없음');
+    return;
+  }
   const btn = document.getElementById('pvSaveBtn');
   const origText = btn ? btn.textContent : '';
   if (btn) {
@@ -5307,36 +5309,56 @@ async function saveCurrentPhoto() {
     btn.textContent = '준비 중...';
   }
 
+  // 진단: URL 확인
+  if (!p.url) {
+    toast('진단: 사진 URL이 없어요');
+    if (btn) { btn.textContent = origText; btn.disabled = false; }
+    return;
+  }
+
   try {
-    // 파일 이름
     const ext = (p.name.split('.').pop() || 'jpg').toLowerCase();
     const studentName = currentStudent?.name || '학생';
     const fname = `${studentName}_${p.tag}_${p.ts}.${ext}`;
 
     // 이미지 blob 다운로드
+    if (btn) btn.textContent = '1. 다운로드 중...';
     const resp = await fetch(p.url);
-    if (!resp.ok) throw new Error('이미지 로드 실패');
+    if (!resp.ok) throw new Error(`fetch 실패 (${resp.status})`);
     const blob = await resp.blob();
+
+    if (btn) btn.textContent = '2. File 생성 중...';
     const file = new File([blob], fname, { type: blob.type || 'image/jpeg' });
 
-    // 1. Web Share API 우선 시도 (iOS Safari 15+, 모바일 Chrome 등)
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    // 진단: Web Share API 지원 여부
+    const canShare = !!(navigator.canShare && typeof navigator.share === 'function');
+    const canShareFile = canShare && navigator.canShare({ files: [file] });
+
+    if (btn) btn.textContent = `3. share=${canShare?'Y':'N'} file=${canShareFile?'Y':'N'}`;
+    await new Promise(r => setTimeout(r, 400)); // 디버그 텍스트 잠깐 보이게
+
+    // 1. Web Share API 우선
+    if (canShareFile) {
       try {
         await navigator.share({
           files: [file],
           title: fname,
           text: p.tag === 'qr' ? 'QR 식권' : '기록 사진'
         });
-        // 성공 시 조용히 마무리
+        toast('✅ 공유 완료');
         return;
       } catch (shareErr) {
-        // 사용자가 공유 취소하면 AbortError — 조용히 무시
-        if (shareErr.name === 'AbortError') return;
-        // 다른 에러면 폴백으로 진행
+        if (shareErr.name === 'AbortError') {
+          toast('공유 취소됨');
+          return;
+        }
+        toast('공유 에러: ' + shareErr.name + ' / ' + (shareErr.message || ''));
+        // 폴백 진행
       }
     }
 
-    // 2. 폴백: blob URL로 다운로드 시도 (데스크톱)
+    // 2. 폴백: blob URL로 다운로드
+    if (btn) btn.textContent = '4. 다운로드 폴백...';
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
@@ -5345,11 +5367,11 @@ async function saveCurrentPhoto() {
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-    toast('✅ 저장됐어요');
+    toast(canShareFile ? '다운로드로 저장 시도' : '저장 시도 (공유 미지원)');
 
   } catch (e) {
     console.error('저장 실패:', e);
-    toast('저장 실패 — 사진을 길게 눌러 저장해보세요');
+    toast('❌ 실패: ' + (e.message || e.name || '알 수 없는 오류'));
   } finally {
     if (btn) {
       btn.textContent = origText;
