@@ -3604,8 +3604,15 @@ async function sendSOS() {
    📷 내 사진 탭
    ═══════════════════════════════════════════════════ */
 const MAX_PHOTOS = 15;
-const PHOTO_MAX_WIDTH = 1600;     // 리사이즈 상한 (긴 변)
-const PHOTO_JPEG_QUALITY = 0.78;  // 품질
+
+// 원본 (뷰어에서 전체화면·저장용)
+const PHOTO_ORIG_MAX_SIDE = 1600;
+const PHOTO_ORIG_QUALITY = 0.78;
+
+// 썸네일 (그리드 표시용)
+const PHOTO_THUMB_MAX_SIDE = 400;
+const PHOTO_THUMB_QUALITY = 0.7;
+
 const PHOTO_MAX_UPLOAD_MB = 5;
 
 let storage = null;
@@ -3626,19 +3633,27 @@ function initStorage() {
   }
 }
 
-// 파일명 규칙: {tag}_{timestamp}_{rand}.jpg
+// 파일명 규칙: {tag}_{timestamp}_{rand}.jpg (원본)
+//              {tag}_{timestamp}_{rand}_thumb.jpg (썸네일)
 //   tag: qr | memo
-function makePhotoName(tag) {
+function makePhotoBaseName(tag) {
   const ts = Date.now();
   const rand = Math.random().toString(36).slice(2, 6);
-  return `${tag}_${ts}_${rand}.jpg`;
+  return `${tag}_${ts}_${rand}`;
 }
 
-// 파일명에서 태그·타임스탬프 파싱
+// 구버전 호환 유지 (현재는 안 쓰임)
+function makePhotoName(tag) {
+  return makePhotoBaseName(tag) + '.jpg';
+}
+
+// 파일명에서 태그·타임스탬프·썸네일 여부 파싱
 function parsePhotoName(name) {
+  // 썸네일은 제외하고 원본만 파싱하는 용도
+  const isThumb = /_thumb\.(jpg|jpeg|png)$/i.test(name);
   const m = name.match(/^(qr|memo)_(\d+)_/);
-  if (!m) return { tag: 'memo', ts: 0 };
-  return { tag: m[1], ts: parseInt(m[2], 10) };
+  if (!m) return { tag: 'memo', ts: 0, isThumb };
+  return { tag: m[1], ts: parseInt(m[2], 10), isThumb };
 }
 
 function photoStorageDir() {
@@ -3647,7 +3662,8 @@ function photoStorageDir() {
 }
 
 // 이미지 리사이즈 + JPEG 변환
-async function resizePhoto(file) {
+// maxSide: 긴 변 목표 픽셀 / quality: 0.0~1.0
+async function resizeImage(file, maxSide, quality) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error('파일 읽기 실패'));
@@ -3655,8 +3671,8 @@ async function resizePhoto(file) {
       const img = new Image();
       img.onerror = () => reject(new Error('이미지 로드 실패'));
       img.onload = () => {
-        const maxSide = Math.max(img.width, img.height);
-        const scale = maxSide > PHOTO_MAX_WIDTH ? PHOTO_MAX_WIDTH / maxSide : 1;
+        const longSide = Math.max(img.width, img.height);
+        const scale = longSide > maxSide ? maxSide / longSide : 1;
         const w = Math.round(img.width * scale);
         const h = Math.round(img.height * scale);
         const canvas = document.createElement('canvas');
@@ -3669,7 +3685,7 @@ async function resizePhoto(file) {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('압축 실패')),
           'image/jpeg',
-          PHOTO_JPEG_QUALITY
+          quality
         );
       };
       img.src = e.target.result;
@@ -3703,6 +3719,7 @@ async function handlePhotoSelect(evt, tag) {
   await uploadPhoto(file, tag);
 }
 
+// 업로드: 원본 + 썸네일을 함께 업로드
 async function uploadPhoto(file, tag) {
   if (!currentStudent) return;
   if (!storageReady) {
@@ -3720,28 +3737,45 @@ async function uploadPhoto(file, tag) {
 
   try {
     setUploadProgress(0, '사진 처리 중...');
-    const blob = await resizePhoto(file);
+    // 원본·썸네일 병렬 리사이즈
+    const [origBlob, thumbBlob] = await Promise.all([
+      resizeImage(file, PHOTO_ORIG_MAX_SIDE, PHOTO_ORIG_QUALITY),
+      resizeImage(file, PHOTO_THUMB_MAX_SIDE, PHOTO_THUMB_QUALITY)
+    ]);
 
-    if (blob.size > PHOTO_MAX_UPLOAD_MB * 1024 * 1024) {
+    if (origBlob.size > PHOTO_MAX_UPLOAD_MB * 1024 * 1024) {
       setUploadProgress(null);
       toast('파일이 너무 커요 (5MB 초과)');
       return;
     }
 
-    const name = makePhotoName(tag);
+    const baseName = makePhotoBaseName(tag);
+    const origName = `${baseName}.jpg`;
+    const thumbName = `${baseName}_thumb.jpg`;
     const dir = photoStorageDir();
     if (!dir) { setUploadProgress(null); return; }
-    const ref = storage.ref(`${dir}/${name}`);
 
-    const task = ref.put(blob, {
+    // Cache-Control: 이미지는 내용이 바뀌지 않으므로 1년 캐시
+    const metaBase = {
       contentType: 'image/jpeg',
+      cacheControl: 'public, max-age=31536000, immutable',
       customMetadata: { tag, studentId: currentStudent.id, studentName: currentStudent.name }
-    });
+    };
 
+    const origRef = storage.ref(`${dir}/${origName}`);
+    const thumbRef = storage.ref(`${dir}/${thumbName}`);
+
+    // 썸네일을 먼저 빠르게 올리고(작음), 그 다음에 원본 업로드 진행률 표시
+    setUploadProgress(5, '썸네일 업로드 중...');
+    await thumbRef.put(thumbBlob, metaBase);
+
+    setUploadProgress(15, '원본 업로드 중...');
+    const task = origRef.put(origBlob, metaBase);
     await new Promise((resolve, reject) => {
       task.on('state_changed',
         snap => {
-          const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+          // 썸네일 끝난 상태가 15%, 원본 진행률을 15~95%에 매핑
+          const pct = 15 + (snap.bytesTransferred / snap.totalBytes) * 80;
           setUploadProgress(pct, `업로드 중... ${Math.round(pct)}%`);
         },
         err => reject(err),
@@ -3749,10 +3783,23 @@ async function uploadPhoto(file, tag) {
       );
     });
 
-    const url = await ref.getDownloadURL();
-    photoCache.unshift({ name, tag, url, ts: Date.now() });
+    // 두 URL 모두 가져오기 (getDownloadURL도 캐싱되므로 한 번만 호출)
+    const [url, thumbUrl] = await Promise.all([
+      origRef.getDownloadURL(),
+      thumbRef.getDownloadURL()
+    ]);
+
+    setUploadProgress(100, '완료!');
+    photoCache.unshift({
+      name: origName,
+      thumbName,
+      tag,
+      url,
+      thumbUrl,
+      ts: Date.now()
+    });
     renderPhotoGrid();
-    setUploadProgress(null);
+    setTimeout(() => setUploadProgress(null), 400);
     toast(tag === 'qr' ? '✅ QR 식권이 저장됐어요' : '✅ 사진이 저장됐어요');
   } catch (e) {
     console.error('업로드 실패:', e);
@@ -3787,11 +3834,39 @@ async function loadPhotos() {
   if (!dir) return;
   try {
     const result = await storage.ref(dir).listAll();
-    const items = await Promise.all(result.items.map(async ref => {
+    // 파일명을 원본/썸네일로 분리
+    const origRefs = [];      // 원본 ref 목록
+    const thumbByBase = {};   // baseName -> thumbRef
+
+    result.items.forEach(ref => {
+      const n = ref.name;
+      if (/_thumb\.(jpg|jpeg|png)$/i.test(n)) {
+        // 썸네일: baseName 추출
+        const base = n.replace(/_thumb\.(jpg|jpeg|png)$/i, '');
+        thumbByBase[base] = ref;
+      } else if (/^(qr|memo)_\d+_/.test(n)) {
+        origRefs.push(ref);
+      }
+    });
+
+    // 원본 기준으로 URL 병렬 조회 (원본 + 있으면 썸네일)
+    const items = await Promise.all(origRefs.map(async ref => {
       try {
-        const url = await ref.getDownloadURL();
         const info = parsePhotoName(ref.name);
-        return { name: ref.name, tag: info.tag, ts: info.ts, url };
+        const baseName = ref.name.replace(/\.(jpg|jpeg|png)$/i, '');
+        const thumbRef = thumbByBase[baseName];
+        const [url, thumbUrl] = await Promise.all([
+          ref.getDownloadURL(),
+          thumbRef ? thumbRef.getDownloadURL().catch(() => null) : Promise.resolve(null)
+        ]);
+        return {
+          name: ref.name,
+          thumbName: thumbRef ? thumbRef.name : null,
+          tag: info.tag,
+          ts: info.ts,
+          url,
+          thumbUrl: thumbUrl || url  // 썸네일 없으면 원본 URL로 폴백 (구버전 파일 대응)
+        };
       } catch (e) {
         return null;
       }
@@ -3847,7 +3922,7 @@ function renderPhotoGrid() {
       : '<div class="pc-badge memo">기록</div>';
     return `
       <div class="photo-cell" onclick="openViewer(${idx})" data-idx="${idx}">
-        <img src="${p.url}" alt="사진" loading="lazy" />
+        <img src="${p.thumbUrl}" alt="사진" loading="lazy" />
         ${badge}
         <div class="pc-time">${timeStr}</div>
       </div>
@@ -3898,10 +3973,14 @@ async function deleteCurrentPhoto() {
   const p = currentViewerPhoto;
   try {
     const dir = photoStorageDir();
-    await storage.ref(`${dir}/${p.name}`).delete();
+    // 원본 + 썸네일 동시 삭제 (썸네일은 없어도 에러 무시)
+    const tasks = [storage.ref(`${dir}/${p.name}`).delete()];
+    if (p.thumbName) {
+      tasks.push(storage.ref(`${dir}/${p.thumbName}`).delete().catch(() => null));
+    }
+    await Promise.all(tasks);
     photoCache = photoCache.filter(x => x.name !== p.name);
     closeViewer();
-    // 강제로 모달 닫기
     document.getElementById('photoViewer').classList.remove('show');
     currentViewerPhoto = null;
     renderPhotoGrid();

@@ -2157,12 +2157,17 @@ function closeStudentModal() {
 // 📷 학생 사진 조회 (교사 전용)
 // ═══════════════════════════════════════════════════
 
-// 파일명에서 태그·타임스탬프 파싱
+// 파일명에서 태그·타임스탬프·썸네일 여부 파싱
 function tParsePhotoName(name) {
+  const isThumb = /_thumb\.(jpg|jpeg|png)$/i.test(name);
   const m = name.match(/^(qr|memo)_(\d+)_/);
-  if (!m) return { tag: 'memo', ts: 0 };
-  return { tag: m[1], ts: parseInt(m[2], 10) };
+  if (!m) return { tag: 'memo', ts: 0, isThumb };
+  return { tag: m[1], ts: parseInt(m[2], 10), isThumb };
 }
+
+// 세션 내 사진 캐시 (학생별) — 재조회 시 listAll 호출 생략
+const tPhotoSessionCache = new Map(); // studentId -> { photos, fetchedAt }
+const T_PHOTO_CACHE_TTL = 5 * 60 * 1000; // 5분 간 유효
 
 async function tLoadStudentPhotos(studentId) {
   if (!storageReady) {
@@ -2170,7 +2175,16 @@ async function tLoadStudentPhotos(studentId) {
     if (grid) grid.innerHTML = '<div class="photos-empty">Storage 연결 실패</div>';
     return;
   }
-  // 요청한 학생이 바뀌면 응답 버리기 (race condition 방지)
+  // 세션 캐시 확인
+  const cached = tPhotoSessionCache.get(studentId);
+  if (cached && Date.now() - cached.fetchedAt < T_PHOTO_CACHE_TTL) {
+    if (tCurrentStudentId === studentId) {
+      tCurrentPhotos = cached.photos;
+      tRenderPhotoGrid();
+    }
+    return;
+  }
+
   const reqId = studentId;
   const path = `field-trip-2026/photos/${studentId}`;
 
@@ -2180,16 +2194,41 @@ async function tLoadStudentPhotos(studentId) {
 
     if (result.items.length === 0) {
       tCurrentPhotos = [];
+      tPhotoSessionCache.set(studentId, { photos: [], fetchedAt: Date.now() });
       tRenderPhotoGrid();
       return;
     }
 
-    // URL 병렬 조회
-    const items = await Promise.all(result.items.map(async ref => {
+    // 원본/썸네일 분리
+    const origRefs = [];
+    const thumbByBase = {};
+    result.items.forEach(ref => {
+      const n = ref.name;
+      if (/_thumb\.(jpg|jpeg|png)$/i.test(n)) {
+        const base = n.replace(/_thumb\.(jpg|jpeg|png)$/i, '');
+        thumbByBase[base] = ref;
+      } else if (/^(qr|memo)_\d+_/.test(n)) {
+        origRefs.push(ref);
+      }
+    });
+
+    // URL 병렬 조회 (원본 + 썸네일)
+    const items = await Promise.all(origRefs.map(async ref => {
       try {
-        const url = await ref.getDownloadURL();
         const info = tParsePhotoName(ref.name);
-        return { name: ref.name, tag: info.tag, ts: info.ts, url };
+        const baseName = ref.name.replace(/\.(jpg|jpeg|png)$/i, '');
+        const thumbRef = thumbByBase[baseName];
+        const [url, thumbUrl] = await Promise.all([
+          ref.getDownloadURL(),
+          thumbRef ? thumbRef.getDownloadURL().catch(() => null) : Promise.resolve(null)
+        ]);
+        return {
+          name: ref.name,
+          tag: info.tag,
+          ts: info.ts,
+          url,
+          thumbUrl: thumbUrl || url
+        };
       } catch (e) {
         return null;
       }
@@ -2197,6 +2236,7 @@ async function tLoadStudentPhotos(studentId) {
     if (tCurrentStudentId !== reqId) return;
 
     tCurrentPhotos = items.filter(Boolean).sort((a, b) => b.ts - a.ts);
+    tPhotoSessionCache.set(studentId, { photos: tCurrentPhotos, fetchedAt: Date.now() });
     tRenderPhotoGrid();
   } catch (e) {
     console.error('사진 조회 실패:', e);
@@ -2244,7 +2284,7 @@ function tRenderPhotoGrid() {
       : '<div class="tpc-badge memo">기록</div>';
     return `
       <div class="t-photo-cell" onclick="tOpenPhotoViewer(${idx})">
-        <img src="${p.url}" alt="사진" loading="lazy" />
+        <img src="${p.thumbUrl}" alt="사진" loading="lazy" />
         ${badge}
         <div class="tpc-time">${timeStr}</div>
       </div>
