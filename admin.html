@@ -388,11 +388,17 @@
         <div class="card-desc">왼쪽 학생을 오른쪽 조로 드래그하세요. 조장은 ⭐ 버튼으로 지정합니다.</div>
         <div class="filterbar">
           <label class="label" style="margin:0">조 개수</label>
-          <input type="number" class="input" id="groupCount" value="10" min="1" max="30" style="width:80px" oninput="adjustGroups()"/>
+          <input type="number" class="input" id="groupCount" value="10" min="1" max="100" style="width:80px" oninput="adjustGroups()"/>
           <button class="btn sm" onclick="autoAssignGroups('balanced')">🎲 균등 자동배정</button>
           <button class="btn sm" onclick="autoAssignGroups('gender')">👫 성별 균등</button>
           <button class="btn sm" onclick="autoAssignGroups('mix')">🔀 반 섞기</button>
           <button class="btn sm danger" onclick="clearAllGroups()">조 전체 해제</button>
+        </div>
+        <div class="filterbar" style="margin-top:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+            <input type="checkbox" id="liveSyncMeta"/>
+            <span>☁️ 조 이름/테마 편집 시 <b>Firebase에 즉시 반영</b> (다른 필드는 보존)</span>
+          </label>
         </div>
         <div class="hint">조 이름과 테마는 아래 각 조 카드에서 편집할 수 있어요.</div>
       </div>
@@ -728,6 +734,14 @@ function loadLocal(){
     state.groups = obj.groups || {};
     state.rooms = obj.rooms || {};
     state.groupCount = obj.groupCount || 10;
+    // state.groups에 저장된 조 번호 최댓값이 groupCount보다 크면 자동 조정
+    const maxGno = Object.keys(state.groups)
+      .map(k => parseInt(k, 10))
+      .filter(n => !isNaN(n))
+      .reduce((m, n) => Math.max(m, n), 0);
+    if(maxGno > state.groupCount){
+      state.groupCount = maxGno;
+    }
     if(obj.ts){
       const el = document.getElementById('lastSaved');
       if(el) el.textContent = '마지막 저장: ' + new Date(obj.ts).toLocaleString('ko-KR');
@@ -1154,12 +1168,18 @@ function renderGroupsUI(){
     members.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
     const counts = {M:0,F:0,_:0};
     members.forEach(m=>{counts[m.gender||'_']++});
+    const nameTrim = (meta.name||'').trim();
+    const isAutoName = !nameTrim || /^\d+조$/.test(nameTrim);
+    const nameBadge = isAutoName
+      ? '<span class="pill" style="background:#fbbf24;color:#000;font-size:9px;padding:1px 6px">자동</span>'
+      : '<span class="pill" style="background:#10b981;color:#fff;font-size:9px;padding:1px 6px">지정</span>';
     html += `
       <div class="group-box" data-dropzone="group" data-group="${i}">
         <div class="group-head">
           <div class="group-title">
             <span class="group-chip g-${i}">${i}</span>
             <input class="input" style="font-size:12px;padding:4px 8px;min-width:0" placeholder="${i}조" value="${escapeHtml(meta.name||'')}" onchange="updateGroupMeta(${i},'name',this.value)"/>
+            ${nameBadge}
           </div>
           <div class="group-count">${members.length}명 · M${counts.M}/F${counts.F}</div>
         </div>
@@ -1176,9 +1196,28 @@ function renderGroupsUI(){
 
 function updateGroupMeta(no, field, val){
   if(!state.groups[no]) state.groups[no] = {no};
-  state.groups[no][field] = val.trim();
+  const trimmed = val.trim();
+  state.groups[no][field] = trimmed;
   saveLocal();
   fillGroupFilters();
+
+  // 라이브 동기화 옵션이 켜져 있으면 해당 필드만 Firebase에 즉시 반영
+  const liveSync = document.getElementById('liveSyncMeta')?.checked;
+  if(liveSync && fbDb){
+    fbDb.ref(`${FB_ROOT}/groups/${no}/${field}`).set(trimmed)
+      .then(() => {
+        toast(`☁️ ${no}조 ${field === 'name' ? '이름' : '테마'} Firebase 반영`, 'ok');
+      })
+      .catch(e => {
+        console.error('라이브 동기화 실패:', e);
+        toast(`동기화 실패: ${e.message}`, 'err');
+      });
+    // 조 노드 자체가 없으면 no 필드도 같이 저장 (신규 조 편집 대비)
+    if(!state.groups[no].no){
+      state.groups[no].no = parseInt(no, 10);
+      fbDb.ref(`${FB_ROOT}/groups/${no}/no`).set(parseInt(no, 10)).catch(()=>{});
+    }
+  }
 }
 function setLeader(groupNo, studentId){
   if(!state.groups[groupNo]) state.groups[groupNo] = {no:groupNo};
@@ -1591,6 +1630,16 @@ async function pullFromFirebase(kind){
     if(kind==='groups' || kind==='all'){
       const snap = await fbDb.ref(`${FB_ROOT}/groups`).once('value');
       state.groups = snap.val() || {};
+      // groupCount 자동 조정 — Firebase의 조 번호 최댓값에 맞춤 (현재 값 이상일 때만)
+      const maxGno = Object.keys(state.groups)
+        .map(k => parseInt(k, 10))
+        .filter(n => !isNaN(n))
+        .reduce((m, n) => Math.max(m, n), 0);
+      if(maxGno > state.groupCount){
+        state.groupCount = maxGno;
+        const gcInput = document.getElementById('groupCount');
+        if(gcInput) gcInput.value = maxGno;
+      }
     }
     if(kind==='rooms' || kind==='all'){
       const snap = await fbDb.ref(`${FB_ROOT}/rooms`).once('value');

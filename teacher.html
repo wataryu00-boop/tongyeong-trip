@@ -343,6 +343,33 @@ header button:hover {
 .map-ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
 .map-ctrl-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+.map-ctrl-select {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  min-width: 80px;
+  max-width: 140px;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%),
+                    linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 12px) 55%, calc(100% - 8px) 55%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  padding-right: 22px;
+}
+.map-ctrl-select:hover { border-color: var(--accent); color: var(--accent); }
+.map-ctrl-select.active { background-color: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.map-ctrl-select option { background: var(--surface); color: var(--ink); }
+
 .map-legend {
   position: absolute;
   bottom: 16px;
@@ -1220,6 +1247,7 @@ header button:hover {
   .tab { font-size: 11px; padding: 12px 4px; }
   .map-controls { right: 8px; }
   .map-ctrl-btn { font-size: 10px; padding: 6px 8px; min-width: 70px; }
+  .map-ctrl-select { font-size: 10px; padding: 6px 18px 6px 8px; min-width: 70px; max-width: 120px; }
 }
 </style>
 </head>
@@ -1299,10 +1327,9 @@ header button:hover {
 
       <div class="map-controls">
         <button class="map-ctrl-btn active" data-filter="all" onclick="setMapFilter('all')">전체</button>
-        <button class="map-ctrl-btn" data-filter="g1" onclick="setMapFilter('g1')">1조</button>
-        <button class="map-ctrl-btn" data-filter="g2" onclick="setMapFilter('g2')">2조</button>
-        <button class="map-ctrl-btn" data-filter="g3" onclick="setMapFilter('g3')">3조</button>
-        <button class="map-ctrl-btn" data-filter="g4" onclick="setMapFilter('g4')">4조</button>
+        <select class="map-ctrl-select" id="mapGroupSelect" onchange="setMapFilter(this.value)">
+          <option value="__placeholder">조 선택…</option>
+        </select>
         <button class="map-ctrl-btn" data-filter="teachers" onclick="setMapFilter('teachers')">교사</button>
         <button class="map-ctrl-btn" onclick="recenterMap()">⟲ 초기화</button>
       </div>
@@ -1769,6 +1796,8 @@ function initFirebase() {
         renderStudentList();
         renderGroupList();
         renderStudentFilters();
+        renderMapGroupSelect();
+        renderLegend();
         populateRecTargets();
         updateMapMarkers();
         updateStats();
@@ -2007,7 +2036,7 @@ function createStudentMarker(loc, student, color) {
 
   const iw = new kakao.maps.InfoWindow({
     content: `<div style="padding:8px 10px; font-size:12px; min-width:140px;">
-      <strong>${student.name}</strong> (${student.group || '?'}조)<br>
+      <strong>${student.name}</strong> (${getGroupName(student.group) || '?조'})<br>
       <span style="color:#888;">${timeText} · ±${loc.accuracy || '?'}m</span>
     </div>`
   });
@@ -2054,12 +2083,44 @@ function updateTeacherMarkers() {
 }
 
 function setMapFilter(filter) {
+  // 드롭다운의 placeholder 선택 시 무시
+  if (filter === '__placeholder') return;
   currentMapFilter = filter;
   document.querySelectorAll('.map-ctrl-btn[data-filter]').forEach(b => {
     b.classList.toggle('active', b.dataset.filter === filter);
   });
+  // 조 선택 드롭다운 상태 반영
+  const sel = document.getElementById('mapGroupSelect');
+  if (sel) {
+    if (filter.startsWith('g')) {
+      sel.value = filter;
+      sel.classList.add('active');
+    } else {
+      sel.value = '__placeholder';
+      sel.classList.remove('active');
+    }
+  }
   updateMapMarkers();
   updateTeacherMarkers();
+}
+
+// 지도의 조 선택 드롭다운 옵션 갱신 (GROUPS 로드 후 호출)
+function renderMapGroupSelect() {
+  const sel = document.getElementById('mapGroupSelect');
+  if (!sel) return;
+  const groupKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  const current = sel.value;
+  const opts = ['<option value="__placeholder">조 선택…</option>']
+    .concat(groupKeys.map(k => {
+      const name = getGroupName(k);
+      const label = name === `${k}조` ? `${k}조` : `${name} (${k}조)`;
+      return `<option value="g${k}">${escapeHtml(label)}</option>`;
+    }));
+  sel.innerHTML = opts.join('');
+  // 현재 필터가 조 필터면 복원
+  if (current && current.startsWith('g') && groupKeys.includes(current.replace('g',''))) {
+    sel.value = current;
+  }
 }
 
 function recenterMap() {
@@ -2084,12 +2145,11 @@ function recenterMap() {
 }
 
 function renderLegend() {
-  const groupNumbers = Object.keys(GROUPS).sort();
+  const groupNumbers = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
   const items = groupNumbers.map(n => {
-    const g = GROUPS[n];
     return `<div class="legend-row">
       <span class="legend-dot" style="background:${GROUP_COLORS[n] || '#888'}"></span>
-      <span>${n}조 ${g?.name || ''}</span>
+      <span>${escapeHtml(getGroupName(n))}</span>
     </div>`;
   }).join('');
   document.getElementById('mapLegend').innerHTML = items +
@@ -2223,6 +2283,7 @@ async function completeLogin(user, info) {
   renderStudentFilters();
   renderStudentList();
   renderGroupList();
+  renderMapGroupSelect();
   renderSOSList();
   renderAnnounceHistory();
   renderRecordList();
@@ -2289,10 +2350,10 @@ let currentStudentFilter = 'all';
 function renderStudentFilters() {
   const el = document.getElementById('studentFilters');
   if (!el) return;
-  const groupKeys = Object.keys(GROUPS).sort();
+  const groupKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
   const chips = [`<button class="filter-chip active" data-filter="all" onclick="setStudentFilter('all')">전체</button>`]
     .concat(groupKeys.map(g =>
-      `<button class="filter-chip" data-filter="g${g}" onclick="setStudentFilter('g${g}')">${g}조</button>`))
+      `<button class="filter-chip" data-filter="g${g}" onclick="setStudentFilter('g${g}')" title="${escapeHtml(getGroupName(g))}">${escapeHtml(getGroupName(g))}</button>`))
     .concat([`<button class="filter-chip" data-filter="unknown" onclick="setStudentFilter('unknown')">위치 없음</button>`]);
   el.innerHTML = chips.join('');
 }
@@ -2380,10 +2441,13 @@ function renderGroupList() {
       const loc = LOCATIONS[id];
       return loc && loc.ts && (Date.now() - loc.ts) < 15 * 60 * 1000;
     }).length;
+    const displayName = getGroupName(k);
+    // 번호와 이름이 같으면(예: "1조") 하나만, 다르면 "이름 · 1조"
+    const hasRealName = displayName !== `${k}조`;
     return `<div class="group-card">
       <div class="group-card-head">
         <span class="dot" style="background:${color}"></span>
-        <span class="gname">${k}조 · ${g.name || ''}</span>
+        <span class="gname">${escapeHtml(displayName)}${hasRealName ? ` <span style="color:var(--ink-mute); font-weight:400; font-size:12px;">· ${k}조</span>` : ''}</span>
         <span class="gcount">${active}/${members.length}명 활동</span>
       </div>
       <div class="group-card-body">
@@ -2427,7 +2491,7 @@ function renderSOSList() {
         <div class="sos-item-name">${s.resolved ? '✓ ' : '🆘 '}${s.name}</div>
         <div class="sos-item-time">${t}</div>
       </div>
-      <div class="sos-item-meta">${s.class || ''} · ${s.group}조 · ${s.room || '?'}호 ${student.name && student.name !== s.name ? '· ⚠️ 이름 불일치' : ''}</div>
+      <div class="sos-item-meta">${s.class || ''} · ${escapeHtml(getGroupName(s.group))} · ${s.room || '?'}호 ${student.name && student.name !== s.name ? '· ⚠️ 이름 불일치' : ''}</div>
       <div class="sos-item-msg">${escapeHtml(s.message)}</div>
       <div class="sos-item-btns">
         ${s.lat ? `<a class="sos-action primary" href="https://map.kakao.com/link/map/${encodeURIComponent(s.name)},${s.lat},${s.lng}" target="_blank">📍 카카오맵 열기</a>` : '<span class="sos-action" style="opacity:0.5;">위치 없음</span>'}
@@ -2460,7 +2524,7 @@ function updateSOSBanner() {
   const unresolved = SOS.filter(s => !s.resolved && !seenSOSIds.has(s.id));
   if (unresolved.length > 0) {
     const latest = unresolved[0];
-    document.getElementById('sosBannerText').textContent = `${latest.name} (${latest.group}조): ${latest.message}`;
+    document.getElementById('sosBannerText').textContent = `${latest.name} (${getGroupName(latest.group)}): ${latest.message}`;
     document.getElementById('sosBannerCount').textContent = unresolved.length > 1 ? `(+${unresolved.length - 1})` : '';
     banner.classList.add('active');
   } else {
@@ -2849,11 +2913,13 @@ function showStudentDetail(studentId) {
     actions.push(`<a class="detail-action" href="tel:${g.leader.tel}">📞 조장 연락</a>`);
   }
 
+  const gDisplay = getGroupName(s.group);
+  const hasRealName = gDisplay !== `${s.group}조`;
   document.getElementById('smBody').innerHTML = `
     <div class="detail-grid">
       <div><div class="k">학번</div><div class="v">${s.id || studentId}</div></div>
       <div><div class="k">반</div><div class="v">${s.class || '—'}</div></div>
-      <div><div class="k">조</div><div class="v">${s.group}조 · ${g.name || ''}</div></div>
+      <div><div class="k">조</div><div class="v">${escapeHtml(gDisplay)}${hasRealName ? ` <span style="color:var(--ink-mute); font-size:11px;">(${s.group}조)</span>` : ''}</div></div>
       <div><div class="k">방</div><div class="v">${s.room || '—'} (${s.floor || ''})</div></div>
       <div><div class="k">조장</div><div class="v">${g.leader?.name || '—'}</div></div>
       <div><div class="k">버스</div><div class="v">${s.bus || '—'}</div></div>
@@ -3134,6 +3200,18 @@ function tClosePhotoViewer(evt) {
 function escapeHtml(s) {
   if (!s) return '';
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// 조 표시명: GROUPS[n].name이 있고 자동 생성형("N조")이 아니면 그 이름을 그대로 쓰고,
+// 비어있거나 "N조"이면 ${n}조 로 폴백. 학생 앱의 getGroupDisplayName과 동일한 규칙.
+function getGroupName(gno) {
+  if (gno == null || gno === '') return '';
+  const key = String(gno);
+  const g = GROUPS[key];
+  const raw = g?.name?.trim?.() || '';
+  // "1조", "71조" 같은 자동 생성 이름은 번호 표시와 동일 취급
+  if (!raw || /^\d+조$/.test(raw)) return `${key}조`;
+  return raw;
 }
 
 function goTab(name) {
