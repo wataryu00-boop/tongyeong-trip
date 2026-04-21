@@ -381,7 +381,12 @@ header button:hover {
   line-height: 1.7;
   z-index: 5;
   backdrop-filter: blur(8px);
+  max-height: 55vh;
+  overflow-y: auto;
+  max-width: 180px;
 }
+.map-legend::-webkit-scrollbar { width: 4px; }
+.map-legend::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
 .map-legend .legend-row {
   display: flex;
   align-items: center;
@@ -1327,7 +1332,10 @@ header button:hover {
 
       <div class="map-controls">
         <button class="map-ctrl-btn active" data-filter="all" onclick="setMapFilter('all')">전체</button>
-        <select class="map-ctrl-select" id="mapGroupSelect" onchange="setMapFilter(this.value)">
+        <select class="map-ctrl-select" id="mapClassSelect" onchange="setClassFilter(this.value)" title="반으로 조 필터">
+          <option value="all">반 전체</option>
+        </select>
+        <select class="map-ctrl-select" id="mapGroupSelect" onchange="setMapFilter(this.value)" title="특정 조로 필터">
           <option value="__placeholder">조 선택…</option>
         </select>
         <button class="map-ctrl-btn" data-filter="teachers" onclick="setMapFilter('teachers')">교사</button>
@@ -1576,6 +1584,7 @@ let markers = {}; // studentId -> marker
 let teacherMarkers = {};
 let infoWindows = {};
 let currentMapFilter = 'all';
+let currentClassFilter = 'all';  // 'all' | '1'..'11' — 지도/범례에 표시할 반 필터
 
 let teacherLocationInterval = null;
 let seenSOSIds = new Set();
@@ -1772,19 +1781,25 @@ function initFirebase() {
           if (!g) return;
           const gStr = String(gkey);
           let leaderObj = { name: '', tel: '' };
-          if (g.leader && _rawStudents && _rawStudents[g.leader]) {
+          let leaderId = '';
+          if (g.leader && typeof g.leader === 'string' && _rawStudents && _rawStudents[g.leader]) {
             leaderObj = {
               name: _rawStudents[g.leader].name || '',
               tel: _rawStudents[g.leader].tel || ''
             };
+            leaderId = g.leader;
           } else if (g.leader && typeof g.leader === 'object') {
             leaderObj = g.leader;
+            leaderId = g.leader.id || '';
+          } else if (typeof g.leader === 'string') {
+            leaderId = g.leader;
           }
           out[gStr] = {
             name: g.name || `${gStr}조`,
             theme: g.theme || '',
             area: g.area || g.teacher || '',
             leader: leaderObj,
+            leaderId: leaderId,
             teacher: g.teacher || ''
           };
         });
@@ -1796,6 +1811,7 @@ function initFirebase() {
         renderStudentList();
         renderGroupList();
         renderStudentFilters();
+        renderMapClassSelect();
         renderMapGroupSelect();
         renderLegend();
         populateRecTargets();
@@ -1994,11 +2010,19 @@ function updateMapMarkers() {
   Object.values(infoWindows).forEach(i => i.close && i.close());
   infoWindows = {};
 
+  // 반 필터가 걸려 있으면 표시 가능한 조 번호 집합을 미리 계산
+  const visibleGroupSet = currentClassFilter === 'all'
+    ? null  // null이면 반 필터 없음
+    : new Set(getVisibleGroupKeys());
+
   Object.entries(LOCATIONS).forEach(([studentId, loc]) => {
     if (!loc.lat || !loc.lng) return;
     const student = STUDENTS[studentId] || { name: loc.name, group: loc.group };
 
-    // 필터 적용
+    // 반 필터 — 학생의 조가 해당 반 조 목록에 없으면 숨김
+    if (visibleGroupSet && !visibleGroupSet.has(String(student.group))) return;
+
+    // 조 필터
     if (currentMapFilter !== 'all' && currentMapFilter !== 'teachers') {
       const gFilter = currentMapFilter.replace('g', '');
       if (student.group !== gFilter) return;
@@ -2104,11 +2128,65 @@ function setMapFilter(filter) {
   updateTeacherMarkers();
 }
 
+// 반 필터 변경 — 지도 마커, 범례, 조 선택 드롭다운 옵션을 모두 해당 반으로 제한
+function setClassFilter(classVal) {
+  currentClassFilter = classVal;  // 'all' 또는 '1'..'11'
+  const sel = document.getElementById('mapClassSelect');
+  if (sel) sel.classList.toggle('active', classVal !== 'all');
+
+  // 현재 선택된 조 필터가 새 반 필터에 속하지 않으면 조 필터 해제
+  if (currentMapFilter.startsWith('g')) {
+    const gno = currentMapFilter.replace('g', '');
+    const visibleKeys = getVisibleGroupKeys();
+    if (!visibleKeys.includes(gno)) {
+      currentMapFilter = 'all';
+      document.querySelectorAll('.map-ctrl-btn[data-filter]').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === 'all');
+      });
+    }
+  }
+
+  // 조 선택 드롭다운 옵션 다시 채우기
+  renderMapGroupSelect();
+  renderLegend();
+  updateMapMarkers();
+  updateTeacherMarkers();
+}
+
+// 반 선택 드롭다운 옵션 채우기 — 조장이 있는 반만 노출 (11개 반 고정 대신)
+function renderMapClassSelect() {
+  const sel = document.getElementById('mapClassSelect');
+  if (!sel) return;
+
+  // GROUPS에서 실제로 조장이 배정된 반만 카운트 (조 개수와 함께)
+  const classCount = {};  // 반번호 -> 조 수
+  Object.keys(GROUPS).forEach(k => {
+    const c = classNoOfGroup(k);
+    if (c != null) classCount[c] = (classCount[c] || 0) + 1;
+  });
+
+  const classNums = Object.keys(classCount).map(Number).sort((a, b) => a - b);
+  const current = sel.value || 'all';
+
+  const opts = ['<option value="all">반 전체</option>']
+    .concat(classNums.map(n =>
+      `<option value="${n}">2-${n} (${classCount[n]}개 조)</option>`
+    ));
+  sel.innerHTML = opts.join('');
+  // 현재 값 복원 (목록에 여전히 있을 때만)
+  if (current === 'all' || classNums.includes(Number(current))) {
+    sel.value = current;
+  } else {
+    sel.value = 'all';
+    currentClassFilter = 'all';
+  }
+}
+
 // 지도의 조 선택 드롭다운 옵션 갱신 (GROUPS 로드 후 호출)
 function renderMapGroupSelect() {
   const sel = document.getElementById('mapGroupSelect');
   if (!sel) return;
-  const groupKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  const groupKeys = getVisibleGroupKeys();  // 반 필터 적용된 조 목록
   const current = sel.value;
   const opts = ['<option value="__placeholder">조 선택…</option>']
     .concat(groupKeys.map(k => {
@@ -2145,14 +2223,17 @@ function recenterMap() {
 }
 
 function renderLegend() {
-  const groupNumbers = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  const groupNumbers = getVisibleGroupKeys();
   const items = groupNumbers.map(n => {
     return `<div class="legend-row">
       <span class="legend-dot" style="background:${GROUP_COLORS[n] || '#888'}"></span>
       <span>${escapeHtml(getGroupName(n))}</span>
     </div>`;
   }).join('');
-  document.getElementById('mapLegend').innerHTML = items +
+  const classTag = currentClassFilter === 'all'
+    ? ''
+    : `<div class="legend-row" style="font-size:10px; color:var(--ink-mute); border-bottom:1px solid var(--line); padding-bottom:4px; margin-bottom:4px;">2-${currentClassFilter}반 조 ${groupNumbers.length}개</div>`;
+  document.getElementById('mapLegend').innerHTML = classTag + items +
     `<div class="legend-row"><span class="legend-dot" style="background:${TEACHER_COLOR}"></span><span>교사</span></div>`;
 }
 
@@ -2283,6 +2364,7 @@ async function completeLogin(user, info) {
   renderStudentFilters();
   renderStudentList();
   renderGroupList();
+  renderMapClassSelect();
   renderMapGroupSelect();
   renderSOSList();
   renderAnnounceHistory();
@@ -3212,6 +3294,32 @@ function getGroupName(gno) {
   // "1조", "71조" 같은 자동 생성 이름은 번호 표시와 동일 취급
   if (!raw || /^\d+조$/.test(raw)) return `${key}조`;
   return raw;
+}
+
+// 학번에서 반 번호 추출 — "20105" → 1, "21128" → 11
+function classNoFromStudentId(sid) {
+  if (!sid) return null;
+  const s = String(sid).trim();
+  if (s.length !== 5 || !/^\d+$/.test(s)) return null;
+  const n = parseInt(s.slice(1, 3), 10);
+  return (n >= 1 && n <= 20) ? n : null;
+}
+
+// 조가 속한 반 — 조장 학번 기준. 조장이 없거나 학번 판정 실패시 null
+function classNoOfGroup(gno) {
+  if (gno == null || gno === '') return null;
+  const g = GROUPS[String(gno)];
+  if (!g) return null;
+  return classNoFromStudentId(g.leaderId);
+}
+
+// 현재 선택된 반 필터로 조 번호를 걸러서 반환 (정렬된 배열)
+// classFilter === 'all' 이면 모든 조, 숫자(1~11) 이면 해당 반의 조만
+function getVisibleGroupKeys() {
+  const all = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  if (currentClassFilter === 'all') return all;
+  const target = Number(currentClassFilter);
+  return all.filter(k => classNoOfGroup(k) === target);
 }
 
 function goTab(name) {
