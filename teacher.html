@@ -647,6 +647,55 @@ header button:hover {
 .group-card-body .row .k { color: var(--ink-mute); }
 .group-card-body .row .v { color: var(--ink); font-weight: 500; }
 
+/* 조원 섹션 */
+.group-members {
+  padding: 10px 16px 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.group-members-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.group-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font-size: 11px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.gm-chip:active { opacity: 0.7; }
+.gm-chip.leader {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+.gm-chip .gm-cls {
+  color: var(--ink-mute);
+  font-size: 10px;
+}
+.gm-chip.leader .gm-cls {
+  color: var(--accent);
+}
+.gm-empty {
+  font-size: 11px;
+  color: var(--ink-mute);
+  padding: 4px 0;
+}
+
 /* SOS panel */
 .sos-item {
   background: var(--accent-soft);
@@ -1473,6 +1522,13 @@ header button:hover {
       <div class="panel-inner">
         <div class="section-label">GROUPS</div>
         <h2 class="section-title">조별 현황</h2>
+        <div class="student-class-row">
+          <label class="scr-label">반</label>
+          <select id="groupClassSelect" class="student-class-select" onchange="setGroupClassFilter(this.value)">
+            <option value="all">전체 반</option>
+          </select>
+          <span class="scr-count" id="groupClassCount"></span>
+        </div>
         <div id="groupList"></div>
       </div>
     </section>
@@ -1972,6 +2028,7 @@ function initFirebase() {
       if (currentTeacher) {
         renderStudentList();
         renderGroupList();
+        renderGroupClassSelect();
         renderStudentFilters();
         renderStudentClassSelect();
         renderMapClassSelect();
@@ -2715,6 +2772,7 @@ async function completeLogin(user, info) {
   renderStudentFilters();
   renderStudentClassSelect();
   renderStudentList();
+  renderGroupClassSelect();
   renderGroupList();
   renderMapClassSelect();
   renderMapGroupSelect();
@@ -2784,6 +2842,7 @@ function teacherLocationTick() {
 
 let currentStudentFilter = 'all';
 let currentStudentClassFilter = 'all';  // 'all' | '1'..'11' — 학생 탭의 반 필터
+let currentGroupClassFilter = 'all';    // 'all' | '1'..'11' — 조정보 탭의 반 필터
 
 // 학생 탭의 반 드롭다운 옵션 채우기 — 학생이 배정된 반만 노출
 function renderStudentClassSelect() {
@@ -2928,24 +2987,91 @@ function renderStudentList() {
 // 조별 현황
 // ═══════════════════════════════════════════════════
 
+// 조정보 탭 반 드롭다운 옵션 채우기
+function renderGroupClassSelect() {
+  const sel = document.getElementById('groupClassSelect');
+  if (!sel) return;
+
+  // 조장의 학번으로 반별 조 개수 집계 (조장 없는 조는 제외)
+  const classGroupCount = {};
+  Object.keys(GROUPS).forEach(k => {
+    const c = classNoOfGroup(k);
+    if (c != null) classGroupCount[c] = (classGroupCount[c] || 0) + 1;
+  });
+
+  const classNums = Object.keys(classGroupCount).map(Number).sort((a, b) => a - b);
+  const current = sel.value || 'all';
+
+  const opts = ['<option value="all">전체 반</option>']
+    .concat(classNums.map(n =>
+      `<option value="${n}">2-${n} (${classGroupCount[n]}조)</option>`
+    ));
+  sel.innerHTML = opts.join('');
+  if (current === 'all' || classNums.includes(Number(current))) {
+    sel.value = current;
+  } else {
+    sel.value = 'all';
+    currentGroupClassFilter = 'all';
+  }
+  sel.classList.toggle('active', currentGroupClassFilter !== 'all');
+}
+
+function setGroupClassFilter(val) {
+  currentGroupClassFilter = val;
+  const sel = document.getElementById('groupClassSelect');
+  if (sel) sel.classList.toggle('active', val !== 'all');
+  renderGroupList();
+}
+
 function renderGroupList() {
   const el = document.getElementById('groupList');
+  const countEl = document.getElementById('groupClassCount');
   if (!el) return;
-  const groupKeys = Object.keys(GROUPS).sort();
+
+  // 반 필터 적용된 조 키 목록 (조장 학번 기준)
+  let groupKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  if (currentGroupClassFilter !== 'all') {
+    const target = Number(currentGroupClassFilter);
+    groupKeys = groupKeys.filter(k => classNoOfGroup(k) === target);
+  }
+
+  if (countEl) {
+    countEl.textContent = currentGroupClassFilter === 'all'
+      ? `총 ${groupKeys.length}조`
+      : `${groupKeys.length}조`;
+  }
+
   if (groupKeys.length === 0) {
     el.innerHTML = '<div class="empty">조 편성 데이터가 없습니다</div>';
     return;
   }
+
   el.innerHTML = groupKeys.map(k => {
     const g = GROUPS[k];
-    const members = Object.entries(STUDENTS).filter(([_, s]) => s.group === k);
+    // 조원 전체 (조장 포함, 학번 오름차순)
+    const members = Object.entries(STUDENTS)
+      .filter(([_, s]) => s.group === k)
+      .sort((a, b) => a[0].localeCompare(b[0]));
+
     const active = members.filter(([id]) => {
       const loc = LOCATIONS[id];
       return loc && loc.ts && (Date.now() - loc.ts) < 15 * 60 * 1000;
     }).length;
+
     const displayName = getGroupName(k);
-    // 번호와 이름이 같으면(예: "1조") 하나만, 다르면 "이름 · 1조"
     const hasRealName = displayName !== `${k}조`;
+
+    // 조원 칩 — 조장은 ⭐ + 강조 스타일
+    const leaderId = g.leaderId || '';
+    const membersHtml = members.length > 0
+      ? members.map(([sid, s]) => {
+          const isLeader = sid === leaderId;
+          const classNo = classNoFromStudentId(sid);
+          const classTag = classNo != null ? `<span class="gm-cls">2-${classNo}</span>` : '';
+          return `<span class="gm-chip ${isLeader ? 'leader' : ''}" onclick="showStudentDetail('${sid}')">${isLeader ? '⭐ ' : ''}${escapeHtml(s.name)}${classTag ? ' ' + classTag : ''}</span>`;
+        }).join('')
+      : '<div class="gm-empty">조원 정보 없음</div>';
+
     return `<div class="group-card">
       <div class="group-card-head">
         <span class="dot" style="background:${NEUTRAL_COLOR}"></span>
@@ -2956,7 +3082,10 @@ function renderGroupList() {
         <div class="row"><span class="k">테마</span><span class="v">${g.theme || '—'}</span></div>
         <div class="row"><span class="k">지역</span><span class="v">${g.area || '—'}</span></div>
         <div class="row"><span class="k">조장</span><span class="v">${g.leader?.name || '—'} ${g.leader?.tel ? `<a href="tel:${g.leader.tel}" style="color:var(--accent); margin-left:4px;">📞</a>` : ''}</span></div>
-        <div class="row"><span class="k">집합</span><span class="v">${g.seoul?.meet || '—'}</span></div>
+      </div>
+      <div class="group-members">
+        <div class="group-members-label">조원 ${members.length}명</div>
+        <div class="group-members-list">${membersHtml}</div>
       </div>
     </div>`;
   }).join('');
