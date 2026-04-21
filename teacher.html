@@ -2231,26 +2231,50 @@ function updateMapMarkers() {
 
     const visibleGroupSet = hasClassFilter ? new Set(Object.keys(groupColorMap)) : null;
 
+    // 진단용: 반 선택됐는데 회색으로 빠지는 학생이 있으면 콘솔에 모아서 출력
+    const diagMiss = [];
+
     Object.entries(LOCATIONS).forEach(([studentId, loc]) => {
       if (!loc.lat || !loc.lng) return;
       const student = STUDENTS[studentId] || { name: loc.name, group: loc.group };
+      // ★ 학생의 조 키를 문자열로 정규화 (공백도 제거) — groupColorMap 키와 동일 형태
+      const studentGroupKey = String(student.group ?? '').trim();
 
       // 반 필터 — 학생의 조가 해당 반 조 목록에 없으면 숨김
-      if (visibleGroupSet && !visibleGroupSet.has(String(student.group))) return;
+      if (visibleGroupSet && !visibleGroupSet.has(studentGroupKey)) return;
 
       // 조 필터
       if (currentMapFilter !== 'all' && currentMapFilter !== 'teachers') {
         const gFilter = currentMapFilter.replace('g', '');
-        if (student.group !== gFilter) return;
+        if (studentGroupKey !== gFilter) return;
       }
       if (currentMapFilter === 'teachers') return;
 
-      const color = groupColorMap
-        ? (groupColorMap[student.group] || NEUTRAL_COLOR)
-        : NEUTRAL_COLOR;
+      let color = NEUTRAL_COLOR;
+      if (groupColorMap) {
+        const mapped = groupColorMap[studentGroupKey];
+        if (mapped) {
+          color = mapped;
+        } else if (hasClassFilter) {
+          // ★ 이게 발생하면 visibleGroupSet 통과는 했는데 groupColorMap에는 키가 없다는 뜻
+          //   → 이론상 불가능하므로 진단 로그
+          diagMiss.push({
+            studentId,
+            name: student.name,
+            groupRaw: student.group,
+            groupKey: studentGroupKey,
+            inSet: visibleGroupSet?.has(studentGroupKey),
+            mapKeys: Object.keys(groupColorMap)
+          });
+        }
+      }
       const marker = createStudentMarker(loc, student, color);
       markers[studentId] = marker;
     });
+
+    if (diagMiss.length > 0) {
+      console.warn('[조별 지도] groupColorMap 매칭 실패:', diagMiss);
+    }
   }
 
   updateStats();
