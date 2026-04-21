@@ -3543,8 +3543,14 @@ function showStudentDetail(studentId) {
     actions.push(`<a class="detail-action primary" href="https://map.kakao.com/link/map/${encodeURIComponent(s.name)},${loc.lat},${loc.lng}" target="_blank">🗺️ 카카오맵</a>`);
     actions.push(`<a class="detail-action" href="https://map.kakao.com/link/to/${encodeURIComponent(s.name)},${loc.lat},${loc.lng}" target="_blank">🚶 길찾기</a>`);
   }
-  if (g.leader?.tel) {
-    actions.push(`<a class="detail-action" href="tel:${g.leader.tel}">📞 조장 연락</a>`);
+  // 학생 본인 연락처
+  if (s.tel) {
+    actions.push(`<a class="detail-action" href="tel:${s.tel}">📞 ${escapeHtml(s.name)}</a>`);
+  }
+  // 조장 연락처 — 학생 본인이 조장이면 중복이므로 생략
+  const isLeader = g.leaderId && g.leaderId === studentId;
+  if (g.leader?.tel && !isLeader) {
+    actions.push(`<a class="detail-action" href="tel:${g.leader.tel}">📞 조장 ${escapeHtml(g.leader.name || '')}</a>`);
   }
 
   const gDisplay = getGroupName(s.group);
@@ -3555,7 +3561,7 @@ function showStudentDetail(studentId) {
       <div><div class="k">반</div><div class="v">${s.class || '—'}</div></div>
       <div><div class="k">조</div><div class="v">${escapeHtml(gDisplay)}${hasRealName ? ` <span style="color:var(--ink-mute); font-size:11px;">(${s.group}조)</span>` : ''}</div></div>
       <div><div class="k">방</div><div class="v">${s.room || '—'} (${s.floor || ''})</div></div>
-      <div><div class="k">조장</div><div class="v">${g.leader?.name || '—'}</div></div>
+      <div><div class="k">조장</div><div class="v">${g.leader?.name || '—'}${isLeader ? ' <span style="color:var(--accent); font-size:11px;">(본인)</span>' : ''}</div></div>
       <div><div class="k">버스</div><div class="v">${s.bus || '—'}</div></div>
     </div>
     ${locHtml}
