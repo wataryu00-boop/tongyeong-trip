@@ -1098,6 +1098,11 @@
     font-weight: 600;
     padding: 5px 12px;
     border-radius: 999px;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
   }
   .mg-label {
     font-size: 11px;
@@ -1468,6 +1473,10 @@
     font-weight: 600;
     padding: 5px 12px;
     border-radius: 999px;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .course-card .cc-theme {
     font-size: 12px;
@@ -1587,6 +1596,10 @@
     font-weight: 600;
     padding: 3px 10px;
     border-radius: 999px;
+    max-width: 55%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .mc-grid {
     display: grid;
@@ -2841,6 +2854,93 @@ const HOMEROOM = {
   11: '김혜영'
 };
 
+// 학생들이 정한 조 이름 (조장 학번 기준 매칭, 69개 조)
+// 70~71조는 특수교육대상 · 별도 편성으로 조 이름 없음
+const GROUP_NICKNAMES = {
+  '1': '강지우가최고다',
+  '2': '김미개이할매국밥',
+  '3': '훈이서당',
+  '4': '리버스 훈이서당',
+  '5': '기가노토사우르스',
+  '6': '남쉐린 가이드',
+  '7': 'MOVE',
+  '8': '가자 인서울',
+  '9': '점',
+  '10': '번따 가이즈',
+  '11': '황금명태본가',
+  '12': '넥쭈2팀',
+  '13': 'bbk',
+  '14': '중앙중 얼짱들',
+  '15': '심심하조',
+  '16': '이유찬원정대',
+  '17': '친한친구',
+  '18': '존잘남 모임',
+  '19': '넥쭈',
+  '20': '알로에농장1',
+  '21': '딸기',
+  '22': 'Artis',
+  '23': '응',
+  '24': '재윤',
+  '25': '송현서개존잘1',
+  '26': '복덕꾸리시락',
+  '27': '콩나물참치짜장면',
+  '28': '민찬모둠',
+  '29': '모둠 이름',
+  '30': '쭈끼쭈끼',
+  '31': '존잘테토남',
+  '32': '알로에농장2',
+  '33': 'ㅇㅇ',
+  '34': '서허양오전',
+  '35': '모둠회',
+  '36': '도산중모임',
+  '37': 'Backpackers',
+  '38': 'sentry',
+  '39': '머저리',
+  '40': 'VC (Vision + Connect)',
+  '41': 'm6757j',
+  '42': '김상욱',
+  '43': '.',
+  '44': '두바이쫀득동진',
+  '45': '달님',
+  '46': '강짤방',
+  '47': '한국남자평균',
+  '48': 'PDS',
+  '49': '부팸',
+  '50': '하선우조',
+  '51': '주먹권',
+  '52': '이기서 발사대',
+  '53': '이경섭',
+  '54': '송현서개존잘2',
+  '55': '이태원',
+  '56': '신김치',
+  '57': '범죄자들',
+  '58': '김보민',
+  '59': '하나사토네첫째딸',
+  '60': '연세대 28학번',
+  '61': '서현우',
+  '62': '5인의 취미생활',
+  '63': '없음',
+  '64': '삼다방',
+  '65': '안준영',
+  '66': '예지민지민재찬라',
+  '67': '쇼핑',
+  '68': 'A-Z',
+  '69': '별과 예원이'
+};
+
+// 조 이름 접근 헬퍼 — 조 번호로 닉네임 반환 (없으면 빈 문자열)
+function getGroupNickname(gno) {
+  if (gno == null) return '';
+  return GROUP_NICKNAMES[String(gno)] || '';
+}
+
+// 조 표시명: 조 이름이 있으면 이름만, 없으면 "N조"
+function getGroupDisplayName(gno) {
+  if (gno == null) return '';
+  const nick = getGroupNickname(gno);
+  return nick || `${gno}조`;
+}
+
 // 에버랜드 5구역 담당 교사 (PDF 18쪽)
 const EVERLAND_ZONES = [
   { name: '유로피안 어드벤처', emoji: '🏰', teachers: ['성화룡', '김연경', '김미경'] },
@@ -3682,7 +3782,7 @@ function renderHome() {
 
   // 인사 + 조 뱃지
   document.getElementById('homeGreeting').textContent = `${s.name}님`;
-  document.getElementById('homeGroupBadge').textContent = s.group ? `${s.group}조` : '조 미정';
+  document.getElementById('homeGroupBadge').textContent = s.group ? getGroupDisplayName(s.group) : '조 미정';
 
   // D-day
   const dd = getDdayInfo();
@@ -3714,7 +3814,7 @@ function renderHome() {
     </div>
     <div class="info-tile">
       <div class="k">조</div>
-      <div class="v">${s.group ? s.group + '조' : '미정'}${teacher ? ' <span class="v-sub">· ' + escapeHtml(teacher) + '</span>' : ''}</div>
+      <div class="v">${s.group ? escapeHtml(getGroupDisplayName(s.group)) : '미정'}${teacher ? ' <span class="v-sub">· ' + escapeHtml(teacher) + '</span>' : ''}</div>
     </div>
   `;
 
@@ -3742,12 +3842,12 @@ function renderHomeGroup() {
 
   const g = GROUPS[s.group];
   if (!g || !g.members || g.members.length === 0) {
-    labelEl.textContent = `${s.group}조`;
-    box.innerHTML = `<div class="grp-empty">${s.group}조 명단을 불러오는 중...</div>`;
+    labelEl.textContent = getGroupDisplayName(s.group);
+    box.innerHTML = `<div class="grp-empty">${escapeHtml(getGroupDisplayName(s.group))} 명단을 불러오는 중...</div>`;
     return;
   }
 
-  labelEl.textContent = `내 조 · ${s.group}조`;
+  labelEl.textContent = `내 조 · ${getGroupDisplayName(s.group)}`;
 
   const leaderName = g.leader?.name || '';
 
@@ -4017,7 +4117,7 @@ function renderMyCourseCard() {
     return `
       <div class="course-card">
         <div class="mg-empty" style="color:var(--coral-ink);opacity:0.7;text-align:center;padding:10px 0;font-size:13px;">
-          ${s.group}조 정보를 불러오는 중...
+          ${escapeHtml(getGroupDisplayName(s.group))} 정보를 불러오는 중...
         </div>
       </div>
     `;
@@ -4062,7 +4162,7 @@ function renderMyCourseCard() {
     <div class="course-card">
       <div class="cc-head">
         <div class="cc-label">내 조 세부 코스</div>
-        <div class="cc-badge">${escapeHtml(s.group)}조</div>
+        <div class="cc-badge">${escapeHtml(getGroupDisplayName(s.group))}</div>
       </div>
       ${showTheme ? `<div class="cc-theme">${escapeHtml(g.theme)}</div>` : ''}
 
@@ -4109,7 +4209,7 @@ function renderGroupMembersCard() {
     <div class="members-card" style="margin-top:4px;">
       <div class="mc-head">
         <div class="mc-title">우리 조 (${g.members.length}명)</div>
-        <div class="mc-badge">${escapeHtml(s.group)}조</div>
+        <div class="mc-badge">${escapeHtml(getGroupDisplayName(s.group))}</div>
       </div>
       <div class="mc-grid">${membersHTML}</div>
       <div style="font-size:10px;color:var(--ink-3);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--line);">
@@ -4258,7 +4358,7 @@ function renderSeoul() {
           <div>
             <div class="mg-label">내 조 일정</div>
           </div>
-          <div class="mg-badge">${s.group}조</div>
+          <div class="mg-badge">${escapeHtml(getGroupDisplayName(s.group))}</div>
         </div>
         <div class="mg-theme">${escapeHtml(groupMeta.theme || groupMeta.name || '일정이 아직 등록되지 않았어요')}</div>
         ${teacher ? `
