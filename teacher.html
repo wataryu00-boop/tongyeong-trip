@@ -508,6 +508,54 @@ header button:hover {
 }
 .search-box:focus { border-color: var(--accent); }
 
+/* 학생 탭 — 반 선택 드롭다운 */
+.student-class-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.scr-label {
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  min-width: 20px;
+}
+.student-class-select {
+  flex: 1;
+  padding: 9px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%),
+                    linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 55%, calc(100% - 10px) 55%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+.student-class-select:focus { border-color: var(--accent); }
+.student-class-select.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.student-class-select option { background: var(--surface); color: var(--ink); }
+.scr-count {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+  min-width: 54px;
+  text-align: right;
+}
+
 .student-item {
   padding: 12px 14px;
   background: var(--surface-2);
@@ -1408,6 +1456,13 @@ header button:hover {
         <div class="section-label">STUDENTS</div>
         <h2 class="section-title">학생 목록</h2>
         <input type="text" class="search-box" id="studentSearch" placeholder="🔍 이름·학번·방 검색..." oninput="renderStudentList()">
+        <div class="student-class-row">
+          <label class="scr-label">반</label>
+          <select id="studentClassSelect" class="student-class-select" onchange="setStudentClassFilter(this.value)">
+            <option value="all">전체 반</option>
+          </select>
+          <span class="scr-count" id="studentClassCount"></span>
+        </div>
         <div class="filter-bar" id="studentFilters"></div>
         <div id="studentList"></div>
       </div>
@@ -1893,6 +1948,7 @@ function initFirebase() {
         renderStudentList();
         renderGroupList();
         renderStudentFilters();
+        renderStudentClassSelect();
         renderMapClassSelect();
         renderMapGroupSelect();
         renderClassMapSelect();
@@ -2566,6 +2622,7 @@ async function completeLogin(user, info) {
 
   // 전체 렌더링
   renderStudentFilters();
+  renderStudentClassSelect();
   renderStudentList();
   renderGroupList();
   renderMapClassSelect();
@@ -2635,15 +2692,72 @@ function teacherLocationTick() {
 // ═══════════════════════════════════════════════════
 
 let currentStudentFilter = 'all';
+let currentStudentClassFilter = 'all';  // 'all' | '1'..'11' — 학생 탭의 반 필터
+
+// 학생 탭의 반 드롭다운 옵션 채우기 — 학생이 배정된 반만 노출
+function renderStudentClassSelect() {
+  const sel = document.getElementById('studentClassSelect');
+  if (!sel) return;
+
+  const classCount = {};
+  Object.keys(STUDENTS).forEach(sid => {
+    const c = classNoFromStudentId(sid);
+    if (c != null) classCount[c] = (classCount[c] || 0) + 1;
+  });
+
+  const classNums = Object.keys(classCount).map(Number).sort((a, b) => a - b);
+  const current = sel.value || 'all';
+
+  const opts = ['<option value="all">전체 반</option>']
+    .concat(classNums.map(n =>
+      `<option value="${n}">2-${n} (${classCount[n]}명)</option>`
+    ));
+  sel.innerHTML = opts.join('');
+  if (current === 'all' || classNums.includes(Number(current))) {
+    sel.value = current;
+  } else {
+    sel.value = 'all';
+    currentStudentClassFilter = 'all';
+  }
+  sel.classList.toggle('active', currentStudentClassFilter !== 'all');
+}
+
+function setStudentClassFilter(val) {
+  currentStudentClassFilter = val;
+  const sel = document.getElementById('studentClassSelect');
+  if (sel) sel.classList.toggle('active', val !== 'all');
+
+  // 반이 바뀌면 조 필터가 해당 반의 조 아니면 자동 해제 (지도와 같은 UX)
+  if (currentStudentFilter.startsWith('g')) {
+    const gno = currentStudentFilter.replace('g', '');
+    const g = GROUPS[gno];
+    const leaderClass = g ? classNoFromStudentId(g.leaderId) : null;
+    if (val !== 'all' && String(leaderClass) !== String(val)) {
+      currentStudentFilter = 'all';
+    }
+  }
+  renderStudentFilters();
+  renderStudentList();
+}
 
 function renderStudentFilters() {
   const el = document.getElementById('studentFilters');
   if (!el) return;
-  const groupKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
-  const chips = [`<button class="filter-chip active" data-filter="all" onclick="setStudentFilter('all')">전체</button>`]
+  // 반 필터가 걸려 있으면 해당 반의 조 칩만, 아니면 전체 조 칩
+  let groupKeys;
+  if (currentStudentClassFilter === 'all') {
+    groupKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  } else {
+    const targetClass = Number(currentStudentClassFilter);
+    groupKeys = Object.keys(GROUPS)
+      .filter(k => classNoOfGroup(k) === targetClass)
+      .sort((a, b) => Number(a) - Number(b));
+  }
+
+  const chips = [`<button class="filter-chip ${currentStudentFilter==='all'?'active':''}" data-filter="all" onclick="setStudentFilter('all')">전체</button>`]
     .concat(groupKeys.map(g =>
-      `<button class="filter-chip" data-filter="g${g}" onclick="setStudentFilter('g${g}')" title="${escapeHtml(getGroupName(g))}">${escapeHtml(getGroupName(g))}</button>`))
-    .concat([`<button class="filter-chip" data-filter="unknown" onclick="setStudentFilter('unknown')">위치 없음</button>`]);
+      `<button class="filter-chip ${currentStudentFilter==='g'+g?'active':''}" data-filter="g${g}" onclick="setStudentFilter('g${g}')" title="${escapeHtml(getGroupName(g))}">${escapeHtml(getGroupName(g))}</button>`))
+    .concat([`<button class="filter-chip ${currentStudentFilter==='unknown'?'active':''}" data-filter="unknown" onclick="setStudentFilter('unknown')">위치 없음</button>`]);
   el.innerHTML = chips.join('');
 }
 
@@ -2662,7 +2776,13 @@ function renderStudentList() {
 
   let list = Object.entries(STUDENTS).map(([id, s]) => ({ id, ...s, loc: LOCATIONS[id] }));
 
-  // 필터
+  // 반 필터 (학번 기반)
+  if (currentStudentClassFilter !== 'all') {
+    const targetClass = Number(currentStudentClassFilter);
+    list = list.filter(s => classNoFromStudentId(s.id) === targetClass);
+  }
+
+  // 조/상태 필터
   if (currentStudentFilter !== 'all') {
     if (currentStudentFilter === 'unknown') {
       list = list.filter(s => !s.loc || !s.loc.lat);
@@ -2682,6 +2802,10 @@ function renderStudentList() {
   }
 
   list.sort((a, b) => a.id.localeCompare(b.id));
+
+  // 결과 건수 표시 (반 드롭다운 옆)
+  const cntEl = document.getElementById('studentClassCount');
+  if (cntEl) cntEl.textContent = `${list.length}명`;
 
   if (list.length === 0) {
     el.innerHTML = '<div class="empty">해당하는 학생이 없습니다</div>';
