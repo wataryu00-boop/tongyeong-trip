@@ -886,7 +886,7 @@ header button:hover {
   background: rgba(0, 0, 0, 0.96);
   display: none;
   flex-direction: column;
-  z-index: 300;
+  z-index: 2000;
 }
 .t-photo-viewer.show { display: flex; }
 .tpv-topbar {
@@ -923,6 +923,14 @@ header button:hover {
   object-fit: contain;
   padding: 0 8px;
 }
+.tpv-hint {
+  padding: 8px 18px 0;
+  text-align: center;
+  color: rgba(255,255,255,0.65);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.tpv-hint b { color: rgba(255,255,255,0.9); font-weight: 600; }
 .tpv-actions {
   padding: 14px 18px 20px;
   display: flex;
@@ -1159,8 +1167,10 @@ header button:hover {
       <button class="tpv-close" onclick="tClosePhotoViewer()" aria-label="닫기">✕</button>
     </div>
     <img class="tpv-img" id="tpvImg" />
+    <div class="tpv-hint" id="tpvHint">사진을 <b>길게 누르면</b> 갤러리에 저장 옵션이 나와요</div>
     <div class="tpv-actions">
-      <a class="tpv-btn" id="tpvDownload" download>⬇ 원본 저장</a>
+      <button class="tpv-btn" id="tpvSaveBtn" onclick="tSaveCurrentPhoto()">💾 이 사진 저장 · 공유</button>
+      <a class="tpv-btn" id="tpvNewTab" target="_blank">🔗 새 창으로 열기</a>
     </div>
   </div>
 </div>
@@ -1244,6 +1254,7 @@ let tCurrentPhotos = [];        // 현재 모달에 표시 중인 사진 목록
 let tCurrentStudentId = null;   // 현재 모달에 띄운 학생 ID
 let tCurrentStudentName = '';   // 현재 모달에 띄운 학생 이름
 let tPhotoFilter = 'all';       // all | qr | memo
+let tCurrentViewerPhoto = null; // 뷰어에 열려있는 사진
 
 // ═══════════════════════════════════════════════════
 // Firebase 초기화
@@ -2247,18 +2258,77 @@ function tOpenPhotoViewer(filteredIdx) {
     : tCurrentPhotos.filter(p => p.tag === tPhotoFilter);
   const p = filtered[filteredIdx];
   if (!p) return;
+  tCurrentViewerPhoto = p;
   const d = new Date(p.ts);
   const timeStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   const tagStr = p.tag === 'qr' ? '★ QR 식권' : '기록';
   document.getElementById('tpvMeta').textContent = `${tCurrentStudentName} · ${tagStr}`;
   document.getElementById('tpvMetaSub').textContent = timeStr;
   document.getElementById('tpvImg').src = p.url;
-  const dl = document.getElementById('tpvDownload');
-  dl.href = p.url;
-  // 다운로드 파일명 커스텀
-  const ext = (p.name.split('.').pop() || 'jpg');
-  dl.setAttribute('download', `${tCurrentStudentName}_${p.tag}_${p.ts}.${ext}`);
+  // 새 창으로 열기 링크
+  document.getElementById('tpvNewTab').href = p.url;
   document.getElementById('tPhotoViewer').classList.add('show');
+}
+
+// 저장/공유 버튼 (플랫폼 자동 감지)
+async function tSaveCurrentPhoto() {
+  const p = tCurrentViewerPhoto;
+  if (!p) return;
+  const btn = document.getElementById('tpvSaveBtn');
+  const origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '준비 중...';
+
+  try {
+    // 파일 이름
+    const ext = (p.name.split('.').pop() || 'jpg').toLowerCase();
+    const fname = `${tCurrentStudentName}_${p.tag}_${p.ts}.${ext}`;
+
+    // 이미지 blob 다운로드
+    const resp = await fetch(p.url);
+    if (!resp.ok) throw new Error('이미지 로드 실패');
+    const blob = await resp.blob();
+    const file = new File([blob], fname, { type: blob.type || 'image/jpeg' });
+
+    // 1. Web Share API 우선 시도 (iOS Safari 15+, 모바일 Chrome 등)
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: fname,
+          text: `${tCurrentStudentName} · ${p.tag === 'qr' ? 'QR 식권' : '기록 사진'}`
+        });
+        btn.textContent = origText;
+        btn.disabled = false;
+        return;
+      } catch (shareErr) {
+        // 사용자가 공유 취소하면 AbortError — 조용히 무시
+        if (shareErr.name === 'AbortError') {
+          btn.textContent = origText;
+          btn.disabled = false;
+          return;
+        }
+        // 다른 에러면 폴백으로 진행
+      }
+    }
+
+    // 2. 폴백: blob URL로 다운로드 시도 (데스크톱)
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+  } catch (e) {
+    console.error('저장 실패:', e);
+    alert('저장에 실패했어요. 사진을 길게 누르거나 "새 창으로 열기"를 눌러 저장하세요.\n\n' + (e.message || ''));
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
 }
 
 function tClosePhotoViewer(evt) {
@@ -2266,6 +2336,7 @@ function tClosePhotoViewer(evt) {
     return;
   }
   document.getElementById('tPhotoViewer').classList.remove('show');
+  tCurrentViewerPhoto = null;
 }
 
 // ═══════════════════════════════════════════════════
