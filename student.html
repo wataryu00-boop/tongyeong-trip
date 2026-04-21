@@ -384,6 +384,139 @@
   }
 
   /* ═══════════════════════════════════════════════════
+     📢 공지사항 섹션
+     ═══════════════════════════════════════════════════ */
+  .section-head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .an-count-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--coral);
+    color: #fff;
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 4px;
+    letter-spacing: 0;
+  }
+  .an-count-badge.hidden { display: none; }
+  .announce-more-btn {
+    background: transparent;
+    border: none;
+    color: var(--coral);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  .announce-more-btn:active {
+    background: var(--coral-bg);
+  }
+  .announce-card {
+    display: flex;
+    gap: 10px;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .announce-card.unread {
+    background: #FFF7F3;
+    border: 0.5px solid rgba(216, 90, 48, 0.2);
+  }
+  .announce-card .an-unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--coral);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+  .announce-card.unread .an-unread-dot {
+    animation: anPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes anPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .announce-card:not(.unread) .an-unread-dot {
+    visibility: hidden;
+  }
+  .announce-card .an-body-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+  .announce-card .an-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+  }
+  .announce-card .an-body {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .announce-card .an-time {
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  /* 공지 모달 (룸메이트 모달 스타일 기반) */
+  /* 공지 모달은 더 크게 (화면 70%까지) */
+  #anModal .rm-modal {
+    height: 75vh;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .an-modal-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding-bottom: 8px;
+  }
+  .an-modal-item {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    margin-bottom: 8px;
+  }
+  .an-modal-item.unread {
+    background: #FFF7F3;
+    border: 0.5px solid rgba(216, 90, 48, 0.2);
+  }
+  .an-modal-item .an-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .an-modal-item .an-body {
+    font-size: 12.5px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .an-modal-item .an-time {
+    font-size: 10.5px;
+    color: var(--ink-3);
+    margin-top: 6px;
+  }
+
+  /* ═══════════════════════════════════════════════════
      내 정보 (2x2 그리드)
      ═══════════════════════════════════════════════════ */
   .info-grid {
@@ -1246,6 +1379,69 @@
     border-color: rgba(216, 90, 48, 0.35);
   }
 
+  /* ═══════════════════════════════════════════════════
+     일정 탭 유의사항 섹션
+     ═══════════════════════════════════════════════════ */
+  .notes-section {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .notes-title {
+    font-family: 'Gowun Batang', serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .notes-cat {
+    background: var(--surface-2);
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    margin-bottom: 10px;
+  }
+  .notes-cat-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .notes-cat-icon {
+    font-size: 15px;
+  }
+  .notes-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .notes-list li {
+    position: relative;
+    padding: 5px 0 5px 14px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+  }
+  .notes-list li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 11px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--coral);
+    opacity: 0.7;
+  }
+
   /* 내 조 세부 코스 카드 (5/7 핵심) */
   .course-card {
     background: var(--coral-bg);
@@ -1253,8 +1449,7 @@
     border-radius: 16px;
     padding: 18px;
     margin-bottom: 20px;
-  }
-  .course-card .cc-head {
+  }  .course-card .cc-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1578,6 +1773,266 @@
   }
 
   /* ═══════════════════════════════════════════════════
+     🆘 비상 탭
+     ═══════════════════════════════════════════════════ */
+  .help-sos-card {
+    background: linear-gradient(135deg, #D85A30 0%, #B43C18 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 14px rgba(216, 90, 48, 0.25);
+  }
+  .help-sos-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .help-sos-ico {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .help-sos-title {
+    font-family: 'Gowun Batang', serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .help-sos-sub {
+    font-size: 11.5px;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+  .help-sos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .help-sos-btn {
+    padding: 12px 8px;
+    border-radius: 12px;
+    border: none;
+    color: #D85A30;
+    background: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    transition: transform 0.12s ease;
+  }
+  .help-sos-btn:active { transform: scale(0.96); }
+  .help-sos-btn.sos {
+    background: #fff;
+    color: #B43C18;
+  }
+  .help-sos-btn .hsb-label {
+    font-size: 10.5px;
+    font-weight: 500;
+    opacity: 0.7;
+  }
+
+  /* 연락처 카드 (기존 zone-card 확장) */
+  .help-contact-card {
+    background: var(--surface-2);
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    margin-bottom: 10px;
+  }
+  .help-contact-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .help-contact-ico {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .help-contact-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .help-contact-role {
+    font-size: 10.5px;
+    color: var(--ink-3);
+    margin-top: 1px;
+  }
+  .help-tel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--coral-bg);
+    color: var(--coral);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 0.5px solid rgba(216, 90, 48, 0.25);
+    text-decoration: none;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .help-tel-btn:active { transform: scale(0.96); }
+
+  /* 병원 카드 */
+  .help-hospital {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+  }
+  .help-hosp-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .help-hosp-chip {
+    font-size: 10px;
+    background: var(--coral-bg);
+    color: var(--coral);
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .help-hosp-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .help-hosp-note {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+  .help-hosp-addr {
+    font-size: 11.5px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .help-hosp-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .help-hosp-act {
+    flex: 1;
+    padding: 7px 10px;
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 0.5px solid var(--line);
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .help-hosp-act.primary {
+    background: var(--coral);
+    color: #fff;
+    border-color: var(--coral);
+  }
+  .help-hosp-act:active { transform: scale(0.96); }
+
+  /* 안전수칙 카드 (일정 탭 notes-cat 재활용 + 비상 탭 전용 스타일) */
+  .help-safety-cat {
+    background: var(--surface-2);
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    margin-bottom: 10px;
+  }
+  .help-safety-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .help-safety-head .hs-ico {
+    font-size: 15px;
+  }
+  .help-safety-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .help-safety-list li {
+    position: relative;
+    padding: 5px 0 5px 14px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+  }
+  .help-safety-list li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 11px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--coral);
+    opacity: 0.7;
+  }
+
+  /* 보고 체계 */
+  .help-chain {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px 14px;
+    background: var(--surface-2);
+    border-radius: 12px;
+  }
+  .help-chain-step {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface);
+    padding: 5px 10px;
+    border-radius: 999px;
+    letter-spacing: -0.01em;
+  }
+  .help-chain-step.me {
+    background: var(--coral);
+    color: #fff;
+  }
+  .help-chain-arrow {
+    color: var(--ink-3);
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  /* ═══════════════════════════════════════════════════
      📷 내 사진 탭
      ═══════════════════════════════════════════════════ */
   .photo-info-box {
@@ -1787,6 +2242,7 @@
   }
   .photo-viewer.show { display: flex; }
   .pv-topbar {
+    flex-shrink: 0;
     padding: calc(env(safe-area-inset-top) + 14px) 18px 14px;
     display: flex;
     align-items: center;
@@ -1812,33 +2268,49 @@
     align-items: center;
     justify-content: center;
   }
-  .pv-img {
+  .pv-img-wrap {
     flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    overflow: hidden;
+  }
+  .pv-img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    padding: 0 8px;
   }
   .pv-actions {
+    flex-shrink: 0;
     padding: 14px 18px calc(env(safe-area-inset-bottom) + 18px);
     display: flex;
     justify-content: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.5);
   }
   .pv-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 11px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 11px 18px;
     border-radius: 10px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
   }
   .pv-btn.danger {
     background: var(--danger, #ef4444);
     border-color: var(--danger, #ef4444);
   }
   .pv-btn:active { opacity: 0.8; }
+  .pv-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
   /* ═══════════════════════════════════════════════════
      토스트
@@ -1992,13 +2464,24 @@
 
       <!-- 긴급 공지 배너 (있을 때만) -->
       <div class="section" id="alertSection" style="display:none">
-        <div class="alert-banner" id="alertBanner" onclick="switchTab('comm')">
+        <div class="alert-banner" id="alertBanner" onclick="scrollToAnnounceSection()">
           <div class="dot"></div>
           <div style="flex:1;min-width:0">
             <div class="title" id="alertTitle">-</div>
             <div class="body" id="alertBody">-</div>
           </div>
         </div>
+      </div>
+
+      <!-- 공지사항 (있을 때만) -->
+      <div class="section" id="announceSection" style="display:none">
+        <div class="section-head-row">
+          <div class="section-label" style="padding:0">
+            📢 공지사항 <span id="announceCountBadge" class="an-count-badge"></span>
+          </div>
+          <button class="announce-more-btn" id="announceMoreBtn" onclick="openAnnounceModal()" style="display:none">전체 보기</button>
+        </div>
+        <div id="announceList"></div>
       </div>
 
       <!-- 내 정보 -->
@@ -2032,14 +2515,6 @@
           <button class="loc-btn" onclick="sendManualLocation()">지금 위치 보내기</button>
           <button class="loc-btn" onclick="openLocHelp()">도움말</button>
         </div>
-      </div>
-
-      <!-- SOS -->
-      <div class="section">
-        <button class="sos-main-btn" onclick="openSOS()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-          긴급 도움 요청 (SOS)
-        </button>
       </div>
 
       <!-- 로그아웃 (작게, 하단) -->
@@ -2167,13 +2642,16 @@
         <div class="pv-meta" id="pvMeta">-</div>
         <button class="pv-close" onclick="closeViewer()" aria-label="닫기">✕</button>
       </div>
-      <img class="pv-img" id="pvImg" />
+      <div class="pv-img-wrap">
+        <img class="pv-img" id="pvImg" />
+      </div>
       <div class="pv-actions">
+        <button class="pv-btn" id="pvSaveBtn" onclick="saveCurrentPhoto()">💾 저장 · 공유</button>
         <button class="pv-btn danger" onclick="deleteCurrentPhoto()">🗑 삭제</button>
       </div>
     </div>
 
-    <!-- 🆘 비상 탭 (플레이스홀더) -->
+    <!-- 🆘 비상 탭 -->
     <section class="panel" id="panel-help">
       <div class="page-head">
         <div>
@@ -2181,11 +2659,7 @@
           <div class="h-title">비상</div>
         </div>
       </div>
-      <div class="placeholder">
-        <div class="ico">🆘</div>
-        <div class="title">비상 탭은 다음 업데이트에서 완성됩니다</div>
-        <div class="desc">비상 연락처 · 안전 수칙 · 요양호 정보가<br>들어갑니다.</div>
-      </div>
+      <div id="helpContent"></div>
     </section>
 
   </div><!-- /.app-scroll -->
@@ -2247,6 +2721,18 @@
     </div>
     <div class="rm-sub" id="rmSub">-</div>
     <div class="rm-list" id="rmList"></div>
+  </div>
+</div>
+
+<!-- 공지 전체 보기 모달 -->
+<div class="rm-modal-bg" id="anModal" onclick="closeAnnounceModal(event)">
+  <div class="rm-modal" onclick="event.stopPropagation()">
+    <div class="rm-head">
+      <div class="rm-title">📢 전체 공지사항</div>
+      <button class="rm-close" onclick="closeAnnounceModal()" aria-label="닫기">✕</button>
+    </div>
+    <div class="rm-sub" id="anModalSub">-</div>
+    <div class="an-modal-list" id="anModalList"></div>
   </div>
 </div>
 
@@ -2380,6 +2866,166 @@ const SEOUL_ZONES = [
   { name: '강남구 · 송파구 일대', emoji: '🌆', teachers: ['송인식', '한호연', '박효덕', '김혜영', '최명기'] }
 ];
 
+// 날짜별 유의사항 (세부계획서 기준)
+const DAY_NOTES = [
+  // 5/6 에버랜드
+  {
+    categories: [
+      {
+        icon: '⏰',
+        title: '시간 · 집결',
+        items: [
+          '07:30까지 열방교회 앞 집결, 08:00 정시 출발',
+          '20:30 CU편의점(에버랜드 정문 옆) 집결 — 반드시 시간 엄수',
+          '21:00 숙소 이동, 21:30 숙소 도착'
+        ]
+      },
+      {
+        icon: '🎢',
+        title: '에버랜드 안전',
+        items: [
+          '구역별 담당 교사 5명이 배치되어 있어요 — 장소 탭에서 위치 확인',
+          '놀이기구 탑승 전 신장 · 건강 제한 반드시 확인',
+          '본인 건강 상태(심장 · 혈압 등) 확인 후 탑승 결정',
+          '동물원 구역: 울타리 · 경계선 넘지 않기, 먹이 주거나 자극 금지'
+        ]
+      },
+      {
+        icon: '🎟️',
+        title: '소지품 · 식사',
+        items: [
+          '중식 · 석식은 식사 쿠폰 사용 — 분실 주의',
+          '귀중품은 담임선생님께 맡기고 필요할 때 찾아 쓰기',
+          '소지품은 항상 휴대, 인파 밀집 장소에서는 앞으로 착용'
+        ]
+      },
+      {
+        icon: '👥',
+        title: '이동 수칙',
+        items: [
+          '개별 행동 금지, 2~5명씩 함께 다니기',
+          '낯선 사람의 접근 · 권유는 정중히 거절하고 담임께 알리기',
+          '길을 잃으면 제자리에서 이탈하지 말고 담임 또는 가까운 직원 · 경찰(112)에 도움 요청'
+        ]
+      }
+    ]
+  },
+
+  // 5/7 서울 자유여행
+  {
+    categories: [
+      {
+        icon: '⏰',
+        title: '시간 · 집결',
+        items: [
+          '07:00~08:00 기상 · 조식, 08:00 숙소 출발',
+          '09:30~11:00 JUMP 공연 관람 (명보아트홀 / 경향아트힐)',
+          '20:30 경복궁 주차장 집결 — 반드시 시간 엄수',
+          '22:00 숙소 도착'
+        ]
+      },
+      {
+        icon: '🎭',
+        title: '공연 관람 예절',
+        items: [
+          '공연 중 휴대전화 사용 금지, 대화 삼가',
+          '배우와 관객 모두를 존중하는 태도',
+          '공연장 비상구 · 대피로 위치를 입장 시 확인'
+        ]
+      },
+      {
+        icon: '📸',
+        title: '모둠 자유 여행',
+        items: [
+          '사전 제출한 계획서대로 이동, 경로 변경 시 담임께 즉시 연락',
+          '2~3시간마다 활동 사진과 안전 보고를 담당 교사에게 문자 · SNS 전송',
+          '반드시 2인 이상 함께 이동, 개별 행동 금지',
+          '청소년 유해업소 · 청소년 출입금지구역 접근 금지'
+        ]
+      },
+      {
+        icon: '💰',
+        title: '식사 · 금전 관리',
+        items: [
+          '중 · 석식은 개별 부담 — 예산 관리',
+          '검증되지 않은 노점 음식 과다 섭취 주의',
+          '식품 알레르기가 있는 사람은 메뉴 확인 철저히'
+        ]
+      },
+      {
+        icon: '🚇',
+        title: '대중교통 · 인파',
+        items: [
+          '지하철 · 버스 이용 시 인원 점검',
+          '노약자 · 임산부 배려석 양보, 큰 소리 대화나 음악 금지',
+          '인파 밀집 장소에서 소지품 앞으로 착용, 일행과 거리 유지'
+        ]
+      },
+      {
+        icon: '🆘',
+        title: '위급 상황',
+        items: [
+          '길을 잃으면 그 자리에서 이탈하지 않기 — 담임에게 즉시 연락',
+          '낯선 사람 접근 시 즉시 담임께 알리기',
+          '긴급 시 112(경찰) · 119(응급)'
+        ]
+      }
+    ]
+  },
+
+  // 5/8 전주한옥마을
+  {
+    categories: [
+      {
+        icon: '⏰',
+        title: '시간 · 집결',
+        items: [
+          '07:00~08:00 기상 · 조식 · 짐 정리 (체크아웃)',
+          '08:00 숙소 출발',
+          '11:00~14:00 전주한옥마을 자유 탐방',
+          '13:50 집결 시작, 14:00 정시 통영 출발 — 엄수',
+          '16:30 열방교회 도착 예정'
+        ]
+      },
+      {
+        icon: '🏯',
+        title: '문화재 · 예절',
+        items: [
+          '궁궐 · 사찰 · 한옥 등 문화재에 낙서하거나 손대지 않기',
+          '쓰레기는 반드시 지정된 장소에 버리기',
+          '타인의 동의 없이 개인 정보가 노출되는 사진 촬영 · SNS 게시 금지'
+        ]
+      },
+      {
+        icon: '💰',
+        title: '식사 · 금전',
+        items: [
+          '중식은 개별 부담 — 기념품 포함 예산 계획',
+          '검증되지 않은 노점 음식 과다 섭취 주의'
+        ]
+      },
+      {
+        icon: '👥',
+        title: '자유 탐방',
+        items: [
+          '조 구분 없이 자유롭게 이동해도 되지만 최소 2인 이상 동행',
+          '한옥마을 내에서 소지품 철저히 관리',
+          '귀중품은 담임선생님께 맡기기'
+        ]
+      },
+      {
+        icon: '🚌',
+        title: '귀가 버스',
+        items: [
+          '차량 출발 전 탑승 버스 번호와 좌석 확인',
+          '차내에서 안전띠 착용 유지',
+          '휴게소에서 본인 버스 번호 · 출발 시각 반드시 메모'
+        ]
+      }
+    ]
+  }
+];
+
 const SEOUL_INFO = {
   showVenue: '명보아트홀',
   showAddress: '서울 중구 마른내로 47',
@@ -2403,6 +3049,138 @@ const JEONJU_INFO = {
   mapQuery: '전주한옥마을'
 };
 
+// 여행지 인근 병원 (세부계획서 16쪽)
+const HOSPITALS = [
+  {
+    day: '5/6 · 5/7',
+    label: '용인',
+    name: '용인제일메디병원',
+    address: '경기 용인시 처인구 포곡읍 포곡로 210번길 21-11',
+    tel: '031-322-7582',
+    note: '에버랜드에서 차량 5분',
+    mapQuery: '용인제일메디병원'
+  },
+  {
+    day: '5/6~8',
+    label: '용인 · 숙소',
+    name: '역북참내과의원',
+    address: '경기 용인시 처인구 명지로40번길 15-15, 3층',
+    tel: '031-339-9894',
+    note: '숙소(더트리니 호텔)에서 차량 3분',
+    mapQuery: '역북참내과의원 용인'
+  },
+  {
+    day: '5/7',
+    label: '서울 · 종로',
+    name: '연세로의료의원',
+    address: '서울 종로구 삼봉로 57',
+    tel: '02-6941-0902',
+    note: '경복궁에서 도보 11분',
+    mapQuery: '연세로의료의원 종로'
+  },
+  {
+    day: '5/7',
+    label: '서울 · 용산',
+    name: '서울삼성내과의원',
+    address: '서울 용산구 이촌로 206',
+    tel: '02-793-5588',
+    note: '국립중앙박물관에서 도보 15분',
+    mapQuery: '서울삼성내과의원 용산'
+  },
+  {
+    day: '5/8',
+    label: '전주',
+    name: '오내과의원',
+    address: '전북 전주시 완산구 기린대로 120',
+    tel: '063-231-3939',
+    note: '전주한옥마을에서 도보 5분',
+    mapQuery: '오내과의원 전주'
+  }
+];
+
+// 안전 수칙 (세부계획서 37~38쪽)
+const SAFETY_RULES = [
+  {
+    icon: '👥',
+    title: '여행 중 기본',
+    items: [
+      '담임선생님의 지도에 성실히 따르고, 자유 투어 시 방문 장소·경로 보고하기',
+      '개별 행동 금지 — 반드시 2~5명이 함께 다니기',
+      '시간 엄수 · 단체생활 피해 주지 않기',
+      '소지품은 항상 휴대, 귀중품은 담임선생님께 맡기기',
+      '낯선 사람의 접근·권유는 정중히 거절하고 담임에게 알리기'
+    ]
+  },
+  {
+    icon: '🚌',
+    title: '버스 · 이동',
+    items: [
+      '지정된 좌석에 앉고 안전띠 필수 착용',
+      '차창 밖으로 손·머리 내밀지 않기, 물건 투기 금지',
+      '소화기와 비상 탈출용 망치 위치·사용법 확인',
+      '운행 중 통로에서 이동·노래·춤 금지',
+      '휴게소에서는 본인 버스 번호와 출발 시각 반드시 메모'
+    ]
+  },
+  {
+    icon: '🏨',
+    title: '숙소',
+    items: [
+      '개인 외출 금지 — 취침 시간 준수',
+      '고성방가·숙소 이탈·음주·흡연·도박 절대 금지',
+      '호텔 난간·창문가에 기대지 않기 (추락 위험)',
+      '비상구 · 안전 대피로 위치 파악',
+      '숙소 물품은 공공 물건 — 파손 시 본인 배상'
+    ]
+  },
+  {
+    icon: '🔥',
+    title: '화재 · 비상 탈출',
+    items: [
+      '비상벨 울리면 즉시 젖은 수건으로 코·입을 막고 낮은 자세로 대피',
+      '가장 가까운 비상계단으로 1층까지 이동',
+      '엘리베이터는 절대 이용하지 않기',
+      '아래로 대피 불가능 시 옥상으로',
+      '벽에 부착된 비상 손전등을 소지하고 이동'
+    ]
+  },
+  {
+    icon: '🌐',
+    title: '지진 · 자연재해',
+    items: [
+      '지진 발생 시 튼튼한 탁자 아래로 몸을 피하고 진동이 멈출 때까지 대기',
+      '진동 멈춘 후 유리파편 조심하며 안전한 넓은 공간으로 대피',
+      '고층빌딩: 창문에서 멀리 떨어진 책상 아래로',
+      '대중교통·인파 밀집 장소: 출입구로 몰리지 말고 머리 보호',
+      '엘리베이터 이용 금지 — 운행 중이라면 전 층 버튼을 눌러 정지시킨 후 하차'
+    ]
+  },
+  {
+    icon: '🤧',
+    title: '감염병 · 건강',
+    items: [
+      '발열·기침·호흡곤란 등 증상 발생 시 즉시 담임에게 보고',
+      '마스크 휴대 (KF80 이상), 미세먼지 시 착용',
+      '손씻기·개인위생 철저히',
+      '식품 알레르기가 있으면 메뉴 확인 후 섭취',
+      '검증되지 않은 노점 음식 과다 섭취 주의'
+    ]
+  },
+  {
+    icon: '💙',
+    title: '친구가 힘들어 보일 때',
+    items: [
+      '친구가 자살 징후(극단적 언행, 갑작스런 작별 등)를 보이면 혼자 해결하려 하지 말기',
+      '즉시 담임선생님 또는 주위 어른에게 알려서 도움 요청',
+      '"그건 중요한 게 아니야"라는 말은 삼가 — 친구의 고통을 인정하고 함께 있어주기',
+      '본인이 힘들 때는 담임 · 보건 선생님 · 전문상담(☎ 1388 청소년상담)에 연락'
+    ]
+  }
+];
+
+// 비상 보고 체계 (PDF 11쪽)
+const REPORT_CHAIN = ['학생', '담임교사', '부장교사', '교감', '교장'];
+
 /* ═══════════════════════════════════════════════════
    상태 (Firebase에서 로드)
    ═══════════════════════════════════════════════════ */
@@ -2411,6 +3189,7 @@ let GROUPS = {};
 let CONTACTS = [];
 let ANNOUNCEMENTS = [];
 let RECORDS = [];
+let DAY_NOTES_OVERRIDE = {};  // Firebase에서 온 유의사항 오버라이드. {1: {...}, 2: {...}, 3: {...}}
 
 let db = null;
 let firebaseReady = false;
@@ -2657,6 +3436,8 @@ function initFirebase() {
       saveToCache('ANNOUNCEMENTS', ANNOUNCEMENTS);
       renderAlertBanner();
       updateCommBadge();
+      // 홈이 표시 중이면 공지 섹션도 재렌더 (실시간 반영)
+      if (currentStudent && currentTab === 'home') renderAnnounceSection();
     });
     db.ref(FIREBASE_PATH + '/records').on('value', snap => {
       const v = snap.val() || {};
@@ -2665,6 +3446,26 @@ function initFirebase() {
         .sort((a, b) => (b.ts || 0) - (a.ts || 0));
       saveToCache('RECORDS', RECORDS);
       updateCommBadge();
+    });
+    db.ref(FIREBASE_PATH + '/dayNotes').on('value', snap => {
+      const v = snap.val();
+      if (v && typeof v === 'object') {
+        // 각 day(1,2,3)에 대해 Firebase 값으로 오버라이드
+        DAY_NOTES_OVERRIDE = {};
+        [1, 2, 3].forEach(d => {
+          if (v[d] && v[d].categories && Array.isArray(v[d].categories)) {
+            DAY_NOTES_OVERRIDE[d] = v[d];
+          }
+        });
+        saveToCache('DAY_NOTES_OVERRIDE', DAY_NOTES_OVERRIDE);
+      } else {
+        DAY_NOTES_OVERRIDE = {};
+        saveToCache('DAY_NOTES_OVERRIDE', DAY_NOTES_OVERRIDE);
+      }
+      // 현재 일정 탭이 보이고 있으면 재렌더
+      if (currentTab === 'sched' && currentStudent) {
+        renderSched();
+      }
     });
 
     db.ref('.info/connected').on('value', snap => {
@@ -2712,11 +3513,13 @@ function loadFromCache() {
     const c = localStorage.getItem('ft_CONTACTS');
     const a = localStorage.getItem('ft_ANNOUNCEMENTS');
     const r = localStorage.getItem('ft_RECORDS');
+    const n = localStorage.getItem('ft_DAY_NOTES_OVERRIDE');
     if (s) STUDENTS = JSON.parse(s);
     if (g) GROUPS = JSON.parse(g);
     if (c) CONTACTS = JSON.parse(c);
     if (a) ANNOUNCEMENTS = JSON.parse(a);
     if (r) RECORDS = JSON.parse(r);
+    if (n) DAY_NOTES_OVERRIDE = JSON.parse(n);
 
     const seen = localStorage.getItem('ft_seenAnnouncements');
     if (seen) seenAnnouncementIds = new Set(JSON.parse(seen));
@@ -2868,6 +3671,7 @@ function switchTab(name) {
   if (name === 'sched') renderSched();
   if (name === 'place') renderPlace();
   if (name === 'photos') renderPhotos();
+  if (name === 'help') renderHelp();
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2918,6 +3722,7 @@ function renderHome() {
   // 내 조 (조원 콜 그리드)
   renderHomeGroup();
   renderAlertBanner();
+  renderAnnounceSection();
 }
 
 /* ─────────────────────────────────────────────
@@ -3161,7 +3966,39 @@ function renderSched() {
     html += renderGroupMembersCard();
   }
 
+  // 오늘의 유의사항 (모든 날)
+  html += renderDayNotesCard(day);
+
   content.innerHTML = html;
+}
+
+/* ─────────────────────────────────────────────
+   오늘의 유의사항 (일정 탭 하단)
+   ───────────────────────────────────────────── */
+function renderDayNotesCard(day) {
+  // Firebase 오버라이드가 있으면 그것을, 없으면 하드코딩 기본값 사용
+  const notes = (DAY_NOTES_OVERRIDE && DAY_NOTES_OVERRIDE[day]) || DAY_NOTES[day - 1];
+  if (!notes || !notes.categories || notes.categories.length === 0) return '';
+
+  const catsHTML = notes.categories.map(cat => {
+    const itemsHTML = cat.items.map(it => `<li>${escapeHtml(it)}</li>`).join('');
+    return `
+      <div class="notes-cat">
+        <div class="notes-cat-head">
+          <span class="notes-cat-icon">${cat.icon}</span>
+          <span>${escapeHtml(cat.title)}</span>
+        </div>
+        <ul class="notes-list">${itemsHTML}</ul>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="notes-section">
+      <div class="notes-title">🛡️ 오늘의 유의사항</div>
+      ${catsHTML}
+    </div>
+  `;
 }
 
 function renderMyCourseCard() {
@@ -3238,11 +4075,10 @@ function renderMyCourseCard() {
         ${stopsHTML}
       </div>
 
-      ${(leader.name || teacher) ? `
+      ${teacher ? `
       <div class="cc-leader">
         <div>
-          ${teacher ? `<b>담당</b> ${escapeHtml(teacher)} 선생님` : ''}
-          ${leader.name ? `${teacher ? ' · ' : ''}<b>조장</b> ${escapeHtml(leader.name)}` : ''}
+          <b>담당</b> ${escapeHtml(teacher)} 선생님
         </div>
         ${teacherTel ? `<a href="tel:${teacherTel}" class="cc-call">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -3339,19 +4175,35 @@ function getMyHomeroom() {
 }
 
 function renderEverland() {
-  // 5/6 에버랜드: 구역 담당 교사 중 담임 + 학년부장(성화룡)만 전화 연결
-  const callable = new Set();
+  // 집결 배너 아래에 표시할 "도움이 필요할 때" 카드: 담임 + 학년부장(성화룡) 전화 연결
   const myHR = getMyHomeroom();
-  if (myHR) callable.add(myHR);
-  callable.add('성화룡');
+  const helpChips = [];
+  if (myHR) helpChips.push(myHR);
+  if (!helpChips.includes('성화룡')) helpChips.push('성화룡');
+  const helpCallable = new Set(helpChips);
 
+  const helpHTML = helpChips.length > 0 ? `
+    <div class="section-label" style="padding:0;margin-bottom:10px">도움이 필요할 때</div>
+    <div class="zone-card">
+      <div class="zone-card-head">
+        <div class="zone-emoji">📞</div>
+        <div class="zone-name">
+          담임 · 학년부장
+          <div class="zone-note">에버랜드에서 문제가 생기면 담임 혹은 학년부장(성화룡 선생님)께 연락하세요</div>
+        </div>
+      </div>
+      <div class="zone-teachers">${teacherChipsHTML(helpChips, helpCallable)}</div>
+    </div>
+  ` : '';
+
+  // 구역별 담당 교사: 이름만 표시 (전화 연결 없음)
   const zones = EVERLAND_ZONES.map(z => `
     <div class="zone-card">
       <div class="zone-card-head">
         <div class="zone-emoji">${z.emoji}</div>
         <div class="zone-name">${escapeHtml(z.name)}</div>
       </div>
-      <div class="zone-teachers">${teacherChipsHTML(z.teachers, callable)}</div>
+      <div class="zone-teachers">${teacherChipsHTML(z.teachers, new Set())}</div>
     </div>
   `).join('');
 
@@ -3367,6 +4219,8 @@ function renderEverland() {
         지도
       </a>
     </div>
+
+    ${helpHTML}
 
     <div class="section-label" style="padding:0;margin-bottom:10px">구역별 담당 교사</div>
     ${zones}
@@ -3544,16 +4398,172 @@ function renderJeonju() {
 }
 
 /* ═══════════════════════════════════════════════════
+   🆘 비상 탭 렌더링
+   ═══════════════════════════════════════════════════ */
+function renderHelp() {
+  const box = document.getElementById('helpContent');
+  if (!box) return;
+
+  // 1. SOS 카드 (최상단, 3버튼)
+  const sosCard = `
+    <div class="help-sos-card">
+      <div class="help-sos-top">
+        <div class="help-sos-ico">🆘</div>
+        <div>
+          <div class="help-sos-title">긴급 상황</div>
+          <div class="help-sos-sub">위급 시 아래 버튼으로 바로 연락하세요</div>
+        </div>
+      </div>
+      <div class="help-sos-grid">
+        <button class="help-sos-btn sos" onclick="openSOS()">
+          🆘
+          <span>담임에게</span>
+          <span class="hsb-label">위치 함께 전송</span>
+        </button>
+        <a class="help-sos-btn" href="tel:112">
+          🚔
+          <span>112</span>
+          <span class="hsb-label">경찰</span>
+        </a>
+        <a class="help-sos-btn" href="tel:119">
+          🚑
+          <span>119</span>
+          <span class="hsb-label">응급 · 소방</span>
+        </a>
+      </div>
+    </div>
+  `;
+
+  // 2. 담당 교사 연락처
+  const myHR = getMyHomeroom();
+  const contacts = [
+    { role: '담임', name: myHR, icon: '👨‍🏫', always: false },
+    { role: '학년부장', name: '성화룡', icon: '📋', always: true },
+    { role: '학생안전부장', name: '강성두', icon: '🛡️', always: true },
+    { role: '보건교사', name: '박보경', icon: '🏥', always: true },
+    { role: '특수교사', name: '최명기', icon: '🤝', always: true }
+  ].filter(c => c.name && (c.always || c.name));
+
+  const contactsHTML = contacts.map(c => {
+    const tel = TEACHER_TEL[c.name];
+    const telBtn = tel ? `
+      <a href="tel:${normalizeTel(tel)}" class="help-tel-btn">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        ${formatTel(tel)}
+      </a>
+    ` : `<span style="font-size:11px;color:var(--ink-3);margin-left:auto;">연락처 미등록</span>`;
+
+    return `
+      <div class="help-contact-head" style="margin-bottom:0;padding:10px 14px;background:var(--surface-2);border-radius:12px;margin-bottom:8px;">
+        <div class="help-contact-ico">${c.icon}</div>
+        <div>
+          <div class="help-contact-name">${escapeHtml(c.name)} 선생님</div>
+          <div class="help-contact-role">${escapeHtml(c.role)}</div>
+        </div>
+        ${telBtn}
+      </div>
+    `;
+  }).join('');
+
+  // 3. 병원 목록
+  const hospitalsHTML = HOSPITALS.map(h => `
+    <div class="help-hospital">
+      <div class="help-hosp-top">
+        <div class="help-hosp-chip">${escapeHtml(h.label)}</div>
+        <div class="help-hosp-name">${escapeHtml(h.name)}</div>
+      </div>
+      <div class="help-hosp-note">${escapeHtml(h.note)}</div>
+      <div class="help-hosp-addr">📍 ${escapeHtml(h.address)}</div>
+      <div class="help-hosp-actions">
+        <a class="help-hosp-act primary" href="tel:${normalizeTel(h.tel)}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          ${escapeHtml(h.tel)}
+        </a>
+        <a class="help-hosp-act" href="${kakaoMapLink(h.mapQuery)}" target="_blank" rel="noopener">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          지도
+        </a>
+      </div>
+    </div>
+  `).join('');
+
+  // 4. 안전 수칙
+  const safetyHTML = SAFETY_RULES.map(cat => {
+    const items = cat.items.map(it => `<li>${escapeHtml(it)}</li>`).join('');
+    return `
+      <div class="help-safety-cat">
+        <div class="help-safety-head">
+          <span class="hs-ico">${cat.icon}</span>
+          <span>${escapeHtml(cat.title)}</span>
+        </div>
+        <ul class="help-safety-list">${items}</ul>
+      </div>
+    `;
+  }).join('');
+
+  // 5. 비상 보고 체계
+  const chainHTML = REPORT_CHAIN.map((step, i) => {
+    const cls = step === '학생' ? 'help-chain-step me' : 'help-chain-step';
+    const arrow = i < REPORT_CHAIN.length - 1 ? '<span class="help-chain-arrow">›</span>' : '';
+    return `<span class="${cls}">${escapeHtml(step)}</span>${arrow}`;
+  }).join('');
+
+  box.innerHTML = `
+    ${sosCard}
+
+    <div class="section-label" style="padding:0;margin-bottom:10px">담당 교사 연락처</div>
+    ${contactsHTML}
+
+    <div class="section-label" style="padding:0;margin:18px 0 10px">여행지 인근 병원</div>
+    ${hospitalsHTML}
+
+    <div class="section-label" style="padding:0;margin:18px 0 10px">안전 수칙</div>
+    ${safetyHTML}
+
+    <div class="section-label" style="padding:0;margin:18px 0 10px">비상 보고 체계</div>
+    <div class="help-chain">${chainHTML}</div>
+
+    <div class="tip-box" style="margin-top:14px">
+      <div class="tip-ico">💙</div>
+      <div>몸이 아프거나 마음이 힘들 때 혼자 참지 말고 담임선생님 또는 보건선생님(박보경)에게 꼭 알려주세요. 친구의 이상 징후를 발견했을 때도 마찬가지예요.</div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════
    공지 · 기록 배너 / 배지
    ═══════════════════════════════════════════════════ */
+
+// 공지 목록을 최신 순으로 (최대 N개) 반환
+function getRecentAnnouncements(limit) {
+  const sorted = [...ANNOUNCEMENTS].sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  return limit ? sorted.slice(0, limit) : sorted;
+}
+
+// 시간 포맷: "3분 전" / "2시간 전" / "5월 6일 14:30"
+function formatAnnounceTime(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return '방금';
+  if (min < 60) return `${min}분 전`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}시간 전`;
+  const d = new Date(ts);
+  return `${d.getMonth()+1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
 function renderAlertBanner() {
   // 24시간 이내 & 안 본 공지 중 가장 최근
   const now = Date.now();
-  const fresh = ANNOUNCEMENTS.filter(a => {
-    const age = now - (a.ts || 0);
-    return age < 24 * 60 * 60 * 1000 && !seenAnnouncementIds.has(a.id);
-  });
+  const fresh = [...ANNOUNCEMENTS]
+    .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+    .filter(a => {
+      const age = now - (a.ts || 0);
+      return age < 24 * 60 * 60 * 1000 && !seenAnnouncementIds.has(a.id);
+    });
   const section = document.getElementById('alertSection');
+  if (!section) return;
   if (fresh.length === 0) {
     section.style.display = 'none';
     return;
@@ -3562,6 +4572,115 @@ function renderAlertBanner() {
   document.getElementById('alertTitle').textContent = latest.title || '긴급 공지';
   document.getElementById('alertBody').textContent = latest.body || '';
   section.style.display = 'block';
+}
+
+// 홈의 공지사항 섹션 렌더링 (최근 3개)
+function renderAnnounceSection() {
+  const section = document.getElementById('announceSection');
+  const list = document.getElementById('announceList');
+  const moreBtn = document.getElementById('announceMoreBtn');
+  const badge = document.getElementById('announceCountBadge');
+  if (!section || !list) return;
+
+  const all = getRecentAnnouncements();
+
+  // 공지 하나도 없으면 숨김
+  if (all.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  // 안 읽은 개수 뱃지
+  const unreadCount = all.filter(a => !seenAnnouncementIds.has(a.id)).length;
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.classList.remove('hidden');
+  } else {
+    badge.textContent = '';
+    badge.classList.add('hidden');
+  }
+
+  // 홈에는 최근 3개만
+  const recent = all.slice(0, 3);
+  list.innerHTML = recent.map(a => {
+    const unread = !seenAnnouncementIds.has(a.id);
+    return `
+      <div class="announce-card ${unread ? 'unread' : ''}" onclick="openAnnounceModal()">
+        <div class="an-unread-dot"></div>
+        <div class="an-body-wrap">
+          <div class="an-title">${escapeHtml(a.title || '공지')}</div>
+          ${a.body ? `<div class="an-body">${escapeHtml(a.body)}</div>` : ''}
+          <div class="an-time">${formatAnnounceTime(a.ts)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // 3개 초과면 전체 보기 버튼 노출
+  moreBtn.style.display = all.length > 3 ? 'block' : 'none';
+}
+
+// 긴급 배너 → 공지 섹션으로 스크롤
+function scrollToAnnounceSection() {
+  const section = document.getElementById('announceSection');
+  if (section && section.style.display !== 'none') {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // 읽음 처리는 마킹 대신, 모달 직접 열지 않고 사용자가 본 것으로 간주
+  markAnnouncementsAsSeen();
+}
+
+// 공지 모달 열기 — 전체 공지 표시
+function openAnnounceModal() {
+  const all = getRecentAnnouncements();
+  const modal = document.getElementById('anModal');
+  const listBox = document.getElementById('anModalList');
+  const sub = document.getElementById('anModalSub');
+  if (!modal || !listBox) return;
+
+  sub.textContent = all.length > 0 ? `총 ${all.length}개` : '등록된 공지가 없어요';
+
+  if (all.length === 0) {
+    listBox.innerHTML = '<div class="rm-empty">아직 공지사항이 없어요</div>';
+  } else {
+    listBox.innerHTML = all.map(a => {
+      const unread = !seenAnnouncementIds.has(a.id);
+      return `
+        <div class="an-modal-item ${unread ? 'unread' : ''}">
+          <div class="an-title">${escapeHtml(a.title || '공지')}</div>
+          ${a.body ? `<div class="an-body">${escapeHtml(a.body)}</div>` : ''}
+          <div class="an-time">${formatAnnounceTime(a.ts)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+  modal.classList.add('show');
+
+  // 모달 열 때 모두 읽음 처리 (다음 렌더 시 반영)
+  markAnnouncementsAsSeen();
+}
+
+function closeAnnounceModal(evt) {
+  if (evt && evt.target && evt.target.id !== 'anModal' && !evt.target.classList.contains('rm-close')) {
+    return;
+  }
+  document.getElementById('anModal').classList.remove('show');
+  // 모달 닫을 때 홈 공지 섹션 재렌더 (읽음 상태 반영)
+  if (currentStudent) renderAnnounceSection();
+  renderAlertBanner();
+}
+
+function markAnnouncementsAsSeen() {
+  ANNOUNCEMENTS.forEach(a => seenAnnouncementIds.add(a.id));
+  try {
+    localStorage.setItem('ft_seenAnnouncements', JSON.stringify([...seenAnnouncementIds]));
+  } catch (e) {}
+  updateCommBadge();
+  renderAlertBanner();
+  // 모달이 열려있지 않을 때만 홈 공지 섹션 재렌더
+  const modalOpen = document.getElementById('anModal')?.classList.contains('show');
+  if (!modalOpen && currentStudent) renderAnnounceSection();
 }
 
 function updateCommBadge() {
@@ -3581,19 +4700,9 @@ function updateCommBadge() {
   badge.style.display = total > 0 ? 'block' : 'none';
 }
 
+// 더 이상 소통 탭 없음 — 남긴 함수는 호환 목적 (호출되어도 안전)
 function markCommAsSeen() {
-  // 소통 탭을 열면 모두 읽음 처리
-  ANNOUNCEMENTS.forEach(a => seenAnnouncementIds.add(a.id));
-  const myId = currentStudent?.id;
-  RECORDS.forEach(r => {
-    if (r.visibility === 'shared' && (r.targetId === myId || r.targetId === '__all')) {
-      seenRecordIds.add(r.id);
-    }
-  });
-  localStorage.setItem('ft_seenAnnouncements', JSON.stringify([...seenAnnouncementIds]));
-  localStorage.setItem('ft_seenRecords', JSON.stringify([...seenRecordIds]));
-  updateCommBadge();
-  renderAlertBanner();
+  markAnnouncementsAsSeen();
 }
 
 /* ═══════════════════════════════════════════════════
@@ -4185,6 +5294,68 @@ function closeViewer(evt) {
   }
   document.getElementById('photoViewer').classList.remove('show');
   currentViewerPhoto = null;
+}
+
+// 사진 저장·공유 (iOS Safari: Web Share API / 데스크톱: blob 다운로드 폴백)
+async function saveCurrentPhoto() {
+  const p = currentViewerPhoto;
+  if (!p) return;
+  const btn = document.getElementById('pvSaveBtn');
+  const origText = btn ? btn.textContent : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '준비 중...';
+  }
+
+  try {
+    // 파일 이름
+    const ext = (p.name.split('.').pop() || 'jpg').toLowerCase();
+    const studentName = currentStudent?.name || '학생';
+    const fname = `${studentName}_${p.tag}_${p.ts}.${ext}`;
+
+    // 이미지 blob 다운로드
+    const resp = await fetch(p.url);
+    if (!resp.ok) throw new Error('이미지 로드 실패');
+    const blob = await resp.blob();
+    const file = new File([blob], fname, { type: blob.type || 'image/jpeg' });
+
+    // 1. Web Share API 우선 시도 (iOS Safari 15+, 모바일 Chrome 등)
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: fname,
+          text: p.tag === 'qr' ? 'QR 식권' : '기록 사진'
+        });
+        // 성공 시 조용히 마무리
+        return;
+      } catch (shareErr) {
+        // 사용자가 공유 취소하면 AbortError — 조용히 무시
+        if (shareErr.name === 'AbortError') return;
+        // 다른 에러면 폴백으로 진행
+      }
+    }
+
+    // 2. 폴백: blob URL로 다운로드 시도 (데스크톱)
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    toast('✅ 저장됐어요');
+
+  } catch (e) {
+    console.error('저장 실패:', e);
+    toast('저장 실패 — 사진을 길게 눌러 저장해보세요');
+  } finally {
+    if (btn) {
+      btn.textContent = origText;
+      btn.disabled = false;
+    }
+  }
 }
 
 async function deleteCurrentPhoto() {
