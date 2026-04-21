@@ -1465,6 +1465,28 @@ header button:hover {
   margin-bottom: 4px;
 }
 .detail-grid .v { font-size: 14px; font-weight: 600; }
+/* 클릭 가능한 필드 (방·조 등) */
+.detail-grid .clickable-cell {
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.detail-grid .clickable-cell:hover {
+  background: var(--accent-soft);
+}
+.detail-grid .clickable-cell:active {
+  opacity: 0.75;
+}
+.detail-grid .clickable-cell .k {
+  color: var(--accent);
+}
+/* 섹션 하이라이트 애니메이션 */
+.roommates-section.flash {
+  animation: sectionFlash 1s ease;
+}
+@keyframes sectionFlash {
+  0%   { background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent); }
+  100% { background: var(--surface-2); box-shadow: none; }
+}
 .detail-loc {
   background: var(--surface-2);
   border: 1px solid var(--line);
@@ -3568,10 +3590,7 @@ function renderRoomList() {
     const chips = students.map(stu => {
       const classNo = classNoFromStudentId(stu.id);
       const classTag = classNo != null ? ` <span class="gm-cls">2-${classNo}</span>` : '';
-      const telBtn = stu.tel
-        ? `<a class="gm-tel" href="tel:${stu.tel}" onclick="event.stopPropagation();" title="${escapeHtml(stu.name)}에게 전화">📞</a>`
-        : `<span class="gm-tel disabled" title="번호 없음">📞</span>`;
-      return `<span class="gm-chip has-tel" onclick="showStudentDetail('${stu.id}')">${escapeHtml(stu.name)}${classTag}${telBtn}</span>`;
+      return `<span class="gm-chip" onclick="showStudentDetail('${stu.id}')">${escapeHtml(stu.name)}${classTag}</span>`;
     }).join('');
 
     return `<div class="room-card">
@@ -4292,17 +4311,12 @@ function showStudentDetail(studentId) {
     const chips = roommates.map(([sid, o]) => {
       const classNo = classNoFromStudentId(sid);
       const classTag = classNo != null ? ` <span class="gm-cls">2-${classNo}</span>` : '';
-      // 이름 클릭 → 해당 학생 상세 모달로 전환
-      // 전화 아이콘 → 전화 (번호 없으면 비활성)
-      const telBtn = o.tel
-        ? `<a class="gm-tel" href="tel:${o.tel}" onclick="event.stopPropagation();" title="${escapeHtml(o.name)}에게 전화">📞</a>`
-        : `<span class="gm-tel disabled" title="번호 없음">📞</span>`;
-      return `<span class="gm-chip has-tel" onclick="showStudentDetail('${sid}')">${escapeHtml(o.name)}${classTag}${telBtn}</span>`;
+      return `<span class="gm-chip" onclick="showStudentDetail('${sid}')">${escapeHtml(o.name)}${classTag}</span>`;
     }).join('');
 
     const label = `같은 방 (${s.room}${s.floor ? ' · ' + s.floor : ''})`;
     roommatesHtml = `
-      <div class="roommates-section">
+      <div class="roommates-section" id="smRoomSection">
         <div class="roommates-label">🛏️ ${escapeHtml(label)}</div>
         <div class="roommates-list">
           ${chips || '<div class="gm-empty">같은 방 학생 정보가 없습니다</div>'}
@@ -4311,18 +4325,55 @@ function showStudentDetail(studentId) {
     `;
   }
 
+  // 같은 조 학생 (본인 포함, 학번 오름차순) — 조장 강조
+  let groupMatesHtml = '';
+  if (s.group) {
+    const mates = Object.entries(STUDENTS)
+      .filter(([_, o]) => o.group === s.group)
+      .sort((a, b) => a[0].localeCompare(b[0]));
+
+    const leaderId = g.leaderId || '';
+    const chips = mates.map(([sid, o]) => {
+      const classNo = classNoFromStudentId(sid);
+      const classTag = classNo != null ? ` <span class="gm-cls">2-${classNo}</span>` : '';
+      const isLeaderChip = sid === leaderId;
+      const isSelf = sid === studentId;
+      const selfTag = isSelf ? ' <span style="color:var(--accent); font-size:10px; font-weight:600;">(본인)</span>' : '';
+      return `<span class="gm-chip ${isLeaderChip ? 'leader' : ''}" onclick="showStudentDetail('${sid}')">${isLeaderChip ? '⭐ ' : ''}${escapeHtml(o.name)}${classTag}${selfTag}</span>`;
+    }).join('');
+
+    const themeLine = g.theme ? ` · ${escapeHtml(g.theme)}` : '';
+    groupMatesHtml = `
+      <div class="roommates-section" id="smGroupSection">
+        <div class="roommates-label">🧭 ${escapeHtml(gDisplay)} 구성원${themeLine}</div>
+        <div class="roommates-list">
+          ${chips || '<div class="gm-empty">같은 조 학생 정보가 없습니다</div>'}
+        </div>
+      </div>
+    `;
+  }
+
+  // 방/조 필드 클릭 핸들러 — 해당 섹션으로 스크롤
+  const roomCell = s.room
+    ? `<div class="clickable-cell" onclick="smScrollTo('smRoomSection')"><div class="k">방 ↓</div><div class="v">${s.room} (${s.floor || ''})</div></div>`
+    : `<div><div class="k">방</div><div class="v">—</div></div>`;
+  const groupCell = s.group
+    ? `<div class="clickable-cell" onclick="smScrollTo('smGroupSection')"><div class="k">조 ↓</div><div class="v">${escapeHtml(gDisplay)}${hasRealName ? ` <span style="color:var(--ink-mute); font-size:11px;">(${s.group}조)</span>` : ''}</div></div>`
+    : `<div><div class="k">조</div><div class="v">—</div></div>`;
+
   document.getElementById('smBody').innerHTML = `
     <div class="detail-grid">
       <div><div class="k">학번</div><div class="v">${s.id || studentId}</div></div>
       <div><div class="k">반</div><div class="v">${s.class || '—'}</div></div>
-      <div><div class="k">조</div><div class="v">${escapeHtml(gDisplay)}${hasRealName ? ` <span style="color:var(--ink-mute); font-size:11px;">(${s.group}조)</span>` : ''}</div></div>
-      <div><div class="k">방</div><div class="v">${s.room || '—'} (${s.floor || ''})</div></div>
+      ${groupCell}
+      ${roomCell}
       <div><div class="k">조장</div><div class="v">${g.leader?.name || '—'}${isLeader ? ' <span style="color:var(--accent); font-size:11px;">(본인)</span>' : ''}</div></div>
       <div><div class="k">버스</div><div class="v">${s.bus || '—'}</div></div>
     </div>
     ${locHtml}
     <div class="detail-actions">${actions.join('')}</div>
     ${roommatesHtml}
+    ${groupMatesHtml}
 
     <div class="photos-section">
       <div class="photos-head">
@@ -4362,6 +4413,20 @@ function closeStudentModal() {
   document.getElementById('studentModal').classList.remove('active');
   tCurrentStudentId = null;
   tCurrentPhotos = [];
+}
+
+// 학생 모달 내부 특정 섹션으로 스크롤 + 하이라이트
+function smScrollTo(sectionId) {
+  const target = document.getElementById(sectionId);
+  if (!target) return;
+  const body = document.getElementById('smBody');
+  if (body) {
+    // modal-body 컨테이너 내부 스크롤
+    const topOffset = target.offsetTop - body.offsetTop - 8;
+    body.scrollTo({ top: topOffset, behavior: 'smooth' });
+  }
+  target.classList.add('flash');
+  setTimeout(() => target.classList.remove('flash'), 1000);
 }
 
 // ═══════════════════════════════════════════════════
