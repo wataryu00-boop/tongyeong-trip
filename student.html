@@ -5313,14 +5313,18 @@ async function saveCurrentPhoto() {
     const fname = `${studentName}_${p.tag}_${p.ts}.${ext}`;
 
     // 이미지 blob 다운로드
-    const resp = await fetch(p.url);
-    if (!resp.ok) throw new Error('이미지 로드 실패');
+    let resp;
+    try {
+      resp = await fetch(p.url);
+    } catch (fetchErr) {
+      throw new Error('fetch 실패: ' + (fetchErr.message || fetchErr.name));
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
     const blob = await resp.blob();
     const file = new File([blob], fname, { type: blob.type || 'image/jpeg' });
 
-    // Web Share API 우선 (iOS Safari 15+, 모바일 Chrome 등)
+    // Web Share API 우선
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      // 🔑 iOS 공유 시트가 뷰어 뒤에 가려지지 않도록 뷰어를 잠시 숨김
       if (viewer) viewer.style.visibility = 'hidden';
       try {
         await navigator.share({
@@ -5328,16 +5332,20 @@ async function saveCurrentPhoto() {
           title: fname,
           text: p.tag === 'qr' ? 'QR 식권' : '기록 사진'
         });
-        return; // 성공 시 종료 (finally에서 뷰어 복원)
+        return; // 성공
       } catch (shareErr) {
         if (shareErr.name === 'AbortError') return; // 사용자 취소
-        // 다른 에러는 폴백으로
+        // 정확한 에러 노출
+        toast('공유 실패: ' + shareErr.name + ' — ' + (shareErr.message || ''), 4000);
+        // 폴백으로 넘어감
       } finally {
         if (viewer) viewer.style.visibility = '';
       }
+    } else {
+      toast('이 브라우저는 파일 공유를 지원하지 않아요 (다운로드로 진행)', 3000);
     }
 
-    // 폴백: blob URL로 다운로드 (데스크톱)
+    // 폴백: blob URL로 다운로드
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
@@ -5346,13 +5354,11 @@ async function saveCurrentPhoto() {
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-    toast('✅ 저장됐어요');
 
   } catch (e) {
     console.error('저장 실패:', e);
-    toast('저장 실패 — 사진을 길게 눌러 저장해보세요');
+    toast('실패: ' + (e.message || e.name || '알 수 없음'), 4000);
   } finally {
-    // 뷰어 visibility가 혹시라도 남아있으면 복원
     if (viewer) viewer.style.visibility = '';
     if (btn) {
       btn.textContent = origText;
