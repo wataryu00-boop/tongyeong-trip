@@ -2470,7 +2470,16 @@ function initFirebase() {
         }
       }
 
-      rerenderIfLoggedIn();
+      // 로그인 안 된 상태면 자동 로그인 시도, 이미 로그인됐으면 재렌더
+      if (!currentStudent) {
+        tryAutoLogin();
+      } else {
+        // 현재 로그인된 학생 정보도 최신으로 갱신 (조·방이 바뀌었을 수 있음)
+        if (STUDENTS[currentStudent.id]) {
+          currentStudent = { id: currentStudent.id, ...STUDENTS[currentStudent.id] };
+        }
+        rerenderIfLoggedIn();
+      }
     }
 
     db.ref(FIREBASE_PATH + '/students').on('value', snap => {
@@ -2563,12 +2572,81 @@ function loadFromCache() {
     const seenR = localStorage.getItem('ft_seenRecords');
     if (seenR) seenRecordIds = new Set(JSON.parse(seenR));
   } catch (e) {}
+
+  // 캐시에 학생 데이터가 있으면 Firebase 도착 전에도 자동 로그인 시도
+  if (!currentStudent && STUDENTS && Object.keys(STUDENTS).length > 0) {
+    tryAutoLogin();
+  }
 }
 
 function rerenderIfLoggedIn() {
   if (currentStudent && document.getElementById('main').classList.contains('active')) {
     renderHome();
   }
+}
+
+/* ═══════════════════════════════════════════════════
+   로그인 세션 (localStorage)
+   ═══════════════════════════════════════════════════ */
+const SESSION_KEY = 'ft_session_v1';
+const SESSION_MAX_AGE_MS = 21 * 24 * 60 * 60 * 1000; // 21일 (여행 전후 충분히 커버)
+
+function saveSession(id, name) {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id, name, ts: Date.now() }));
+  } catch (e) {}
+}
+
+function clearSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+}
+
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || !s.id || !s.name) return null;
+    // 만료 체크
+    if (Date.now() - (s.ts || 0) > SESSION_MAX_AGE_MS) {
+      clearSession();
+      return null;
+    }
+    return s;
+  } catch (e) {
+    return null;
+  }
+}
+
+// 저장된 세션으로 자동 로그인 시도 (실패시 조용히 로그인 화면 표시)
+// Firebase 데이터 도착 후 호출되거나, 캐시에 이미 데이터가 있으면 즉시 호출
+function tryAutoLogin() {
+  // 이미 로그인되어 있으면 스킵
+  if (currentStudent) return false;
+  const sess = loadSession();
+  if (!sess) return false;
+  // STUDENTS 비어있으면 아직 데이터 도착 전 — 복원 불가
+  if (!STUDENTS || Object.keys(STUDENTS).length === 0) return false;
+
+  const student = STUDENTS[sess.id];
+  if (!student) {
+    // 학번이 DB에 없어진 경우 — 세션 폐기
+    clearSession();
+    return false;
+  }
+  if (student.name !== sess.name) {
+    // 이름이 바뀌었으면 (개명 등) — 세션 폐기
+    clearSession();
+    return false;
+  }
+
+  // 로그인 상태 복원
+  currentStudent = { id: sess.id, ...student };
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('main').classList.add('active');
+  renderHome();
+  restoreLocationSettings();
+  return true;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2596,6 +2674,9 @@ function login() {
   currentStudent = { id, ...student };
   err.textContent = '';
 
+  // 세션 저장 (다음 방문 때 자동 로그인)
+  saveSession(id, name);
+
   document.getElementById('login').style.display = 'none';
   document.getElementById('main').classList.add('active');
 
@@ -2610,6 +2691,8 @@ function logout() {
   photoCache = [];
   photosLoadedOnce = false;
   currentViewerPhoto = null;
+  // 자동 로그인 해제
+  clearSession();
   document.getElementById('login').style.display = 'flex';
   document.getElementById('main').classList.remove('active');
   document.getElementById('inputId').value = '';
