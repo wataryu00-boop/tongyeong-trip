@@ -696,6 +696,95 @@ header button:hover {
   padding: 4px 0;
 }
 
+/* 학생 상세 모달 — 룸메이트 섹션 */
+.roommates-section {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.roommates-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.roommates-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gm-chip.has-tel {
+  padding-right: 4px;
+}
+.gm-tel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-size: 11px;
+  margin-left: 2px;
+}
+.gm-tel:active { opacity: 0.7; }
+.gm-tel.disabled {
+  background: var(--line);
+  color: var(--ink-mute);
+  cursor: not-allowed;
+}
+
+/* 숙소 탭 */
+.room-card {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.room-card-head {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.room-card-head .room-no {
+  font-family: 'Gowun Batang', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.room-card-head .room-floor {
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.room-card-head .room-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.room-card-body {
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+/* 반 필터 선택됐을 때: 해당 반 학생은 강조, 다른 반은 흐리게 */
+.gm-chip.hi {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.gm-chip.dim {
+  opacity: 0.5;
+}
+
 /* SOS panel */
 .sos-item {
   background: var(--accent-soft);
@@ -1454,6 +1543,7 @@ header button:hover {
       <div class="tab" data-panel="classmap">🏫 반별</div>
       <div class="tab" data-panel="students">👥 학생</div>
       <div class="tab" data-panel="groups">🧭 조정보</div>
+      <div class="tab" data-panel="rooms">🏨 숙소</div>
       <div class="tab" data-panel="sos">🆘 SOS<span class="badge" id="sosBadge" style="display:none;">0</span></div>
       <div class="tab" data-panel="announce">📢 공지</div>
       <div class="tab" data-panel="records">📝 기록</div>
@@ -1530,6 +1620,22 @@ header button:hover {
           <span class="scr-count" id="groupClassCount"></span>
         </div>
         <div id="groupList"></div>
+      </div>
+    </section>
+
+    <!-- ROOMS PANEL -->
+    <section id="panel-rooms" class="panel">
+      <div class="panel-inner">
+        <div class="section-label">LODGING</div>
+        <h2 class="section-title">숙소 정보</h2>
+        <div class="student-class-row">
+          <label class="scr-label">반</label>
+          <select id="roomClassSelect" class="student-class-select" onchange="setRoomClassFilter(this.value)">
+            <option value="all">전체 반</option>
+          </select>
+          <span class="scr-count" id="roomClassCount"></span>
+        </div>
+        <div id="roomList"></div>
       </div>
     </section>
 
@@ -2029,6 +2135,8 @@ function initFirebase() {
         renderStudentList();
         renderGroupList();
         renderGroupClassSelect();
+        renderRoomClassSelect();
+        renderRoomList();
         renderStudentFilters();
         renderStudentClassSelect();
         renderMapClassSelect();
@@ -2787,6 +2895,8 @@ async function completeLogin(user, info) {
   renderStudentList();
   renderGroupClassSelect();
   renderGroupList();
+  renderRoomClassSelect();
+  renderRoomList();
   renderMapClassSelect();
   renderMapGroupSelect();
   renderClassMapSelect();
@@ -3099,6 +3209,124 @@ function renderGroupList() {
       <div class="group-members">
         <div class="group-members-label">조원 ${members.length}명</div>
         <div class="group-members-list">${membersHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// 숙소 정보 (🏨)
+// ═══════════════════════════════════════════════════
+let currentRoomClassFilter = 'all';  // 'all' | '1'..'11'
+
+// 숙소 탭 반 드롭다운 옵션 채우기
+function renderRoomClassSelect() {
+  const sel = document.getElementById('roomClassSelect');
+  if (!sel) return;
+
+  // 반별 학생 수 집계 (학번 기반)
+  const classCount = {};
+  Object.keys(STUDENTS).forEach(sid => {
+    const c = classNoFromStudentId(sid);
+    if (c != null) classCount[c] = (classCount[c] || 0) + 1;
+  });
+
+  const classNums = Object.keys(classCount).map(Number).sort((a, b) => a - b);
+  const current = sel.value || 'all';
+
+  const opts = ['<option value="all">전체 반</option>']
+    .concat(classNums.map(n =>
+      `<option value="${n}">2-${n} (${classCount[n]}명)</option>`
+    ));
+  sel.innerHTML = opts.join('');
+  if (current === 'all' || classNums.includes(Number(current))) {
+    sel.value = current;
+  } else {
+    sel.value = 'all';
+    currentRoomClassFilter = 'all';
+  }
+  sel.classList.toggle('active', currentRoomClassFilter !== 'all');
+}
+
+function setRoomClassFilter(val) {
+  currentRoomClassFilter = val;
+  const sel = document.getElementById('roomClassSelect');
+  if (sel) sel.classList.toggle('active', val !== 'all');
+  renderRoomList();
+}
+
+// 층 문자열("8층")에서 숫자만 추출 — 정렬용
+function floorNum(f) {
+  if (!f) return 0;
+  const m = String(f).match(/\d+/);
+  return m ? parseInt(m[0], 10) : 0;
+}
+
+function renderRoomList() {
+  const el = document.getElementById('roomList');
+  const countEl = document.getElementById('roomClassCount');
+  if (!el) return;
+
+  // 1. 방 번호 → 해당 방의 모든 학생 엔트리 맵핑
+  const byRoom = {};  // roomNo -> [{id, ...s}, ...]
+  Object.entries(STUDENTS).forEach(([sid, s]) => {
+    if (!s.room) return;
+    if (!byRoom[s.room]) byRoom[s.room] = [];
+    byRoom[s.room].push({ id: sid, ...s });
+  });
+
+  // 2. 반 필터 적용 — 선택된 반 학생이 1명이라도 들어있는 방만
+  const targetClass = currentRoomClassFilter === 'all' ? null : Number(currentRoomClassFilter);
+  let roomNos = Object.keys(byRoom);
+  if (targetClass != null) {
+    roomNos = roomNos.filter(rn =>
+      byRoom[rn].some(stu => classNoFromStudentId(stu.id) === targetClass)
+    );
+  }
+
+  // 3. 정렬: 층 → 방번호 순
+  roomNos.sort((a, b) => {
+    const fa = floorNum(byRoom[a][0]?.floor);
+    const fb = floorNum(byRoom[b][0]?.floor);
+    if (fa !== fb) return fa - fb;
+    return String(a).localeCompare(String(b), undefined, { numeric: true });
+  });
+
+  if (countEl) {
+    countEl.textContent = `${roomNos.length}실`;
+  }
+
+  if (roomNos.length === 0) {
+    el.innerHTML = '<div class="empty">방 배정 데이터가 없습니다</div>';
+    return;
+  }
+
+  // 4. 각 방 카드 렌더
+  el.innerHTML = roomNos.map(rn => {
+    const students = [...byRoom[rn]].sort((a, b) => a.id.localeCompare(b.id));
+    const floor = students[0]?.floor || '';
+
+    // 선택된 반 학생을 강조, 다른 반은 약하게
+    const chips = students.map(stu => {
+      const classNo = classNoFromStudentId(stu.id);
+      const isHighlighted = targetClass != null && classNo === targetClass;
+      const classTag = classNo != null ? ` <span class="gm-cls">2-${classNo}</span>` : '';
+      const telBtn = stu.tel
+        ? `<a class="gm-tel" href="tel:${stu.tel}" onclick="event.stopPropagation();" title="${escapeHtml(stu.name)}에게 전화">📞</a>`
+        : `<span class="gm-tel disabled" title="번호 없음">📞</span>`;
+      const dimClass = (targetClass != null && !isHighlighted) ? ' dim' : '';
+      const hiClass = isHighlighted ? ' hi' : '';
+      return `<span class="gm-chip has-tel${hiClass}${dimClass}" onclick="showStudentDetail('${stu.id}')">${escapeHtml(stu.name)}${classTag}${telBtn}</span>`;
+    }).join('');
+
+    return `<div class="room-card">
+      <div class="room-card-head">
+        <span class="room-no">${escapeHtml(String(rn))}호</span>
+        ${floor ? `<span class="room-floor">${escapeHtml(floor)}</span>` : ''}
+        <span class="room-count">${students.length}명</span>
+      </div>
+      <div class="room-card-body">
+        ${chips}
       </div>
     </div>`;
   }).join('');
@@ -3570,6 +3798,36 @@ function showStudentDetail(studentId) {
 
   const gDisplay = getGroupName(s.group);
   const hasRealName = gDisplay !== `${s.group}조`;
+
+  // 같은 방 학생 (본인 제외, 학번 오름차순)
+  let roommatesHtml = '';
+  if (s.room) {
+    const roommates = Object.entries(STUDENTS)
+      .filter(([sid, o]) => sid !== studentId && o.room && o.room === s.room)
+      .sort((a, b) => a[0].localeCompare(b[0]));
+
+    const chips = roommates.map(([sid, o]) => {
+      const classNo = classNoFromStudentId(sid);
+      const classTag = classNo != null ? ` <span class="gm-cls">2-${classNo}</span>` : '';
+      // 이름 클릭 → 해당 학생 상세 모달로 전환
+      // 전화 아이콘 → 전화 (번호 없으면 비활성)
+      const telBtn = o.tel
+        ? `<a class="gm-tel" href="tel:${o.tel}" onclick="event.stopPropagation();" title="${escapeHtml(o.name)}에게 전화">📞</a>`
+        : `<span class="gm-tel disabled" title="번호 없음">📞</span>`;
+      return `<span class="gm-chip has-tel" onclick="showStudentDetail('${sid}')">${escapeHtml(o.name)}${classTag}${telBtn}</span>`;
+    }).join('');
+
+    const label = `같은 방 (${s.room}${s.floor ? ' · ' + s.floor : ''})`;
+    roommatesHtml = `
+      <div class="roommates-section">
+        <div class="roommates-label">🛏️ ${escapeHtml(label)}</div>
+        <div class="roommates-list">
+          ${chips || '<div class="gm-empty">같은 방 학생 정보가 없습니다</div>'}
+        </div>
+      </div>
+    `;
+  }
+
   document.getElementById('smBody').innerHTML = `
     <div class="detail-grid">
       <div><div class="k">학번</div><div class="v">${s.id || studentId}</div></div>
@@ -3581,6 +3839,7 @@ function showStudentDetail(studentId) {
     </div>
     ${locHtml}
     <div class="detail-actions">${actions.join('')}</div>
+    ${roommatesHtml}
 
     <div class="photos-section">
       <div class="photos-head">
