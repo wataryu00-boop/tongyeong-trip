@@ -320,13 +320,21 @@ header button:hover {
 }
 .map-controls {
   position: absolute;
-  top: 124px;
+  top: 140px;
   right: 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   z-index: 5;
 }
+/* SOS 배너가 떠 있을 때는 배너 높이만큼(약 60px) 추가로 내려서 탭과 겹치지 않게 */
+.sos-banner.active ~ nav.tabs ~ section #map,
+.sos-banner.active ~ nav.tabs ~ section .map-controls,
+.sos-banner.active ~ nav.tabs ~ section .map-stats {
+  /* 선택자만 남기는 용도 — 실제 규칙은 JS로 토글하는 편이 확실 */
+}
+.main.sos-visible .map-controls { top: 200px; }
+.main.sos-visible .map-stats { top: 200px; }
 .map-ctrl-btn {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -370,39 +378,71 @@ header button:hover {
 .map-ctrl-select.active { background-color: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .map-ctrl-select option { background: var(--surface); color: var(--ink); }
 
-.map-legend {
-  position: absolute;
-  bottom: 16px;
-  left: 12px;
-  background: rgba(26, 26, 26, 0.92);
-  border: 1px solid var(--line);
-  padding: 10px 12px;
-  font-size: 10px;
-  line-height: 1.7;
-  z-index: 5;
-  backdrop-filter: blur(8px);
-  max-height: 55vh;
-  overflow-y: auto;
-  max-width: 180px;
-}
-.map-legend::-webkit-scrollbar { width: 4px; }
-.map-legend::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
-.map-legend .legend-row {
+/* .map-legend 제거됨 — 조 이름은 마커 위에 직접 표시 */
+
+/* 학생 마커 — CustomOverlay로 색 점 + 이름 상시 표시 */
+.student-pin {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  /* CustomOverlay 기본 컨테이너 — 클릭 가능하게 */
 }
-.legend-dot {
-  width: 10px;
-  height: 10px;
+.student-pin.stale { opacity: 0.55; }
+.student-pin .sp-dot {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  display: inline-block;
   border: 2px solid #fff;
+  color: #fff;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+.student-pin .sp-label {
+  margin-top: 2px;
+  background: rgba(15, 15, 15, 0.88);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(4px);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.student-pin .sp-name {
+  font-weight: 600;
+  font-size: 11px;
+}
+.student-pin .sp-group {
+  color: #a0a0a0;
+  font-size: 9px;
+  margin-top: 1px;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.student-pin:hover .sp-dot {
+  transform: scale(1.1);
+  transition: transform 0.15s;
+}
+.student-pin:hover .sp-label {
+  background: rgba(255, 90, 60, 0.95);
+  border-color: var(--accent);
 }
 
 .map-stats {
   position: absolute;
-  top: 124px;
+  top: 140px;
   left: 12px;
   background: rgba(26, 26, 26, 0.92);
   border: 1px solid var(--line);
@@ -1338,11 +1378,8 @@ header button:hover {
         <select class="map-ctrl-select" id="mapGroupSelect" onchange="setMapFilter(this.value)" title="특정 조로 필터">
           <option value="__placeholder">조 선택…</option>
         </select>
-        <button class="map-ctrl-btn" data-filter="teachers" onclick="setMapFilter('teachers')">교사</button>
         <button class="map-ctrl-btn" onclick="recenterMap()">⟲ 초기화</button>
       </div>
-
-      <div class="map-legend" id="mapLegend"></div>
     </section>
 
     <!-- STUDENTS PANEL -->
@@ -1562,6 +1599,14 @@ const TEACHER_COLOR = '#60a5fa';
 
 // 기본 지도 중심 (서울 광화문)
 const DEFAULT_CENTER = { lat: 37.5759, lng: 126.9768 };
+
+// ═══════════════════════════════════════════════════
+// 기능 플래그
+// ═══════════════════════════════════════════════════
+// 교사 위치 공유 — 비상시에만 true로 바꿔서 교사들끼리 서로 위치 확인 가능
+// false: 내 위치를 Firebase에 올리지도 않고, 다른 교사 위치도 지도에 표시 안 함
+// true : 5분마다 내 위치 전송 + 다른 교사 마커 지도에 표시
+const ENABLE_TEACHER_LOCATION_SHARING = false;
 
 // ═══════════════════════════════════════════════════
 // 상태
@@ -1881,10 +1926,13 @@ function initFirebase() {
         });
       }
     });
-    db.ref(FIREBASE_PATH + '/teacher-locations').on('value', snap => {
-      TEACHER_LOCATIONS = snap.val() || {};
-      if (currentTeacher) updateTeacherMarkers();
-    });
+    // 교사 위치 구독은 기능 플래그가 켜졌을 때만 — 불필요한 다운로드/구독 방지
+    if (ENABLE_TEACHER_LOCATION_SHARING) {
+      db.ref(FIREBASE_PATH + '/teacher-locations').on('value', snap => {
+        TEACHER_LOCATIONS = snap.val() || {};
+        if (currentTeacher) updateTeacherMarkers();
+      });
+    }
     db.ref('.info/connected').on('value', snap => {
       setConn(snap.val() ? 'online' : 'offline', snap.val() ? '실시간 연결' : '오프라인');
     });
@@ -2040,39 +2088,31 @@ function updateMapMarkers() {
 function createStudentMarker(loc, student, color) {
   const position = new kakao.maps.LatLng(loc.lat, loc.lng);
   const isStale = (Date.now() - (loc.ts || 0)) > 15 * 60 * 1000;
+  const studentId = Object.keys(LOCATIONS).find(k => LOCATIONS[k] === loc) || '';
 
-  // SVG 마커 이미지
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
-    <circle cx="14" cy="14" r="11" fill="${color}" stroke="#fff" stroke-width="2" opacity="${isStale ? 0.55 : 1}"/>
-    <text x="14" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="sans-serif">${student.group || '?'}</text>
-  </svg>`;
-  const imageSrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-  const imageSize = new kakao.maps.Size(28, 28);
-  const imageOption = { offset: new kakao.maps.Point(14, 14) };
-  const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+  // CustomOverlay — 색 점 + 학생 이름 + 조 이름을 항상 표시
+  const wrapEl = document.createElement('div');
+  wrapEl.className = 'student-pin' + (isStale ? ' stale' : '');
+  wrapEl.innerHTML = `
+    <div class="sp-dot" style="background:${color}">${escapeHtml(student.group || '?')}</div>
+    <div class="sp-label">
+      <div class="sp-name">${escapeHtml(student.name || '')}</div>
+      <div class="sp-group">${escapeHtml(getGroupName(student.group) || '')}</div>
+    </div>
+  `;
 
-  const marker = new kakao.maps.Marker({
-    position, image: markerImage, map: kakaoMap, title: student.name
+  // 클릭 시 학생 상세 모달
+  wrapEl.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (studentId) showStudentDetail(studentId);
   });
 
-  const minutes = Math.round((Date.now() - (loc.ts || 0)) / 60000);
-  const timeText = minutes < 1 ? '방금' : minutes < 60 ? `${minutes}분 전` : `${Math.round(minutes/60)}시간 전`;
-
-  const iw = new kakao.maps.InfoWindow({
-    content: `<div style="padding:8px 10px; font-size:12px; min-width:140px;">
-      <strong>${student.name}</strong> (${getGroupName(student.group) || '?조'})<br>
-      <span style="color:#888;">${timeText} · ±${loc.accuracy || '?'}m</span>
-    </div>`
+  const overlay = new kakao.maps.CustomOverlay({
+    position, content: wrapEl, yAnchor: 0.5, xAnchor: 0.5, zIndex: 3
   });
+  overlay.setMap(kakaoMap);
 
-  kakao.maps.event.addListener(marker, 'click', () => {
-    Object.values(infoWindows).forEach(i => i.close());
-    iw.open(kakaoMap, marker);
-    // 학생 상세 모달도 열기
-    showStudentDetail(Object.keys(LOCATIONS).find(k => LOCATIONS[k] === loc));
-  });
-  infoWindows[student.name] = iw;
-  return marker;
+  return overlay;  // Marker 대신 CustomOverlay 반환
 }
 
 function updateTeacherMarkers() {
@@ -2080,6 +2120,7 @@ function updateTeacherMarkers() {
   Object.values(teacherMarkers).forEach(m => m.setMap(null));
   teacherMarkers = {};
 
+  if (!ENABLE_TEACHER_LOCATION_SHARING) return;  // 기능 꺼짐 — 교사 마커 표시 안 함
   if (currentMapFilter !== 'all' && currentMapFilter !== 'teachers') return;
 
   Object.entries(TEACHER_LOCATIONS).forEach(([name, loc]) => {
@@ -2223,18 +2264,8 @@ function recenterMap() {
 }
 
 function renderLegend() {
-  const groupNumbers = getVisibleGroupKeys();
-  const items = groupNumbers.map(n => {
-    return `<div class="legend-row">
-      <span class="legend-dot" style="background:${GROUP_COLORS[n] || '#888'}"></span>
-      <span>${escapeHtml(getGroupName(n))}</span>
-    </div>`;
-  }).join('');
-  const classTag = currentClassFilter === 'all'
-    ? ''
-    : `<div class="legend-row" style="font-size:10px; color:var(--ink-mute); border-bottom:1px solid var(--line); padding-bottom:4px; margin-bottom:4px;">2-${currentClassFilter}반 조 ${groupNumbers.length}개</div>`;
-  document.getElementById('mapLegend').innerHTML = classTag + items +
-    `<div class="legend-row"><span class="legend-dot" style="background:${TEACHER_COLOR}"></span><span>교사</span></div>`;
+  // 범례 제거됨 — 조 이름은 마커 위에 직접 표시됨 (createStudentMarker 참고)
+  // 다른 여러 곳에서 이 함수를 호출하므로 no-op로 유지
 }
 
 function updateStats() {
@@ -2452,10 +2483,11 @@ async function teacherLogout() {
 }
 
 // ═══════════════════════════════════════════════════
-// 교사 위치 전송
+// 교사 위치 전송 (ENABLE_TEACHER_LOCATION_SHARING 플래그로 제어)
 // ═══════════════════════════════════════════════════
 
 function startTeacherLocation() {
+  if (!ENABLE_TEACHER_LOCATION_SHARING) return;  // 기능 꺼짐
   teacherLocationTick();
   teacherLocationInterval = setInterval(teacherLocationTick, 5 * 60 * 1000);
 }
@@ -2468,6 +2500,7 @@ function stopTeacherLocation() {
 }
 
 function teacherLocationTick() {
+  if (!ENABLE_TEACHER_LOCATION_SHARING) return;  // 기능 꺼짐
   if (!currentTeacher || !firebaseReady) return;
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(pos => {
@@ -2662,14 +2695,17 @@ function unresolveSOS(id) {
 function updateSOSBanner() {
   const banner = document.getElementById('sosBanner');
   if (!banner) return;
+  const main = document.getElementById('main');
   const unresolved = SOS.filter(s => !s.resolved && !seenSOSIds.has(s.id));
   if (unresolved.length > 0) {
     const latest = unresolved[0];
     document.getElementById('sosBannerText').textContent = `${latest.name} (${getGroupName(latest.group)}): ${latest.message}`;
     document.getElementById('sosBannerCount').textContent = unresolved.length > 1 ? `(+${unresolved.length - 1})` : '';
     banner.classList.add('active');
+    if (main) main.classList.add('sos-visible');
   } else {
     banner.classList.remove('active');
+    if (main) main.classList.remove('sos-visible');
   }
 }
 
