@@ -2270,6 +2270,15 @@
     font-weight: 500;
     opacity: 0.85;
   }
+  .pv-memo {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    margin-top: 3px;
+    max-width: 75vw;
+    line-height: 1.35;
+    word-break: break-word;
+  }
   .pv-close {
     width: 36px;
     height: 36px;
@@ -2415,6 +2424,26 @@
   .modal-actions .confirm {
     background: var(--red);
     color: #fff;
+  }
+  .modal-actions .primary {
+    background: var(--coral);
+    color: #fff;
+  }
+  .modal-actions .confirm:disabled,
+  .modal-actions .primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  /* 글자수 카운터 */
+  .modal-counter {
+    font-size: 11px;
+    color: var(--ink-3);
+    text-align: right;
+    margin-top: 4px;
+  }
+  .modal-counter.over {
+    color: var(--red);
+    font-weight: 600;
   }
 
   /* 키보드 올라올 때 하단 탭바 숨기기 (작은 뷰포트) */
@@ -2653,7 +2682,10 @@
     <!-- 사진 뷰어 모달 -->
     <div class="photo-viewer" id="photoViewer" onclick="closeViewer(event)">
       <div class="pv-topbar">
-        <div class="pv-meta" id="pvMeta">-</div>
+        <div>
+          <div class="pv-meta" id="pvMeta">-</div>
+          <div class="pv-memo" id="pvMemo" style="display:none;"></div>
+        </div>
         <button class="pv-close" onclick="closeViewer()" aria-label="닫기">✕</button>
       </div>
       <img class="pv-img" id="pvImg" />
@@ -2720,6 +2752,20 @@
     <div class="modal-actions">
       <button class="cancel" onclick="closeSOS()">취소</button>
       <button class="confirm" onclick="sendSOS()">전송</button>
+    </div>
+  </div>
+</div>
+
+<!-- 기록 사진 메모 입력 모달 -->
+<div class="modal-bg" id="memoModal">
+  <div class="modal">
+    <h3>📷 기록 사진 코멘트</h3>
+    <div class="desc">이 사진이 어떤 장면인지 한 줄로 적어주세요.<br>(나중에 사진을 다시 볼 때 도움이 돼요)</div>
+    <textarea id="memoInput" placeholder="예) 조원들과 남산타워 앞에서 / 점심 먹은 메뉴 / 경복궁 수문장 교대식" maxlength="120" oninput="onMemoInput()"></textarea>
+    <div class="modal-counter" id="memoCounter">0 / 120</div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeMemoModal()">취소</button>
+      <button class="primary" id="memoConfirmBtn" onclick="confirmMemoAndUpload()" disabled>등록</button>
     </div>
   </div>
 </div>
@@ -5138,17 +5184,82 @@ function setUploadProgress(pct, label) {
 }
 
 // <input> onchange 핸들러
+// 기록 사진 업로드를 위한 임시 상태 — 메모 입력 대기 중인 파일
+let pendingMemoFile = null;
+
 async function handlePhotoSelect(evt, tag) {
   const input = evt.target;
   const file = input.files && input.files[0];
   // 바로 리셋 — 같은 파일 재선택 가능하게
   input.value = '';
   if (!file) return;
-  await uploadPhoto(file, tag);
+
+  // 사전 검증 (모달 띄우기 전에)
+  if (!currentStudent) return;
+  if (!storageReady) {
+    toast('연결 준비 중이에요. 잠시 후 다시 해주세요');
+    return;
+  }
+  if (!file.type.startsWith('image/')) {
+    toast('이미지 파일만 올릴 수 있어요');
+    return;
+  }
+  if (photoCache.length >= MAX_PHOTOS) {
+    toast(`최대 ${MAX_PHOTOS}장까지 업로드할 수 있어요. 기존 사진을 지우세요.`);
+    return;
+  }
+
+  if (tag === 'memo') {
+    // 기록 사진은 먼저 메모 입력받고 업로드
+    openMemoModal(file);
+  } else {
+    // QR 식권은 바로 업로드 (메모 없음)
+    await uploadPhoto(file, tag, '');
+  }
+}
+
+function openMemoModal(file) {
+  pendingMemoFile = file;
+  const ta = document.getElementById('memoInput');
+  const counter = document.getElementById('memoCounter');
+  const btn = document.getElementById('memoConfirmBtn');
+  ta.value = '';
+  counter.textContent = '0 / 120';
+  counter.classList.remove('over');
+  btn.disabled = true;
+  document.getElementById('memoModal').classList.add('show');
+  setTimeout(() => ta.focus(), 100);
+}
+
+function closeMemoModal() {
+  document.getElementById('memoModal').classList.remove('show');
+  pendingMemoFile = null;
+}
+
+function onMemoInput() {
+  const ta = document.getElementById('memoInput');
+  const counter = document.getElementById('memoCounter');
+  const btn = document.getElementById('memoConfirmBtn');
+  const len = ta.value.length;
+  const trimmedLen = ta.value.trim().length;
+  counter.textContent = `${len} / 120`;
+  counter.classList.toggle('over', len > 120);
+  // 공백만 있는 경우도 비활성 — 최소 1자 이상 의미 있는 입력 요구
+  btn.disabled = trimmedLen === 0 || len > 120;
+}
+
+async function confirmMemoAndUpload() {
+  if (!pendingMemoFile) return;
+  const memo = document.getElementById('memoInput').value.trim();
+  if (!memo) return;
+  const file = pendingMemoFile;
+  pendingMemoFile = null;
+  closeMemoModal();
+  await uploadPhoto(file, 'memo', memo);
 }
 
 // 업로드: 원본 + 썸네일을 함께 업로드
-async function uploadPhoto(file, tag) {
+async function uploadPhoto(file, tag, memo = '') {
   if (!currentStudent) return;
   if (!storageReady) {
     toast('연결 준비 중이에요. 잠시 후 다시 해주세요');
@@ -5184,10 +5295,18 @@ async function uploadPhoto(file, tag) {
     if (!dir) { setUploadProgress(null); return; }
 
     // Cache-Control: 이미지는 내용이 바뀌지 않으므로 1년 캐시
+    // customMetadata에 memo 포함 (기록 사진일 때만 의미있음)
+    const customMeta = {
+      tag,
+      studentId: currentStudent.id,
+      studentName: currentStudent.name
+    };
+    if (memo) customMeta.memo = memo;
+
     const metaBase = {
       contentType: 'image/jpeg',
       cacheControl: 'public, max-age=31536000, immutable',
-      customMetadata: { tag, studentId: currentStudent.id, studentName: currentStudent.name }
+      customMetadata: customMeta
     };
 
     const origRef = storage.ref(`${dir}/${origName}`);
@@ -5222,6 +5341,7 @@ async function uploadPhoto(file, tag) {
       name: origName,
       thumbName,
       tag,
+      memo,
       url,
       thumbUrl,
       ts: Date.now()
@@ -5277,21 +5397,25 @@ async function loadPhotos() {
       }
     });
 
-    // 원본 기준으로 URL 병렬 조회 (원본 + 있으면 썸네일)
+    // 원본 기준으로 URL 병렬 조회 (원본 + 있으면 썸네일 + memo metadata)
     const items = await Promise.all(origRefs.map(async ref => {
       try {
         const info = parsePhotoName(ref.name);
         const baseName = ref.name.replace(/\.(jpg|jpeg|png)$/i, '');
         const thumbRef = thumbByBase[baseName];
-        const [url, thumbUrl] = await Promise.all([
+        // memo는 기록 사진(memo 태그)에서만 의미가 있으므로 조건부 조회
+        const needsMeta = info.tag === 'memo';
+        const [url, thumbUrl, meta] = await Promise.all([
           ref.getDownloadURL(),
-          thumbRef ? thumbRef.getDownloadURL().catch(() => null) : Promise.resolve(null)
+          thumbRef ? thumbRef.getDownloadURL().catch(() => null) : Promise.resolve(null),
+          needsMeta ? ref.getMetadata().catch(() => null) : Promise.resolve(null)
         ]);
         return {
           name: ref.name,
           thumbName: thumbRef ? thumbRef.name : null,
           tag: info.tag,
           ts: info.ts,
+          memo: meta?.customMetadata?.memo || '',
           url,
           thumbUrl: thumbUrl || url  // 썸네일 없으면 원본 URL로 폴백 (구버전 파일 대응)
         };
@@ -5383,6 +5507,17 @@ function openViewer(idx) {
   const timeStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   const tagStr = p.tag === 'qr' ? '★ QR 식권' : '기록';
   document.getElementById('pvMeta').textContent = `${tagStr} · ${timeStr}`;
+  // 메모 표시 (있을 때만)
+  const memoEl = document.getElementById('pvMemo');
+  if (memoEl) {
+    if (p.memo && p.tag === 'memo') {
+      memoEl.textContent = p.memo;
+      memoEl.style.display = '';
+    } else {
+      memoEl.textContent = '';
+      memoEl.style.display = 'none';
+    }
+  }
   document.getElementById('pvImg').src = p.url;
   document.getElementById('photoViewer').classList.add('show');
 }
