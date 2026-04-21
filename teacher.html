@@ -853,6 +853,42 @@ header button:hover {
   background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
+
+/* 점호 날짜 탭 */
+.rc-day-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.rc-day-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-soft);
+  padding: 12px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+.rc-day-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.rc-day-tab:active { opacity: 0.75; }
+.rc-day-count {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 500;
+  margin-left: 3px;
+}
+.rc-day-tab.active .rc-day-count {
+  color: var(--accent);
+}
 .rc-progress {
   height: 6px;
   background: var(--surface-2);
@@ -1950,10 +1986,14 @@ header button:hover {
       </div>
       <button class="rc-close" onclick="closeRollCallModal()" aria-label="닫기">✕</button>
     </div>
+    <div class="rc-day-tabs" id="rcDayTabs">
+      <button class="rc-day-tab" data-rcday="1" onclick="setRollCallDay(1)">5/6 · 1일차</button>
+      <button class="rc-day-tab" data-rcday="2" onclick="setRollCallDay(2)">5/7 · 2일차</button>
+    </div>
     <div class="rc-summary" id="rcSummary">—</div>
     <div class="rc-body" id="rcBody"></div>
     <div class="rc-footer">
-      <button class="rc-reset" onclick="resetRollCall()">↺ 모두 초기화</button>
+      <button class="rc-reset" onclick="resetRollCall()">↺ 이 날 점호 초기화</button>
     </div>
   </div>
 
@@ -3560,8 +3600,29 @@ function updateRollCallButton() {
 // 📋 점호 모드 (담임 전용 · 본인 반 학생 · Firebase 실시간)
 // ═══════════════════════════════════════════════════
 
-function rcPathForClass(klass) {
-  return `${FIREBASE_PATH}/roll-calls/class-${klass}`;
+// 점호 날짜 상태 (1 = 5/6, 2 = 5/7)
+let currentRcDay = 1;
+
+// 오늘 날짜 기준 기본 day 판정
+function defaultRcDay() {
+  const now = new Date();
+  // 현재 시각을 기준으로 한국 날짜 계산 (브라우저 로컬 시간 가정)
+  const y = now.getFullYear(), m = now.getMonth() + 1, d = now.getDate();
+  // 5/6 이전 또는 5/6 당일 → 1일차
+  // 5/7 당일 → 2일차
+  // 5/8 이후 → 가장 최근인 2일차로 (리뷰용)
+  if (y < 2026) return 1;
+  if (y > 2026) return 2;
+  if (m < 5) return 1;
+  if (m > 5) return 2;
+  // m === 5
+  if (d <= 6) return 1;
+  if (d === 7) return 2;
+  return 2;
+}
+
+function rcPathForClass(klass, day) {
+  return `${FIREBASE_PATH}/roll-calls/class-${klass}/day-${day}`;
 }
 
 // 현재 로그인 교사의 담당 반 학생들을 방별로 그룹핑
@@ -3584,7 +3645,10 @@ function openRollCallModal() {
     alert('담임 교사에게만 점호 기능이 제공됩니다.');
     return;
   }
+  // 오늘 날짜에 맞춰 탭 기본값 설정
+  currentRcDay = defaultRcDay();
   document.getElementById('rollCallModal').classList.add('active');
+  updateRollCallDayTabs();
   renderRollCallModal();
 }
 
@@ -3592,13 +3656,31 @@ function closeRollCallModal() {
   document.getElementById('rollCallModal').classList.remove('active');
 }
 
+function setRollCallDay(day) {
+  currentRcDay = day;
+  updateRollCallDayTabs();
+  renderRollCallModal();
+}
+
+function updateRollCallDayTabs() {
+  document.querySelectorAll('.rc-day-tab').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.rcday) === currentRcDay);
+  });
+}
+
+// 특정 날짜의 해당 반 점호 데이터
+function rcGetClassDayData(klass, day) {
+  const classData = ROLL_CALL[`class-${klass}`] || {};
+  return classData[`day-${day}`] || {};
+}
+
 function renderRollCallModal() {
   const klass = myHomeroomClass();
   if (klass == null) return;
 
   const byRoom = rcGetMyRoomsByClass(klass);
-  const classData = ROLL_CALL[`class-${klass}`] || {};
-  const checks = classData.students || {};
+  const dayData = rcGetClassDayData(klass, currentRcDay);
+  const checks = dayData.students || {};
 
   // 방 번호 정렬 — 층, 방번호 순
   const roomNos = Object.keys(byRoom).sort((a, b) => {
@@ -3617,10 +3699,28 @@ function renderRollCallModal() {
     });
   });
 
+  // 각 날짜별 완료율 계산 (탭에 표시)
+  [1, 2].forEach(d => {
+    const dData = rcGetClassDayData(klass, d);
+    const dChecks = dData.students || {};
+    let dTotal = 0, dDone = 0;
+    Object.keys(STUDENTS).forEach(sid => {
+      if (classNoFromStudentId(sid) !== klass) return;
+      dTotal++;
+      if (dChecks[sid]?.present) dDone++;
+    });
+    const tab = document.querySelector(`.rc-day-tab[data-rcday="${d}"]`);
+    if (tab) {
+      const dateLabel = d === 1 ? '5/6 · 1일차' : '5/7 · 2일차';
+      tab.innerHTML = `${dateLabel} <span class="rc-day-count">(${dDone}/${dTotal})</span>`;
+    }
+  });
+
   // 헤더 요약
-  document.getElementById('rcSub').textContent = `2-${klass} 담임 · ${currentTeacher?.name || ''} 선생님`;
+  const dayLabel = currentRcDay === 1 ? '5/6 (수요일)' : '5/7 (목요일)';
+  document.getElementById('rcSub').textContent = `2-${klass} 담임 · ${currentTeacher?.name || ''} 선생님 · ${dayLabel}`;
   const pct = totalStudents > 0 ? Math.round((checkedCount / totalStudents) * 100) : 0;
-  const updatedBy = classData.updatedBy ? ` · 최근: ${escapeHtml(classData.updatedBy)}` : '';
+  const updatedBy = dayData.updatedBy ? ` · 최근: ${escapeHtml(dayData.updatedBy)}` : '';
   document.getElementById('rcSummary').innerHTML = `
     <div class="rc-progress">
       <div class="rc-progress-fill" style="width:${pct}%;"></div>
@@ -3667,8 +3767,10 @@ async function toggleRollCallCheck(studentId) {
   const klass = myHomeroomClass();
   if (klass == null || !currentTeacher) return;
 
+  const day = currentRcDay;
   const classKey = `class-${klass}`;
-  const current = ROLL_CALL[classKey]?.students?.[studentId];
+  const dayKey = `day-${day}`;
+  const current = ROLL_CALL[classKey]?.[dayKey]?.students?.[studentId];
   const nextPresent = !(current && current.present);
 
   const now = Date.now();
@@ -3676,18 +3778,19 @@ async function toggleRollCallCheck(studentId) {
 
   try {
     // 낙관적 업데이트 — UI 반응성
-    if (!ROLL_CALL[classKey]) ROLL_CALL[classKey] = { students: {} };
-    if (!ROLL_CALL[classKey].students) ROLL_CALL[classKey].students = {};
-    ROLL_CALL[classKey].students[studentId] = { present: nextPresent, ts: now, by };
-    ROLL_CALL[classKey].updatedAt = now;
-    ROLL_CALL[classKey].updatedBy = by;
+    if (!ROLL_CALL[classKey]) ROLL_CALL[classKey] = {};
+    if (!ROLL_CALL[classKey][dayKey]) ROLL_CALL[classKey][dayKey] = { students: {} };
+    if (!ROLL_CALL[classKey][dayKey].students) ROLL_CALL[classKey][dayKey].students = {};
+    ROLL_CALL[classKey][dayKey].students[studentId] = { present: nextPresent, ts: now, by };
+    ROLL_CALL[classKey][dayKey].updatedAt = now;
+    ROLL_CALL[classKey][dayKey].updatedBy = by;
     renderRollCallModal();
 
     // Firebase 저장
-    await db.ref(`${rcPathForClass(klass)}/students/${studentId}`).set({
+    await db.ref(`${rcPathForClass(klass, day)}/students/${studentId}`).set({
       present: nextPresent, ts: now, by
     });
-    await db.ref(`${rcPathForClass(klass)}`).update({
+    await db.ref(`${rcPathForClass(klass, day)}`).update({
       updatedAt: now, updatedBy: by
     });
   } catch (e) {
@@ -3699,10 +3802,12 @@ async function toggleRollCallCheck(studentId) {
 async function resetRollCall() {
   const klass = myHomeroomClass();
   if (klass == null || !currentTeacher) return;
-  if (!confirm(`2-${klass} 점호 기록을 모두 초기화할까요?\n(다른 교사가 체크한 것도 모두 사라집니다)`)) return;
+  const day = currentRcDay;
+  const dayLabel = day === 1 ? '5/6 1일차' : '5/7 2일차';
+  if (!confirm(`2-${klass} ${dayLabel} 점호 기록을 초기화할까요?\n(다른 교사가 체크한 것도 모두 사라집니다)`)) return;
 
   try {
-    await db.ref(rcPathForClass(klass)).remove();
+    await db.ref(rcPathForClass(klass, day)).remove();
     // Firebase 리스너가 ROLL_CALL 갱신해줌
   } catch (e) {
     console.error('점호 초기화 실패:', e);
