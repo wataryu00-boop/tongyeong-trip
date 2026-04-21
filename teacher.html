@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <style>
 :root {
   --bg: #0f0f0f;
@@ -132,6 +133,50 @@ html, body {
   transition: background 0.2s;
 }
 .login-form button:hover { background: #ff7355; }
+
+/* Google 로그인 버튼 */
+.google-btn {
+  width: 100%;
+  padding: 14px 16px !important;
+  background: #fff !important;
+  color: #1f1f1f !important;
+  border: 1px solid #dadce0 !important;
+  border-radius: 4px;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: box-shadow 0.2s, background 0.2s;
+  font-family: inherit;
+}
+.google-btn:hover {
+  background: #f8f9fa !important;
+  box-shadow: 0 1px 3px rgba(60,64,67,0.15);
+}
+.google-btn:active {
+  background: #f1f3f4 !important;
+}
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.g-ico {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.login-meta {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--ink-mute);
+  min-height: 14px;
+}
+
 .login-hint {
   text-align: center;
   margin-top: 20px;
@@ -603,6 +648,207 @@ header button:hover {
   color: var(--ink-soft);
   letter-spacing: 0.05em;
 }
+
+/* ═══════════════════════════════════════════════════
+   🛡️ 유의사항 편집 UI
+   ═══════════════════════════════════════════════════ */
+.notes-help {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 11px 13px;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+.notes-help code {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 10px;
+  padding: 3px 6px;
+  background: var(--surface);
+  color: var(--ink);
+  word-break: break-all;
+}
+.notes-daytabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.notes-daytab {
+  flex: 1;
+  padding: 9px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.notes-daytab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.notes-daytab.dirty::after {
+  content: ' •';
+  color: var(--warn);
+}
+.notes-daytab.active.dirty::after {
+  color: #ffe7a0;
+}
+.notes-source {
+  font-size: 10px;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.notes-editor {
+  width: 100%;
+  min-height: 340px;
+  padding: 12px;
+  font-family: 'SF Mono', Menlo, Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  resize: vertical;
+  box-sizing: border-box;
+}
+.notes-editor:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.notes-editor.invalid {
+  border-color: var(--warn);
+  background: #fff8f0;
+}
+.notes-status {
+  margin-top: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  border-left: 3px solid var(--line);
+}
+.notes-status.ok {
+  background: #f0f8f2;
+  border-left-color: var(--success);
+  color: #2a6a3a;
+}
+.notes-status.err {
+  background: #fff4f0;
+  border-left-color: var(--warn);
+  color: #a23f14;
+}
+.notes-status.info {
+  background: #eef4fb;
+  border-left-color: var(--blue);
+  color: #234a7a;
+}
+.notes-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.2fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+.notes-btn {
+  padding: 10px 8px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+.notes-btn:active {
+  transform: scale(0.97);
+}
+.notes-btn.ghost {
+  background: var(--surface-2);
+}
+.notes-btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.notes-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 학생 앱 미리보기 */
+.notes-preview {
+  margin-top: 16px;
+  border: 1px solid var(--accent);
+  background: var(--surface-2);
+}
+.notes-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.notes-preview-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.notes-preview-body {
+  padding: 14px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+.np-cat {
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.np-cat-head {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.np-cat-head .np-icon { font-size: 14px; }
+.np-list { margin: 0; padding: 0; list-style: none; }
+.np-list li {
+  position: relative;
+  padding: 3px 0 3px 12px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.np-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px; top: 9px;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
 .record-item-meta {
   font-size: 11px;
   color: var(--ink-mute);
@@ -990,16 +1236,19 @@ header button:hover {
       <div class="sub serif">통영고등학교</div>
     </div>
     <div class="login-form">
-      <label>교사 선택</label>
-      <select id="teacherSelect">
-        <option value="">— 선생님 선택 —</option>
-      </select>
-      <label>비밀번호</label>
-      <input type="password" id="passwordInput" placeholder="교사 공용 비밀번호" autocomplete="off">
-      <button onclick="teacherLogin()">입장</button>
+      <button class="google-btn" id="googleLoginBtn" onclick="signInWithGoogle()">
+        <svg class="g-ico" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0124 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 01-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+        </svg>
+        <span>Google 계정으로 로그인</span>
+      </button>
       <div class="login-error" id="loginError"></div>
+      <div class="login-meta" id="loginMeta"></div>
     </div>
-    <div class="login-hint">담임·인솔 교사 전용 앱입니다</div>
+    <div class="login-hint">담임·인솔 교사 전용 앱입니다<br>학교 계정(@gne.go.kr) 또는 Gmail로 로그인하세요</div>
   </div>
 
   <!-- MAIN -->
@@ -1036,6 +1285,7 @@ header button:hover {
       <div class="tab" data-panel="sos">🆘 SOS<span class="badge" id="sosBadge" style="display:none;">0</span></div>
       <div class="tab" data-panel="announce">📢 공지</div>
       <div class="tab" data-panel="records">📝 기록</div>
+      <div class="tab" data-panel="notes">🛡️ 유의사항</div>
     </nav>
 
     <!-- MAP PANEL -->
@@ -1144,6 +1394,48 @@ header button:hover {
       </div>
     </section>
 
+    <!-- NOTES PANEL (학생 앱 일정 탭 하단 유의사항 편집) -->
+    <section id="panel-notes" class="panel">
+      <div class="panel-inner">
+        <div class="section-label">DAY NOTES</div>
+        <h2 class="section-title">일정별 유의사항 편집</h2>
+
+        <div class="notes-help">
+          학생 앱 <b>일정 탭 하단</b>에 표시되는 유의사항입니다.
+          JSON 형식으로 편집하고 <b>저장</b>하면 모든 학생 앱에 실시간 반영돼요.
+          <br>
+          <b>형식:</b> <code>{"categories":[{"icon":"⏰","title":"제목","items":["항목1","항목2"]}]}</code>
+        </div>
+
+        <div class="notes-daytabs" id="notesDayTabs">
+          <button class="notes-daytab active" data-dnote="1" onclick="selectNotesDay(1)">5/6 · 1일차</button>
+          <button class="notes-daytab" data-dnote="2" onclick="selectNotesDay(2)">5/7 · 2일차</button>
+          <button class="notes-daytab" data-dnote="3" onclick="selectNotesDay(3)">5/8 · 3일차</button>
+        </div>
+
+        <div class="notes-source" id="notesSource">—</div>
+
+        <textarea id="notesEditor" class="notes-editor" spellcheck="false" oninput="onNotesEditorInput()"></textarea>
+
+        <div class="notes-status" id="notesStatus"></div>
+
+        <div class="notes-actions">
+          <button class="notes-btn ghost" onclick="resetNotesToDefault()">↺ 기본값으로</button>
+          <button class="notes-btn ghost" onclick="formatNotesJSON()">✨ 정렬</button>
+          <button class="notes-btn ghost" onclick="previewNotes()">👁 미리보기</button>
+          <button class="notes-btn primary" onclick="saveNotesToFirebase()">💾 저장</button>
+        </div>
+
+        <div class="notes-preview" id="notesPreview" style="display:none;">
+          <div class="notes-preview-head">
+            <div>📱 학생 앱 미리보기</div>
+            <button class="notes-preview-close" onclick="closeNotesPreview()">✕</button>
+          </div>
+          <div class="notes-preview-body" id="notesPreviewBody"></div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <!-- 학생 상세 모달 -->
@@ -1197,18 +1489,32 @@ const FIREBASE_CONFIG = {
 // ⚠️ 반드시 본인 키 입력 + Kakao Developers에서 배포 도메인 등록 필요
 const KAKAO_APP_KEY = '93e97572beb250ebf8f9acd9933f91a6';
 
-// [교사 공용 비밀번호] — 모든 교사가 공유
-// ⚠️ 학생들에게 알려지지 않도록 주의
-const TEACHER_PASSWORD = 'teacher2026';
+// ═══════════════════════════════════════════════════
+// [교사 화이트리스트] — Google 계정 이메일 → 교사 정보
+// ═══════════════════════════════════════════════════
+// 박효덕 선생님께: 각 교사의 Gmail 또는 학교 계정을 여기에 추가해주세요.
+// 형식: 'email@domain.com': { name: '교사이름', role: '담당' }
+// 화이트리스트에 없는 계정은 로그인이 거부됩니다.
+const TEACHER_WHITELIST = {
+  // ⬇️ 테스트용 (박효덕 선생님 계정 여기 입력)
+  'wataryu00@gmail.com': { name: '박효덕', role: '2-10 담임' },
 
-// [교사 명단] — 로그인 드롭다운에 표시됨. 담임 선생님이 맨 앞
-const TEACHERS = [
-  '박효덕', '성화룡', '김연경', '김미경',
-  '최선아', '박수현', '강성두',
-  '강수미', '김동희', '진현창',
-  '박보경', '송인식', '한호연',
-  '김혜영', '최명기'
-];
+  // ⬇️ 추후 추가 (예시 — 실제 이메일로 교체 필요)
+  // 'xxx@gne.go.kr': { name: '성화룡', role: '2학년 부장' },
+  // 'xxx@gne.go.kr': { name: '김연경', role: '2-1 담임' },
+  // 'xxx@gne.go.kr': { name: '김미경', role: '2-2 담임' },
+  // 'xxx@gne.go.kr': { name: '최선아', role: '2-3 담임' },
+  // 'xxx@gne.go.kr': { name: '박수현', role: '2-4 담임' },
+  // 'xxx@gne.go.kr': { name: '강수미', role: '2-5 담임' },
+  // 'xxx@gne.go.kr': { name: '김동희', role: '2-6 담임' },
+  // 'xxx@gne.go.kr': { name: '진현창', role: '2-7 담임' },
+  // 'xxx@gne.go.kr': { name: '송인식', role: '2-8 담임' },
+  // 'xxx@gne.go.kr': { name: '한호연', role: '2-9 담임' },
+  // 'xxx@gne.go.kr': { name: '김혜영', role: '2-11 담임' },
+  // 'xxx@gne.go.kr': { name: '강성두', role: '학생안전부장' },
+  // 'xxx@gne.go.kr': { name: '박보경', role: '보건교사' },
+  // 'xxx@gne.go.kr': { name: '최명기', role: '특수교사' },
+};
 
 const FIREBASE_PATH = 'field-trip-2026';
 
@@ -1254,6 +1560,109 @@ let tCurrentPhotos = [];        // 현재 모달에 표시 중인 사진 목록
 let tCurrentStudentId = null;   // 현재 모달에 띄운 학생 ID
 let tCurrentStudentName = '';   // 현재 모달에 띄운 학생 이름
 let tPhotoFilter = 'all';       // all | qr | memo
+
+// ═══════════════════════════════════════════════════
+// 🛡️ 유의사항 편집 상태
+// ═══════════════════════════════════════════════════
+let DAY_NOTES_FROM_FIREBASE = {};   // {1: {categories:[...]}, 2: {...}, 3: {...}}
+let notesCurrentDay = 1;
+let notesDirty = { 1: false, 2: false, 3: false };
+let notesLastSaved = {};            // day -> 저장 직후 텍스트 (중복 저장 방지 비교용)
+
+// 학생 앱과 동일한 기본값 (수정 시 학생 앱의 DAY_NOTES도 함께 업데이트 필요)
+const DEFAULT_DAY_NOTES = [
+  {
+    categories: [
+      { icon: '⏰', title: '시간 · 집결', items: [
+        '07:30까지 열방교회 앞 집결, 08:00 정시 출발',
+        '20:30 CU편의점(에버랜드 정문 옆) 집결 — 반드시 시간 엄수',
+        '21:00 숙소 이동, 21:30 숙소 도착'
+      ]},
+      { icon: '🎢', title: '에버랜드 안전', items: [
+        '구역별 담당 교사 5명이 배치되어 있어요 — 장소 탭에서 위치 확인',
+        '놀이기구 탑승 전 신장 · 건강 제한 반드시 확인',
+        '본인 건강 상태(심장 · 혈압 등) 확인 후 탑승 결정',
+        '동물원 구역: 울타리 · 경계선 넘지 않기, 먹이 주거나 자극 금지'
+      ]},
+      { icon: '🎟️', title: '소지품 · 식사', items: [
+        '중식 · 석식은 식사 쿠폰 사용 — 분실 주의',
+        '귀중품은 담임선생님께 맡기고 필요할 때 찾아 쓰기',
+        '소지품은 항상 휴대, 인파 밀집 장소에서는 앞으로 착용'
+      ]},
+      { icon: '👥', title: '이동 수칙', items: [
+        '개별 행동 금지, 2~5명씩 함께 다니기',
+        '낯선 사람의 접근 · 권유는 정중히 거절하고 담임께 알리기',
+        '길을 잃으면 제자리에서 이탈하지 말고 담임 또는 가까운 직원 · 경찰(112)에 도움 요청'
+      ]}
+    ]
+  },
+  {
+    categories: [
+      { icon: '⏰', title: '시간 · 집결', items: [
+        '07:00~08:00 기상 · 조식, 08:00 숙소 출발',
+        '09:30~11:00 JUMP 공연 관람 (명보아트홀 / 경향아트힐)',
+        '20:30 경복궁 주차장 집결 — 반드시 시간 엄수',
+        '22:00 숙소 도착'
+      ]},
+      { icon: '🎭', title: '공연 관람 예절', items: [
+        '공연 중 휴대전화 사용 금지, 대화 삼가',
+        '배우와 관객 모두를 존중하는 태도',
+        '공연장 비상구 · 대피로 위치를 입장 시 확인'
+      ]},
+      { icon: '📸', title: '모둠 자유 여행', items: [
+        '사전 제출한 계획서대로 이동, 경로 변경 시 담임께 즉시 연락',
+        '2~3시간마다 활동 사진과 안전 보고를 담당 교사에게 문자 · SNS 전송',
+        '반드시 2인 이상 함께 이동, 개별 행동 금지',
+        '청소년 유해업소 · 청소년 출입금지구역 접근 금지'
+      ]},
+      { icon: '💰', title: '식사 · 금전 관리', items: [
+        '중 · 석식은 개별 부담 — 예산 관리',
+        '검증되지 않은 노점 음식 과다 섭취 주의',
+        '식품 알레르기가 있는 사람은 메뉴 확인 철저히'
+      ]},
+      { icon: '🚇', title: '대중교통 · 인파', items: [
+        '지하철 · 버스 이용 시 인원 점검',
+        '노약자 · 임산부 배려석 양보, 큰 소리 대화나 음악 금지',
+        '인파 밀집 장소에서 소지품 앞으로 착용, 일행과 거리 유지'
+      ]},
+      { icon: '🆘', title: '위급 상황', items: [
+        '길을 잃으면 그 자리에서 이탈하지 않기 — 담임에게 즉시 연락',
+        '낯선 사람 접근 시 즉시 담임께 알리기',
+        '긴급 시 112(경찰) · 119(응급)'
+      ]}
+    ]
+  },
+  {
+    categories: [
+      { icon: '⏰', title: '시간 · 집결', items: [
+        '07:00~08:00 기상 · 조식 · 짐 정리 (체크아웃)',
+        '08:00 숙소 출발',
+        '11:00~14:00 전주한옥마을 자유 탐방',
+        '13:50 집결 시작, 14:00 정시 통영 출발 — 엄수',
+        '16:30 열방교회 도착 예정'
+      ]},
+      { icon: '🏯', title: '문화재 · 예절', items: [
+        '궁궐 · 사찰 · 한옥 등 문화재에 낙서하거나 손대지 않기',
+        '쓰레기는 반드시 지정된 장소에 버리기',
+        '타인의 동의 없이 개인 정보가 노출되는 사진 촬영 · SNS 게시 금지'
+      ]},
+      { icon: '💰', title: '식사 · 금전', items: [
+        '중식은 개별 부담 — 기념품 포함 예산 계획',
+        '검증되지 않은 노점 음식 과다 섭취 주의'
+      ]},
+      { icon: '👥', title: '자유 탐방', items: [
+        '조 구분 없이 자유롭게 이동해도 되지만 최소 2인 이상 동행',
+        '한옥마을 내에서 소지품 철저히 관리',
+        '귀중품은 담임선생님께 맡기기'
+      ]},
+      { icon: '🚌', title: '귀가 버스', items: [
+        '차량 출발 전 탑승 버스 번호와 좌석 확인',
+        '차내에서 안전띠 착용 유지',
+        '휴게소에서 본인 버스 번호 · 출발 시각 반드시 메모'
+      ]}
+    ]
+  }
+];
 let tCurrentViewerPhoto = null; // 뷰어에 열려있는 사진
 
 // ═══════════════════════════════════════════════════
@@ -1269,6 +1678,9 @@ function initFirebase() {
     firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.database();
     firebaseReady = true;
+
+    // Google Auth 상태 감지 (로그인 유지에 필요)
+    initAuthListener();
     setConn('connecting', '연결 중...');
 
     // Storage 초기화 (사진 조회용)
@@ -1406,6 +1818,23 @@ function initFirebase() {
         .map(([id, r]) => ({ id, ...r }))
         .sort((a, b) => (b.ts || 0) - (a.ts || 0));
       if (currentTeacher) renderRecordList();
+    });
+    db.ref(FIREBASE_PATH + '/dayNotes').on('value', snap => {
+      const v = snap.val() || {};
+      DAY_NOTES_FROM_FIREBASE = {};
+      [1, 2, 3].forEach(d => {
+        if (v[d] && v[d].categories && Array.isArray(v[d].categories)) {
+          DAY_NOTES_FROM_FIREBASE[d] = v[d];
+        }
+      });
+      // 에디터가 현재 'dirty' 상태가 아니고 해당 day 탭이 열려 있으면 자동 반영
+      if (currentTeacher) {
+        [1, 2, 3].forEach(d => {
+          if (!notesDirty[d] && notesCurrentDay === d) {
+            loadNotesEditor(d, false);  // dirty 초기화는 이미 false
+          }
+        });
+      }
     });
     db.ref(FIREBASE_PATH + '/teacher-locations').on('value', snap => {
       TEACHER_LOCATIONS = snap.val() || {};
@@ -1679,29 +2108,116 @@ function updateStats() {
 }
 
 // ═══════════════════════════════════════════════════
-// 로그인
+// 로그인 (Google Sign-In)
 // ═══════════════════════════════════════════════════
 
-function populateTeachers() {
-  const sel = document.getElementById('teacherSelect');
-  sel.innerHTML = '<option value="">— 선생님 선택 —</option>' +
-    TEACHERS.map(t => `<option value="${t}">${t}</option>`).join('');
+// 이메일 정규화 (소문자, 공백 제거)
+function normalizeEmail(e) {
+  return (e || '').trim().toLowerCase();
 }
 
-function teacherLogin() {
-  const name = document.getElementById('teacherSelect').value;
-  const pw = document.getElementById('passwordInput').value;
+// 화이트리스트에서 교사 정보 조회
+function lookupTeacher(email) {
+  if (!email) return null;
+  const key = normalizeEmail(email);
+  // 대소문자 무관 조회
+  for (const [k, v] of Object.entries(TEACHER_WHITELIST)) {
+    if (normalizeEmail(k) === key) return v;
+  }
+  return null;
+}
+
+// 초기 로드 시 Auth 상태 감지 — 로그인 유지
+function initAuthListener() {
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      // 이미 로그인된 상태 (이전 세션 유지)
+      const info = lookupTeacher(user.email);
+      if (!info) {
+        // 화이트리스트에 없으면 로그아웃
+        await firebase.auth().signOut();
+        showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
+        return;
+      }
+      await completeLogin(user, info);
+    }
+    // 로그아웃 상태면 그냥 로그인 화면 유지
+  });
+}
+
+async function signInWithGoogle() {
+  const btn = document.getElementById('googleLoginBtn');
   const err = document.getElementById('loginError');
-
-  if (!name) { err.textContent = '선생님을 선택하세요'; return; }
-  if (pw !== TEACHER_PASSWORD) { err.textContent = '비밀번호가 틀립니다'; return; }
-
-  currentTeacher = { name };
+  const meta = document.getElementById('loginMeta');
   err.textContent = '';
+  meta.textContent = '';
+
+  if (!firebaseReady) {
+    err.textContent = 'Firebase 연결 대기 중... 잠시 후 다시 시도해주세요';
+    return;
+  }
+
+  btn.disabled = true;
+
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    // 항상 계정 선택 화면 표시 (여러 계정 있는 경우 대비)
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    const result = await firebase.auth().signInWithPopup(provider);
+    const user = result.user;
+
+    const info = lookupTeacher(user.email);
+    if (!info) {
+      // 화이트리스트에 없는 계정 → 로그아웃 + 에러 메시지
+      await firebase.auth().signOut();
+      showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
+      return;
+    }
+
+    await completeLogin(user, info);
+  } catch (e) {
+    console.error('로그인 실패:', e);
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+      // 사용자 취소 — 메시지 없이
+      meta.textContent = '로그인 창이 닫혔습니다';
+    } else if (e.code === 'auth/popup-blocked') {
+      err.textContent = '브라우저가 팝업을 차단했습니다. 팝업을 허용하고 다시 시도해주세요.';
+    } else if (e.code === 'auth/network-request-failed') {
+      err.textContent = '네트워크 오류 — 인터넷 연결을 확인하세요';
+    } else {
+      err.textContent = '로그인 실패: ' + (e.message || e.code || '알 수 없는 오류');
+    }
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function showLoginError(msg) {
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+  // 줄바꿈 지원
+  msg.split('\n').forEach((line, i) => {
+    if (i > 0) err.appendChild(document.createElement('br'));
+    err.appendChild(document.createTextNode(line));
+  });
+}
+
+async function completeLogin(user, info) {
+  currentTeacher = {
+    name: info.name,
+    role: info.role || '',
+    email: user.email,
+    uid: user.uid
+  };
+
+  // 로그인 화면 → 메인 화면
   document.getElementById('login').style.display = 'none';
   document.getElementById('main').classList.add('active');
-  document.getElementById('hdrName').textContent = name + ' 선생님';
-  document.getElementById('hdrTag').textContent = name === '박효덕' ? '담임 · 수학여행 담당' : '인솔 교사';
+  document.getElementById('hdrName').textContent = info.name + ' 선생님';
+  document.getElementById('hdrTag').textContent = info.role || '인솔 교사';
+  document.getElementById('loginError').textContent = '';
+  document.getElementById('loginMeta').textContent = '';
 
   // 전체 렌더링
   renderStudentFilters();
@@ -1720,12 +2236,17 @@ function teacherLogin() {
   startTeacherLocation();
 }
 
-function teacherLogout() {
+async function teacherLogout() {
+  if (!confirm('로그아웃할까요?')) return;
   stopTeacherLocation();
   currentTeacher = null;
+  try {
+    await firebase.auth().signOut();
+  } catch (e) {
+    console.error('로그아웃 실패:', e);
+  }
   document.getElementById('login').style.display = 'flex';
   document.getElementById('main').classList.remove('active');
-  document.getElementById('passwordInput').value = '';
 }
 
 // ═══════════════════════════════════════════════════
@@ -2061,6 +2582,233 @@ function renderRecordList() {
       <div class="record-item-body">${escapeHtml(r.body).replace(/\n/g, '<br>')}</div>
     </div>`;
   }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// 🛡️ 유의사항 편집
+// ═══════════════════════════════════════════════════
+
+// Firebase값 > 기본값 순으로 가져오기
+function getCurrentNotesForDay(day) {
+  return DAY_NOTES_FROM_FIREBASE[day] || DEFAULT_DAY_NOTES[day - 1];
+}
+
+function selectNotesDay(day) {
+  // 다른 탭으로 이동하려 할 때 dirty 경고
+  if (notesDirty[notesCurrentDay] && notesCurrentDay !== day) {
+    const ok = confirm(
+      `${notesCurrentDay}일차 편집 중인 내용이 저장되지 않았습니다.\n` +
+      `탭을 바꾸면 변경사항이 사라져요. 계속하시겠어요?`
+    );
+    if (!ok) return;
+    notesDirty[notesCurrentDay] = false;
+  }
+  notesCurrentDay = day;
+
+  // 탭 active 상태
+  document.querySelectorAll('.notes-daytab').forEach(b => {
+    const d = parseInt(b.dataset.dnote, 10);
+    b.classList.toggle('active', d === day);
+    b.classList.toggle('dirty', !!notesDirty[d]);
+  });
+
+  loadNotesEditor(day, false);
+}
+
+function loadNotesEditor(day, markDirty) {
+  const data = getCurrentNotesForDay(day);
+  const editor = document.getElementById('notesEditor');
+  if (!editor) return;
+  editor.value = JSON.stringify(data, null, 2);
+  editor.classList.remove('invalid');
+
+  // 출처 표시
+  const source = document.getElementById('notesSource');
+  if (source) {
+    source.textContent = DAY_NOTES_FROM_FIREBASE[day]
+      ? `Firebase에 저장된 값 (편집 후 저장 → 모든 학생 앱에 반영)`
+      : `아직 Firebase에 저장된 값 없음 — 현재 기본값 표시 중`;
+  }
+
+  notesDirty[day] = !!markDirty;
+  updateNotesDirtyUI();
+  setNotesStatus('', '');
+}
+
+function onNotesEditorInput() {
+  notesDirty[notesCurrentDay] = true;
+  updateNotesDirtyUI();
+  // 실시간 검증
+  const editor = document.getElementById('notesEditor');
+  const result = validateNotesJSON(editor.value);
+  if (result.ok) {
+    editor.classList.remove('invalid');
+    const catN = result.data.categories.length;
+    const itemN = result.data.categories.reduce((s, c) => s + (c.items?.length || 0), 0);
+    setNotesStatus('ok', `✓ JSON 유효 · ${catN}개 카테고리 · ${itemN}개 항목`);
+  } else {
+    editor.classList.add('invalid');
+    setNotesStatus('err', '✗ ' + result.error);
+  }
+}
+
+function updateNotesDirtyUI() {
+  document.querySelectorAll('.notes-daytab').forEach(b => {
+    const d = parseInt(b.dataset.dnote, 10);
+    b.classList.toggle('dirty', !!notesDirty[d]);
+  });
+}
+
+function setNotesStatus(kind, msg) {
+  const el = document.getElementById('notesStatus');
+  if (!el) return;
+  el.className = 'notes-status' + (kind ? ' ' + kind : '');
+  el.textContent = msg;
+}
+
+// JSON 검증: { categories: [ { icon, title, items: [...] } ] }
+function validateNotesJSON(str) {
+  if (!str || !str.trim()) return { ok: false, error: '내용이 비어있습니다' };
+  if (str.length > 50000) return { ok: false, error: '너무 깁니다 (50KB 초과)' };
+
+  let data;
+  try {
+    data = JSON.parse(str);
+  } catch (e) {
+    const m = e.message.match(/position (\d+)/);
+    let hint = '';
+    if (m) {
+      const pos = parseInt(m[1], 10);
+      const line = str.substring(0, pos).split('\n').length;
+      hint = ` (${line}번째 줄 근처)`;
+    }
+    return { ok: false, error: 'JSON 형식 오류' + hint + ': ' + e.message };
+  }
+
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return { ok: false, error: '최상위는 객체여야 합니다 { "categories": [...] }' };
+  }
+  if (!Array.isArray(data.categories)) {
+    return { ok: false, error: '"categories" 필드는 배열이어야 합니다' };
+  }
+  if (data.categories.length === 0) {
+    return { ok: false, error: '카테고리가 최소 1개는 있어야 합니다' };
+  }
+  if (data.categories.length > 20) {
+    return { ok: false, error: '카테고리가 너무 많습니다 (최대 20개)' };
+  }
+
+  for (let i = 0; i < data.categories.length; i++) {
+    const c = data.categories[i];
+    const prefix = `카테고리 ${i + 1}: `;
+    if (!c || typeof c !== 'object') return { ok: false, error: prefix + '객체여야 합니다' };
+    if (typeof c.icon !== 'string' || c.icon.length === 0) return { ok: false, error: prefix + 'icon 필드 필요 (문자열)' };
+    if (c.icon.length > 10) return { ok: false, error: prefix + 'icon이 너무 깁니다' };
+    if (typeof c.title !== 'string' || c.title.length === 0) return { ok: false, error: prefix + 'title 필드 필요 (문자열)' };
+    if (c.title.length > 100) return { ok: false, error: prefix + 'title이 너무 깁니다' };
+    if (!Array.isArray(c.items)) return { ok: false, error: prefix + 'items 필드는 배열이어야 합니다' };
+    if (c.items.length === 0) return { ok: false, error: prefix + '최소 1개 항목 필요' };
+    if (c.items.length > 30) return { ok: false, error: prefix + '항목이 너무 많습니다 (최대 30개)' };
+    for (let j = 0; j < c.items.length; j++) {
+      if (typeof c.items[j] !== 'string' || c.items[j].length === 0) {
+        return { ok: false, error: prefix + `항목 ${j + 1}는 비어있지 않은 문자열이어야 합니다` };
+      }
+      if (c.items[j].length > 500) {
+        return { ok: false, error: prefix + `항목 ${j + 1}가 너무 깁니다 (500자 초과)` };
+      }
+    }
+  }
+
+  return { ok: true, data };
+}
+
+function resetNotesToDefault() {
+  const day = notesCurrentDay;
+  const ok = confirm(`${day}일차 유의사항을 초기 기본값으로 되돌릴까요?\n\n편집 중인 내용은 사라져요. (저장 버튼을 누를 때까지 Firebase에는 영향 없음)`);
+  if (!ok) return;
+  const editor = document.getElementById('notesEditor');
+  editor.value = JSON.stringify(DEFAULT_DAY_NOTES[day - 1], null, 2);
+  editor.classList.remove('invalid');
+  notesDirty[day] = true;
+  updateNotesDirtyUI();
+  onNotesEditorInput(); // 검증 및 상태 업데이트
+}
+
+function formatNotesJSON() {
+  const editor = document.getElementById('notesEditor');
+  const result = validateNotesJSON(editor.value);
+  if (!result.ok) {
+    setNotesStatus('err', '정렬 실패: ' + result.error);
+    return;
+  }
+  editor.value = JSON.stringify(result.data, null, 2);
+  setNotesStatus('ok', '✓ JSON 정렬 완료');
+}
+
+function previewNotes() {
+  const editor = document.getElementById('notesEditor');
+  const result = validateNotesJSON(editor.value);
+  const box = document.getElementById('notesPreview');
+  const body = document.getElementById('notesPreviewBody');
+  if (!result.ok) {
+    setNotesStatus('err', '미리보기 실패: ' + result.error);
+    return;
+  }
+  const catsHTML = result.data.categories.map(cat => {
+    const itemsHTML = cat.items.map(it => `<li>${escapeHtml(it)}</li>`).join('');
+    return `
+      <div class="np-cat">
+        <div class="np-cat-head">
+          <span class="np-icon">${escapeHtml(cat.icon)}</span>
+          <span>${escapeHtml(cat.title)}</span>
+        </div>
+        <ul class="np-list">${itemsHTML}</ul>
+      </div>
+    `;
+  }).join('');
+  body.innerHTML = catsHTML;
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeNotesPreview() {
+  document.getElementById('notesPreview').style.display = 'none';
+}
+
+async function saveNotesToFirebase() {
+  if (!firebaseReady || !db) {
+    setNotesStatus('err', 'Firebase 연결되지 않음');
+    return;
+  }
+  const day = notesCurrentDay;
+  const editor = document.getElementById('notesEditor');
+  const result = validateNotesJSON(editor.value);
+  if (!result.ok) {
+    setNotesStatus('err', '저장 실패: ' + result.error);
+    return;
+  }
+
+  const ok = confirm(
+    `${day}일차 유의사항을 Firebase에 저장할까요?\n\n` +
+    `저장되는 즉시 모든 학생 앱에 반영됩니다.`
+  );
+  if (!ok) return;
+
+  setNotesStatus('info', '저장 중...');
+  try {
+    await db.ref(FIREBASE_PATH + '/dayNotes/' + day).set({
+      ...result.data,
+      savedAt: Date.now(),
+      savedBy: currentTeacher?.name || ''
+    });
+    notesDirty[day] = false;
+    notesLastSaved[day] = editor.value;
+    updateNotesDirtyUI();
+    setNotesStatus('ok', `✓ ${day}일차 유의사항 저장 완료 — 학생 앱에 즉시 반영됩니다`);
+  } catch (e) {
+    console.error('유의사항 저장 실패:', e);
+    setNotesStatus('err', '저장 실패: ' + (e.message || '알 수 없는 오류'));
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -2401,6 +3149,13 @@ function goTab(name) {
     SOS.forEach(s => seenSOSIds.add(s.id));
     updateSOSBanner();
   }
+  if (name === 'notes') {
+    // 에디터가 비어있으면 현재 day 로드 (dirty 유지)
+    const editor = document.getElementById('notesEditor');
+    if (editor && !editor.value && !notesDirty[notesCurrentDay]) {
+      loadNotesEditor(notesCurrentDay, false);
+    }
+  }
 }
 
 // Tab switching
@@ -2408,14 +3163,8 @@ document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => goTab(tab.dataset.panel));
 });
 
-// Enter로 로그인
-document.getElementById('passwordInput').addEventListener('keypress', e => {
-  if (e.key === 'Enter') teacherLogin();
-});
-
 // 초기화
 window.addEventListener('DOMContentLoaded', () => {
-  populateTeachers();
   initFirebase();
 });
 </script>
