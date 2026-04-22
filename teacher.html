@@ -3416,13 +3416,18 @@ function initAuthListener() {
   });
 
   firebase.auth().onAuthStateChanged(async (user) => {
+    console.log('[onAuthStateChanged] user=', user ? user.email : 'null');
     if (user) {
       // 이미 로그인 처리된 상태면 재처리 방지
-      if (currentTeacher && currentTeacher.uid === user.uid) return;
+      if (currentTeacher && currentTeacher.uid === user.uid) {
+        console.log('[onAuthStateChanged] 이미 완료된 로그인, 스킵');
+        return;
+      }
 
       // 이미 로그인된 상태 (이전 세션 유지 or 리디렉트 복귀)
       const info = lookupTeacher(user.email);
       if (!info) {
+        console.warn('[onAuthStateChanged] 화이트리스트에 없음:', user.email);
         // 화이트리스트에 없으면 로그아웃
         await firebase.auth().signOut();
         showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
@@ -3481,6 +3486,7 @@ async function signInWithGoogle() {
     // 데스크톱 — 팝업 방식
     const result = await firebase.auth().signInWithPopup(provider);
     const user = result.user;
+    console.log('[signInWithPopup] 성공:', user.email);
 
     const info = lookupTeacher(user.email);
     if (!info) {
@@ -3490,7 +3496,12 @@ async function signInWithGoogle() {
       return;
     }
 
-    await completeLogin(user, info);
+    // onAuthStateChanged가 곧 발화되어 completeLogin을 호출할 것이므로
+    // 여기서는 추가 처리 없이 넘어감 (중복 호출 방지)
+    // 단, 혹시 리스너 발화가 지연되는 환경을 대비해 보조 호출
+    if (!currentTeacher) {
+      await completeLogin(user, info);
+    }
   } catch (e) {
     console.error('로그인 실패:', e);
     if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
@@ -3539,6 +3550,7 @@ function showLoginError(msg) {
 }
 
 async function completeLogin(user, info) {
+  console.log('[completeLogin] 시작:', user.email, info);
   currentTeacher = {
     name: info.name,
     role: info.role || '',
@@ -3546,45 +3558,59 @@ async function completeLogin(user, info) {
     uid: user.uid
   };
 
-  // 관리자 표시 클래스 적용 (유의사항 탭 등)
-  document.body.classList.toggle('is-admin', isAdminTeacher());
+  // ★ 화면 전환을 가장 먼저 수행 — 이후 렌더링에서 에러가 나도
+  //   로그인 화면에 갇히지 않도록
+  try {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('main').classList.add('active');
+    document.getElementById('hdrName').textContent = info.name + ' 선생님';
+    document.getElementById('hdrTag').textContent = info.role || '인솔 교사';
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('loginMeta').textContent = '';
+  } catch (e) {
+    console.error('[completeLogin] 화면 전환 실패:', e);
+  }
 
-  // 로그인 화면 → 메인 화면
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('main').classList.add('active');
-  document.getElementById('hdrName').textContent = info.name + ' 선생님';
-  document.getElementById('hdrTag').textContent = info.role || '인솔 교사';
-  document.getElementById('loginError').textContent = '';
-  document.getElementById('loginMeta').textContent = '';
+  // 관리자 표시 클래스
+  try {
+    document.body.classList.toggle('is-admin', isAdminTeacher());
+  } catch (e) { console.warn('is-admin 토글 실패:', e); }
 
-  // 전체 렌더링
-  restoreSOSAlertsState();
-  restoreMemoSeenTs();
-  renderStudentFilters();
-  renderStudentClassSelect();
-  renderStudentList();
-  renderGroupClassSelect();
-  renderGroupList();
-  renderRoomClassSelect();
-  renderRoomList();
-  updateRollCallButton();
-  updateRollCallBadge();
-  renderMapClassSelect();
-  renderMapGroupSelect();
-  renderClassMapSelect();
-  renderSOSList();
-  renderAnnounceHistory();
-  renderMemoList();
-  updateMemoBadge();
-  renderRecordList();
-  populateRecTargets();
-  updateStats();
+  // 각 렌더를 방어적으로 실행 — 하나가 실패해도 나머지는 계속
+  const safeCall = (name, fn) => {
+    try { fn(); }
+    catch (e) { console.error('[completeLogin] ' + name + ' 실패:', e); }
+  };
+
+  safeCall('restoreSOSAlertsState', restoreSOSAlertsState);
+  safeCall('restoreMemoSeenTs', restoreMemoSeenTs);
+  safeCall('renderStudentFilters', renderStudentFilters);
+  safeCall('renderStudentClassSelect', renderStudentClassSelect);
+  safeCall('renderStudentList', renderStudentList);
+  safeCall('renderGroupClassSelect', renderGroupClassSelect);
+  safeCall('renderGroupList', renderGroupList);
+  safeCall('renderRoomClassSelect', renderRoomClassSelect);
+  safeCall('renderRoomList', renderRoomList);
+  safeCall('updateRollCallButton', updateRollCallButton);
+  safeCall('updateRollCallBadge', updateRollCallBadge);
+  safeCall('renderMapClassSelect', renderMapClassSelect);
+  safeCall('renderMapGroupSelect', renderMapGroupSelect);
+  safeCall('renderClassMapSelect', renderClassMapSelect);
+  safeCall('renderSOSList', renderSOSList);
+  safeCall('renderAnnounceHistory', renderAnnounceHistory);
+  safeCall('renderMemoList', renderMemoList);
+  safeCall('updateMemoBadge', updateMemoBadge);
+  safeCall('renderRecordList', renderRecordList);
+  safeCall('populateRecTargets', populateRecTargets);
+  safeCall('updateStats', updateStats);
 
   // Kakao Map 로딩
-  loadKakaoMap();
+  try { loadKakaoMap(); } catch (e) { console.error('Kakao Map 로드 실패:', e); }
 
   // 교사 위치 자동 전송 시작
-  startTeacherLocation();
+  try { startTeacherLocation(); } catch (e) { console.warn('교사 위치 전송 시작 실패:', e); }
+
+  console.log('[completeLogin] 완료');
 }
 
 async function teacherLogout() {
