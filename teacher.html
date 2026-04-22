@@ -169,6 +169,41 @@ html, body {
   height: 18px;
   flex-shrink: 0;
 }
+
+/* 아이디/비밀번호 로그인 */
+.login-input {
+  width: 100%;
+  padding: 12px 14px !important;
+  background: var(--bg) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 4px;
+  font-size: 15px !important;
+  font-family: inherit;
+  color: var(--ink) !important;
+  margin-bottom: 10px !important;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-input:focus {
+  border-color: var(--accent) !important;
+}
+.id-login-btn {
+  width: 100%;
+  padding: 14px !important;
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 4px;
+  font-size: 14px !important;
+  font-family: inherit;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  cursor: pointer;
+  margin-top: 6px !important;
+  transition: background 0.2s;
+}
+.id-login-btn:hover { background: #ff7355 !important; }
+.id-login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .login-meta {
   text-align: center;
   margin-top: 12px;
@@ -1682,6 +1717,156 @@ body.is-admin .tab.admin-only { display: inline-flex; }
   color: var(--ink-mute);
 }
 
+/* 교사 계정 관리 */
+.accounts-section {
+  padding: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.account-form {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.account-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.account-form input[type="text"] {
+  width: 100%;
+  padding: 9px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  border-radius: 3px;
+}
+.account-form input[type="text"]:focus {
+  border-color: var(--accent);
+}
+.account-form-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.account-form-btns #acctSubmitBtn {
+  flex: 1;
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.acct-cancel-btn {
+  flex: 0 0 90px;
+  padding: 10px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.acct-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.acct-item.editing {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.acct-item.me {
+  border-left: 3px solid var(--accent);
+}
+.acct-item.disabled {
+  opacity: 0.55;
+}
+.acct-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.acct-item-main {
+  flex: 1;
+  min-width: 0;
+}
+.acct-name-line {
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.acct-id {
+  color: var(--accent);
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+}
+.acct-admin-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.acct-me-tag {
+  color: var(--ink-mute);
+  font-size: 10px;
+  font-weight: 400;
+}
+.acct-role-line {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.acct-pw-line {
+  font-size: 10px;
+  color: var(--ink-mute);
+  margin-top: 2px;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+.acct-item-btns {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.acct-item-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-mute);
+  font-size: 10px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 3px;
+}
+.acct-item-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.acct-item-btn.danger:hover {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
 /* Student detail modal */
 .modal {
   display: none;
@@ -2029,19 +2214,15 @@ body.is-admin .tab.admin-only { display: inline-flex; }
       <div class="sub serif">통영고등학교</div>
     </div>
     <div class="login-form">
-      <button class="google-btn" id="googleLoginBtn" onclick="signInWithGoogle()">
-        <svg class="g-ico" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0124 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 01-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-        </svg>
-        <span>Google 계정으로 로그인</span>
+      <input type="text" id="loginId" class="login-input" placeholder="아이디" autocomplete="username" autocapitalize="off" autocorrect="off">
+      <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" autocomplete="current-password">
+      <button class="id-login-btn" id="idLoginBtn" onclick="handleIdLogin()">
+        로그인
       </button>
       <div class="login-error" id="loginError"></div>
       <div class="login-meta" id="loginMeta"></div>
     </div>
-    <div class="login-hint">담임·인솔 교사 전용 앱입니다<br>학교 계정(@gne.go.kr) 또는 Gmail로 로그인하세요</div>
+    <div class="login-hint">담임·인솔 교사 전용 앱입니다<br>계정 문의: 박효덕 선생님</div>
   </div>
 
   <!-- MAIN -->
@@ -2274,6 +2455,37 @@ body.is-admin .tab.admin-only { display: inline-flex; }
     <section id="panel-notes" class="panel">
       <div class="panel-inner">
 
+        <!-- 교사 계정 관리 (관리자 전용) -->
+        <div class="accounts-section">
+          <div class="section-label">TEACHER ACCOUNTS</div>
+          <h2 class="section-title" style="margin-bottom:8px;">👥 교사 계정 관리</h2>
+          <div style="font-size:11px; color:var(--ink-mute); margin-bottom:12px;">
+            교사들이 로그인할 아이디·비밀번호를 여기서 만들고 관리합니다. 변경사항은 즉시 반영됩니다.
+          </div>
+
+          <div class="account-form">
+            <div class="account-form-row">
+              <input type="text" id="acctId" placeholder="아이디 (영문·숫자)" autocapitalize="off" autocorrect="off">
+              <input type="text" id="acctName" placeholder="교사 이름">
+            </div>
+            <div class="account-form-row">
+              <input type="text" id="acctRole" placeholder="담당 (예: 2-10 담임)">
+              <input type="text" id="acctPw" placeholder="비밀번호 (최소 4자)">
+            </div>
+            <label style="font-size:11px; color:var(--ink-mute); display:flex; align-items:center; gap:6px; margin-top:4px;">
+              <input type="checkbox" id="acctIsAdmin" style="margin:0;">
+              관리자 (계정 관리·유의사항 편집 가능)
+            </label>
+            <div class="account-form-btns">
+              <button id="acctSubmitBtn" onclick="submitTeacherAccount()">➕ 계정 추가</button>
+              <button id="acctCancelBtn" class="acct-cancel-btn" onclick="cancelAccountEdit()" style="display:none;">취소</button>
+            </div>
+          </div>
+
+          <div class="section-label" style="margin-top:14px;">등록된 계정 <span id="acctCount" style="color:var(--ink-mute); font-weight:400;">—</span></div>
+          <div id="acctList"></div>
+        </div>
+
         <!-- 데이터 내보내기 (관리자 전용 패널이므로 여기에 배치) -->
         <div class="export-section">
           <div class="section-label">DATA EXPORT</div>
@@ -2427,46 +2639,7 @@ const FIREBASE_CONFIG = {
 // ⚠️ 반드시 본인 키 입력 + Kakao Developers에서 배포 도메인 등록 필요
 const KAKAO_APP_KEY = '93e97572beb250ebf8f9acd9933f91a6';
 
-// ═══════════════════════════════════════════════════
-// [교사 화이트리스트] — Google 계정 이메일 → 교사 정보
-// ═══════════════════════════════════════════════════
-// 박효덕 선생님께: 각 교사의 Gmail 또는 학교 계정을 여기에 추가해주세요.
-// 형식: 'email@domain.com': { name: '교사이름', role: '담당' }
-// 화이트리스트에 없는 계정은 로그인이 거부됩니다.
-const TEACHER_WHITELIST = {
-  // ⬇️ 테스트용 (박효덕 선생님 계정 여기 입력)
-  'wataryu00@gmail.com': { name: '박효덕', role: '2-10 담임' },
-
-  // ⬇️ 추후 추가 (예시 — 실제 이메일로 교체 필요)
-  // 'xxx@gne.go.kr': { name: '성화룡', role: '2학년 부장' },
-  // 'xxx@gne.go.kr': { name: '김연경', role: '2-1 담임' },
-  // 'xxx@gne.go.kr': { name: '김미경', role: '2-2 담임' },
-  // 'xxx@gne.go.kr': { name: '최선아', role: '2-3 담임' },
-  // 'xxx@gne.go.kr': { name: '박수현', role: '2-4 담임' },
-  // 'xxx@gne.go.kr': { name: '강수미', role: '2-5 담임' },
-  // 'xxx@gne.go.kr': { name: '김동희', role: '2-6 담임' },
-  // 'xxx@gne.go.kr': { name: '진현창', role: '2-7 담임' },
-  // 'xxx@gne.go.kr': { name: '송인식', role: '2-8 담임' },
-  // 'xxx@gne.go.kr': { name: '한호연', role: '2-9 담임' },
-  // 'xxx@gne.go.kr': { name: '김혜영', role: '2-11 담임' },
-  // 'xxx@gne.go.kr': { name: '강성두', role: '학생안전부장' },
-  // 'xxx@gne.go.kr': { name: '박보경', role: '보건교사' },
-  // 'xxx@gne.go.kr': { name: '최명기', role: '특수교사' },
-};
-
 const FIREBASE_PATH = 'field-trip-2026';
-
-// ═══════════════════════════════════════════════════
-// 관리자 전용 기능 접근 가능 계정 (유의사항 편집 등)
-// ═══════════════════════════════════════════════════
-const ADMIN_EMAILS = new Set([
-  'wataryu00@gmail.com',
-]);
-
-function isAdminTeacher() {
-  if (!currentTeacher || !currentTeacher.email) return false;
-  return ADMIN_EMAILS.has(currentTeacher.email.toLowerCase());
-}
 
 // 기본 회색 — "전체 보기" 상태일 때 모든 마커 공통 색
 const NEUTRAL_COLOR = '#9ca3af';
@@ -3371,262 +3544,171 @@ function updateStats() {
 }
 
 // ═══════════════════════════════════════════════════
-// 로그인 (Google Sign-In)
+// 🔐 로그인 (아이디/비밀번호 · Firebase 직접 저장)
 // ═══════════════════════════════════════════════════
 
-// 이메일 정규화 (소문자, 공백 제거)
-function normalizeEmail(e) {
-  return (e || '').trim().toLowerCase();
-}
+// 부트스트랩 계정 — DB에 teacher-accounts가 비어있을 때만 사용
+// (최초 설치 시 박효덕 선생님이 이 계정으로 로그인해서 다른 계정 만들면 됨)
+const BOOTSTRAP_ACCOUNT = {
+  id: 'admin',
+  password: 'tongyeong2026',   // ★ 첫 로그인 후 바로 계정 추가하고 이 계정은 사용 안 함
+  name: '박효덕',
+  role: '2-10 담임',
+  isAdmin: true
+};
 
-// 화이트리스트에서 교사 정보 조회
-function lookupTeacher(email) {
-  if (!email) return null;
-  const key = normalizeEmail(email);
-  // 대소문자 무관 조회
-  for (const [k, v] of Object.entries(TEACHER_WHITELIST)) {
-    if (normalizeEmail(k) === key) return v;
-  }
-  return null;
-}
+const LOGIN_STORAGE_KEY = 'tongyeong_teacher_login_v1';
 
-// 초기 로드 시 Auth 상태 감지 — 로그인 유지
+let TEACHER_ACCOUNTS_CACHE = {};  // {id: {password, name, role, isAdmin}}
+
+// 로그인 정보 복원 (앱 시작 시)
 async function initAuthListener() {
-  // 1단계: persistence를 먼저 확실히 설정 (await로 완료 보장)
-  //    → 이후 모든 인증 결과가 브라우저 localStorage에 저장됨
-  try {
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    console.log('[Auth] persistence: LOCAL 설정 완료');
-  } catch (e) {
-    console.warn('[Auth] persistence 설정 실패 (SESSION으로 유지):', e);
+  // Firebase 준비될 때까지 대기 (최대 5초)
+  for (let i = 0; i < 50; i++) {
+    if (firebaseReady) break;
+    await new Promise(r => setTimeout(r, 100));
   }
 
-  // 2단계: 리디렉트 로그인 복귀 처리 (모바일에서 돌아왔을 때)
-  //    ★ 중요: 이전에는 onAuthStateChanged에만 맡겼지만, 모바일에서 일부 환경은
-  //      리스너 발화가 지연되거나 누락되므로 여기서 직접 completeLogin 호출
-  let redirectPending = false;
-  try {
-    redirectPending = !!sessionStorage.getItem('auth_redirect_pending');
-  } catch (e) {}
-
-  try {
-    const result = await firebase.auth().getRedirectResult();
-    if (result && result.user) {
-      console.log('[Auth] 리디렉트 복귀 성공:', result.user.email);
-      try { sessionStorage.removeItem('auth_redirect_pending'); } catch (e) {}
-      const btn = document.getElementById('googleLoginBtn');
-      if (btn) btn.disabled = false;
-
-      const info = lookupTeacher(result.user.email);
-      if (!info) {
-        console.warn('[Auth] 리디렉트 복귀 — 화이트리스트에 없음:', result.user.email);
-        await firebase.auth().signOut();
-        showLoginError(`이 계정(${result.user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
-      } else {
-        // 직접 completeLogin 호출 — onAuthStateChanged가 중복 호출하면 가드로 스킵됨
-        await completeLogin(result.user, info);
+  // teacher-accounts 구독 — 관리자가 바꾸면 실시간 반영
+  if (firebaseReady) {
+    db.ref(FIREBASE_PATH + '/teacher-accounts').on('value', snap => {
+      TEACHER_ACCOUNTS_CACHE = snap.val() || {};
+      // 계정 관리 UI가 열려 있으면 목록 갱신
+      if (currentTeacher && document.getElementById('panel-notes')?.classList.contains('active')) {
+        renderTeacherAccounts();
       }
-    } else if (redirectPending) {
-      // ★ 리디렉트 대기 플래그는 있는데 getRedirectResult가 null인 경우
-      //   (= 쿠키/세션 유실로 복귀 실패한 상태)
-      //   → onAuthStateChanged가 이어서 발화할 때까지 최대 3초 대기, 아니면 에러 안내
-      console.warn('[Auth] 리디렉트 대기 중인데 복귀 결과 없음 — 3초 대기');
-      try { sessionStorage.removeItem('auth_redirect_pending'); } catch (e) {}
-
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      if (!currentTeacher && !firebase.auth().currentUser) {
-        const errEl = document.getElementById('loginError');
-        if (errEl) {
-          errEl.innerHTML = '로그인 세션 복구에 실패했습니다.<br>' +
-            '• 브라우저의 <b>쿠키 허용</b> 및 <b>크로스 사이트 추적 방지 끄기</b> 설정 확인<br>' +
-            '• iOS Safari: 설정 → Safari → 크로스 사이트 추적 방지 <b>끄기</b><br>' +
-            '• 그래도 안 되면 데스크톱에서 사용해주세요';
-        }
-        const btn = document.getElementById('googleLoginBtn');
-        if (btn) btn.disabled = false;
-      }
-    } else {
-      console.log('[Auth] 리디렉트 복귀 결과 없음 (일반 접속)');
-    }
-  } catch (e) {
-    console.error('[Auth] getRedirectResult 실패:', e);
-    try { sessionStorage.removeItem('auth_redirect_pending'); } catch (e2) {}
-    const err = document.getElementById('loginError');
-    if (err && e.code !== 'auth/no-auth-event') {
-      err.textContent = '로그인 복귀 실패: ' + (e.message || e.code || '알 수 없는 오류');
-    }
-    const btn = document.getElementById('googleLoginBtn');
-    if (btn) btn.disabled = false;
+    });
   }
 
-  // 3단계: 지속 상태 리스너 등록 (기존 세션 복원용)
-  firebase.auth().onAuthStateChanged(async (user) => {
-    console.log('[onAuthStateChanged] user=', user ? user.email : 'null');
-    try {
-      if (user) {
-        // 이미 로그인 처리된 상태면 재처리 방지
-        if (currentTeacher && currentTeacher.uid === user.uid) {
-          console.log('[onAuthStateChanged] 이미 완료된 로그인, 스킵');
-          // 화면은 혹시 모르니 강제로 메인으로
-          const loginEl = document.getElementById('login');
-          const mainEl = document.getElementById('main');
-          if (loginEl && loginEl.style.display !== 'none') {
-            console.warn('[onAuthStateChanged] 이미 로그인됐는데 화면이 로그인 상태 — 강제 전환');
-            loginEl.style.display = 'none';
-            if (mainEl) mainEl.classList.add('active');
-          }
-          return;
+  // 저장된 로그인 정보 복원
+  try {
+    const saved = localStorage.getItem(LOGIN_STORAGE_KEY);
+    if (saved) {
+      const info = JSON.parse(saved);
+      if (info && info.id && info.name) {
+        console.log('[Auth] 저장된 로그인 복원:', info.id);
+        // 저장된 비밀번호와 현재 DB를 재검증해서 무효화된 계정 방어
+        await new Promise(r => setTimeout(r, 300));  // teacher-accounts 첫 로드 대기
+        const acct = TEACHER_ACCOUNTS_CACHE[info.id];
+        const isBootstrap = info.id === BOOTSTRAP_ACCOUNT.id && Object.keys(TEACHER_ACCOUNTS_CACHE).length === 0;
+        if (acct && acct.password === info.password) {
+          completeLogin({ id: info.id, name: acct.name, role: acct.role, isAdmin: !!acct.isAdmin });
+        } else if (isBootstrap && info.password === BOOTSTRAP_ACCOUNT.password) {
+          completeLogin({ id: BOOTSTRAP_ACCOUNT.id, name: BOOTSTRAP_ACCOUNT.name, role: BOOTSTRAP_ACCOUNT.role, isAdmin: true });
+        } else {
+          // 계정이 사라졌거나 비번이 바뀜 — 세션 폐기
+          console.warn('[Auth] 저장된 계정 무효, 로그아웃');
+          localStorage.removeItem(LOGIN_STORAGE_KEY);
         }
-
-        // 이미 로그인된 상태 (이전 세션 유지 or 리디렉트 복귀)
-        const info = lookupTeacher(user.email);
-        if (!info) {
-          console.warn('[onAuthStateChanged] 화이트리스트에 없음:', user.email);
-          await firebase.auth().signOut();
-          showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
-          return;
-        }
-        await completeLogin(user, info);
-      } else {
-        // 로그아웃 상태 — 로그인 화면 유지
-        currentTeacher = null;
-      }
-    } catch (e) {
-      console.error('[onAuthStateChanged] 처리 중 예외:', e);
-      if (currentTeacher) {
-        try {
-          document.getElementById('login').style.display = 'none';
-          document.getElementById('main').classList.add('active');
-        } catch {}
       }
     }
-  });
+  } catch (e) {
+    console.warn('[Auth] 로그인 복원 실패:', e);
+  }
 }
 
-// 모바일/태블릿 감지 — 터치 환경 또는 좁은 뷰포트 또는 모바일 UA
-function isMobileDevice() {
-  if (typeof navigator === 'undefined') return false;
-  const ua = navigator.userAgent || '';
-  if (/Android|iPhone|iPad|iPod|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua)) return true;
-  // iPadOS는 최근 Safari에서 데스크톱 UA를 사용하므로 터치 기능으로 보조 판정
-  if (ua.includes('Macintosh') && typeof document !== 'undefined' && 'ontouchend' in document) return true;
-  // 좁은 뷰포트
-  if (typeof window !== 'undefined' && window.innerWidth <= 820 && ('ontouchstart' in window)) return true;
-  return false;
-}
+// 로그인 버튼 클릭
+async function handleIdLogin() {
+  const id = (document.getElementById('loginId').value || '').trim();
+  const pw = document.getElementById('loginPw').value || '';
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('idLoginBtn');
 
-async function signInWithGoogle() {
-  const btn = document.getElementById('googleLoginBtn');
-  const err = document.getElementById('loginError');
-  const meta = document.getElementById('loginMeta');
-  err.textContent = '';
-  meta.textContent = '';
-
-  if (!firebaseReady) {
-    err.textContent = 'Firebase 연결 대기 중... 잠시 후 다시 시도해주세요';
+  if (!id || !pw) {
+    if (errEl) errEl.textContent = '아이디와 비밀번호를 모두 입력하세요';
     return;
   }
 
   btn.disabled = true;
+  if (errEl) errEl.textContent = '';
 
   try {
-    // 명시적으로 LOCAL persistence 재확인 (브라우저 재시작 후에도 로그인 유지)
-    // 명시적으로 LOCAL persistence 재확인 (initAuthListener에서 이미 설정했지만 방어)
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-    const provider = new firebase.auth.GoogleAuthProvider();
-    // 항상 계정 선택 화면 표시 (여러 계정 있는 경우 대비)
-    provider.setCustomParameters({ prompt: 'select_account' });
-
-    if (isMobileDevice()) {
-      // 모바일 — 리디렉트 방식 (팝업은 모바일에서 postMessage 통신 문제 잦음)
-      meta.textContent = 'Google 로그인 페이지로 이동합니다…';
-      console.log('[signInWithGoogle] 모바일 리디렉트 시작');
-      // 로그인 시도 플래그 — 돌아왔을 때 getRedirectResult 실패해도 감지 가능
-      try { sessionStorage.setItem('auth_redirect_pending', String(Date.now())); } catch (e) {}
-      await firebase.auth().signInWithRedirect(provider);
-      // 이 줄 이후의 코드는 실행되지 않음 — 페이지 리로드됨
+    if (!firebaseReady) {
+      if (errEl) errEl.textContent = '연결 준비 중입니다. 잠시 후 다시 시도하세요';
       return;
     }
 
-    // 데스크톱 — 팝업 방식
-    console.log('[signInWithGoogle] 데스크톱 팝업 로그인 시작');
-    const result = await firebase.auth().signInWithPopup(provider);
-    const user = result.user;
-    console.log('[signInWithPopup] 성공:', user.email);
+    // Firebase에서 직접 읽기 (캐시가 아직 없을 수 있음)
+    const snap = await db.ref(FIREBASE_PATH + '/teacher-accounts').once('value');
+    const accounts = snap.val() || {};
+    TEACHER_ACCOUNTS_CACHE = accounts;
 
-    const info = lookupTeacher(user.email);
-    if (!info) {
-      // 화이트리스트에 없는 계정 → 로그아웃 + 에러 메시지
-      await firebase.auth().signOut();
-      showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
+    // 부트스트랩: DB가 비어 있으면 내장 계정 허용
+    if (Object.keys(accounts).length === 0) {
+      if (id === BOOTSTRAP_ACCOUNT.id && pw === BOOTSTRAP_ACCOUNT.password) {
+        saveLoginState(id, pw);
+        completeLogin({
+          id: BOOTSTRAP_ACCOUNT.id,
+          name: BOOTSTRAP_ACCOUNT.name,
+          role: BOOTSTRAP_ACCOUNT.role,
+          isAdmin: true
+        });
+        // 첫 로그인 안내
+        setTimeout(() => {
+          alert('첫 로그인입니다.\n\n🛡️ 유의사항 탭에서 "교사 계정 관리"를 열어\n본인 계정을 먼저 만들고 다른 선생님들 계정도 추가하세요.\n\n그 후 이 부트스트랩 계정(admin)은 더 이상 작동하지 않습니다.');
+        }, 800);
+        return;
+      }
+    }
+
+    const acct = accounts[id];
+    if (!acct) {
+      if (errEl) errEl.textContent = '아이디 또는 비밀번호가 잘못되었습니다';
+      return;
+    }
+    if (acct.password !== pw) {
+      if (errEl) errEl.textContent = '아이디 또는 비밀번호가 잘못되었습니다';
+      return;
+    }
+    if (acct.disabled) {
+      if (errEl) errEl.textContent = '이 계정은 비활성화되어 있습니다. 관리자에게 문의하세요';
       return;
     }
 
-    // onAuthStateChanged가 곧 발화되어 completeLogin을 호출할 것이므로
-    // 여기서는 추가 처리 없이 넘어감 (중복 호출 방지)
-    // 단, 혹시 리스너 발화가 지연되는 환경을 대비해 보조 호출
-    if (!currentTeacher) {
-      await completeLogin(user, info);
-    }
+    saveLoginState(id, pw);
+    completeLogin({
+      id,
+      name: acct.name,
+      role: acct.role || '',
+      isAdmin: !!acct.isAdmin
+    });
   } catch (e) {
     console.error('로그인 실패:', e);
-    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
-      // 사용자 취소 — 메시지 없이
-      meta.textContent = '로그인 창이 닫혔습니다';
-    } else if (e.code === 'auth/popup-blocked') {
-      // 팝업 차단 — 리디렉트로 자동 폴백
-      meta.textContent = '팝업이 차단되어 페이지 이동 방식으로 전환합니다…';
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        await firebase.auth().signInWithRedirect(provider);
-        return;
-      } catch (e2) {
-        err.textContent = '로그인 실패: ' + (e2.message || e2.code);
-      }
-    } else if (e.code === 'auth/network-request-failed') {
-      err.textContent = '네트워크 오류 — 인터넷 연결을 확인하세요';
-    } else if (e.code === 'auth/operation-not-supported-in-this-environment') {
-      // 일부 in-app 브라우저에서 발생 — 리디렉트로 폴백
-      meta.textContent = '팝업 방식을 지원하지 않아 페이지 이동 방식으로 전환합니다…';
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        await firebase.auth().signInWithRedirect(provider);
-        return;
-      } catch (e2) {
-        err.textContent = '로그인 실패: ' + (e2.message || e2.code);
-      }
-    } else {
-      err.textContent = '로그인 실패: ' + (e.message || e.code || '알 수 없는 오류');
-    }
+    if (errEl) errEl.textContent = '로그인 처리 중 오류: ' + (e.message || '알 수 없음');
   } finally {
     btn.disabled = false;
   }
 }
 
+function saveLoginState(id, password) {
+  try {
+    localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify({ id, password }));
+  } catch (e) {
+    console.warn('로그인 저장 실패:', e);
+  }
+}
+
 function showLoginError(msg) {
   const err = document.getElementById('loginError');
+  if (!err) return;
   err.textContent = '';
-  // 줄바꿈 지원
   msg.split('\n').forEach((line, i) => {
     if (i > 0) err.appendChild(document.createElement('br'));
     err.appendChild(document.createTextNode(line));
   });
 }
 
-async function completeLogin(user, info) {
-  console.log('[completeLogin] 시작:', user.email, info);
+function completeLogin(info) {
+  console.log('[completeLogin] 시작:', info.id, info);
   currentTeacher = {
+    id: info.id,
     name: info.name,
     role: info.role || '',
-    email: user.email,
-    uid: user.uid
+    isAdmin: !!info.isAdmin,
+    email: info.id + '@tongyeong-h.local'  // 레거시 호환 (author 표시용)
   };
 
-  // ★ 화면 전환을 가장 먼저 수행 — 이후 렌더링에서 에러가 나도
-  //   로그인 화면에 갇히지 않도록
+  // 화면 전환을 가장 먼저
   try {
     document.getElementById('login').style.display = 'none';
     document.getElementById('main').classList.add('active');
@@ -3634,16 +3716,18 @@ async function completeLogin(user, info) {
     document.getElementById('hdrTag').textContent = info.role || '인솔 교사';
     document.getElementById('loginError').textContent = '';
     document.getElementById('loginMeta').textContent = '';
+    // 입력 초기화
+    document.getElementById('loginPw').value = '';
   } catch (e) {
     console.error('[completeLogin] 화면 전환 실패:', e);
   }
 
   // 관리자 표시 클래스
   try {
-    document.body.classList.toggle('is-admin', isAdminTeacher());
+    document.body.classList.toggle('is-admin', !!info.isAdmin);
   } catch (e) { console.warn('is-admin 토글 실패:', e); }
 
-  // 각 렌더를 방어적으로 실행 — 하나가 실패해도 나머지는 계속
+  // 렌더
   const safeCall = (name, fn) => {
     try { fn(); }
     catch (e) { console.error('[completeLogin] ' + name + ' 실패:', e); }
@@ -3671,10 +3755,7 @@ async function completeLogin(user, info) {
   safeCall('populateRecTargets', populateRecTargets);
   safeCall('updateStats', updateStats);
 
-  // Kakao Map 로딩
   try { loadKakaoMap(); } catch (e) { console.error('Kakao Map 로드 실패:', e); }
-
-  // 교사 위치 자동 전송 시작
   try { startTeacherLocation(); } catch (e) { console.warn('교사 위치 전송 시작 실패:', e); }
 
   console.log('[completeLogin] 완료');
@@ -3685,14 +3766,244 @@ async function teacherLogout() {
   stopTeacherLocation();
   currentTeacher = null;
   document.body.classList.remove('is-admin');
-  try {
-    await firebase.auth().signOut();
-  } catch (e) {
-    console.error('로그아웃 실패:', e);
-  }
+  try { localStorage.removeItem(LOGIN_STORAGE_KEY); } catch (e) {}
   document.getElementById('login').style.display = 'flex';
   document.getElementById('main').classList.remove('active');
+  // 입력 초기화
+  const idEl = document.getElementById('loginId');
+  const pwEl = document.getElementById('loginPw');
+  if (idEl) idEl.value = '';
+  if (pwEl) pwEl.value = '';
 }
+
+// 관리자 여부는 이제 currentTeacher.isAdmin로 판정
+function isAdminTeacher() {
+  return !!(currentTeacher && currentTeacher.isAdmin);
+}
+
+// Enter 키로 로그인 제출
+document.addEventListener('DOMContentLoaded', () => {
+  ['loginId', 'loginPw'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('keypress', e => {
+        if (e.key === 'Enter') handleIdLogin();
+      });
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════
+// 👥 교사 계정 관리 (관리자 전용)
+// ═══════════════════════════════════════════════════
+
+let editingAccountId = null;  // 편집 중인 계정 id
+
+function renderTeacherAccounts() {
+  const list = document.getElementById('acctList');
+  const countEl = document.getElementById('acctCount');
+  if (!list) return;
+
+  const ids = Object.keys(TEACHER_ACCOUNTS_CACHE).sort();
+  if (countEl) countEl.textContent = ids.length > 0 ? `${ids.length}개` : '(아직 없음)';
+
+  if (ids.length === 0) {
+    list.innerHTML = '<div class="empty" style="padding:20px;">등록된 계정이 없습니다.<br>위에서 첫 계정을 추가하세요.</div>';
+    return;
+  }
+
+  list.innerHTML = ids.map(id => {
+    const a = TEACHER_ACCOUNTS_CACHE[id];
+    if (!a) return '';
+    const isMe = currentTeacher && currentTeacher.id === id;
+    const isEditing = editingAccountId === id;
+    const adminBadge = a.isAdmin ? '<span class="acct-admin-badge">관리자</span>' : '';
+    const meTag = isMe ? '<span class="acct-me-tag">(본인)</span>' : '';
+    const disabledCls = a.disabled ? ' disabled' : '';
+    const disabledBtnLabel = a.disabled ? '활성화' : '비활성화';
+    return `<div class="acct-item ${isMe ? 'me' : ''} ${isEditing ? 'editing' : ''}${disabledCls}">
+      <div class="acct-item-head">
+        <div class="acct-item-main">
+          <div class="acct-name-line">
+            ${escapeHtml(a.name || '—')}
+            ${adminBadge}
+            ${meTag}
+            ${a.disabled ? '<span style="color:var(--warn); font-size:10px;">비활성</span>' : ''}
+          </div>
+          <div class="acct-role-line">
+            <span class="acct-id">${escapeHtml(id)}</span>
+            ${a.role ? ' · ' + escapeHtml(a.role) : ''}
+          </div>
+          <div class="acct-pw-line">비밀번호: ${escapeHtml(a.password || '')}</div>
+        </div>
+        <div class="acct-item-btns">
+          <button class="acct-item-btn" onclick="startAccountEdit('${escapeHtml(id)}')">편집</button>
+          <button class="acct-item-btn" onclick="toggleAccountDisabled('${escapeHtml(id)}')">${disabledBtnLabel}</button>
+          <button class="acct-item-btn danger" onclick="deleteTeacherAccount('${escapeHtml(id)}')">삭제</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function submitTeacherAccount() {
+  if (!currentTeacher?.isAdmin) { alert('관리자만 가능합니다'); return; }
+  const id = (document.getElementById('acctId').value || '').trim();
+  const name = (document.getElementById('acctName').value || '').trim();
+  const role = (document.getElementById('acctRole').value || '').trim();
+  const pw = document.getElementById('acctPw').value || '';
+  const isAdmin = document.getElementById('acctIsAdmin').checked;
+
+  // 유효성
+  if (!editingAccountId) {
+    // 신규 — 모든 필드 필요
+    if (!id) { alert('아이디를 입력하세요'); return; }
+    if (!/^[a-zA-Z0-9_]{2,20}$/.test(id)) { alert('아이디는 영문·숫자·언더스코어, 2~20자 이내'); return; }
+    if (!name) { alert('이름을 입력하세요'); return; }
+    if (!pw || pw.length < 4) { alert('비밀번호는 최소 4자 이상'); return; }
+    if (id === BOOTSTRAP_ACCOUNT.id && Object.keys(TEACHER_ACCOUNTS_CACHE).length > 0) {
+      // 부트스트랩 아이디 재사용 주의 (경고만)
+      if (!confirm(`아이디 "${id}"는 부트스트랩 계정과 같아요. 이대로 만들면 DB의 이 계정이 부트스트랩을 대체하게 됩니다. 진행할까요?`)) return;
+    }
+    // 중복 체크
+    if (TEACHER_ACCOUNTS_CACHE[id]) { alert('이미 존재하는 아이디입니다'); return; }
+
+    const data = {
+      password: pw,
+      name,
+      role,
+      isAdmin: !!isAdmin,
+      createdAt: Date.now(),
+      createdBy: currentTeacher.name
+    };
+    try {
+      await db.ref(FIREBASE_PATH + '/teacher-accounts/' + id).set(data);
+      clearAccountForm();
+      alert('✅ 계정이 추가되었습니다');
+    } catch (e) {
+      alert('저장 실패: ' + (e.message || '알 수 없음'));
+    }
+  } else {
+    // 편집 모드
+    const origId = editingAccountId;
+    if (!name) { alert('이름을 입력하세요'); return; }
+    if (pw && pw.length < 4) { alert('비밀번호는 최소 4자 이상 (비우면 기존 유지)'); return; }
+
+    // 본인 계정에서 관리자 권한 해제 방어
+    if (origId === currentTeacher.id && !isAdmin && currentTeacher.isAdmin) {
+      if (!confirm('본인 계정의 관리자 권한을 해제하려 합니다. 해제 후에는 이 화면에 다시 접근하지 못할 수 있어요. 계속할까요?')) return;
+    }
+
+    const existing = TEACHER_ACCOUNTS_CACHE[origId] || {};
+    const data = {
+      ...existing,
+      name,
+      role,
+      isAdmin: !!isAdmin,
+      updatedAt: Date.now(),
+      updatedBy: currentTeacher.name
+    };
+    if (pw) data.password = pw;  // 비었으면 기존 비밀번호 유지
+
+    try {
+      await db.ref(FIREBASE_PATH + '/teacher-accounts/' + origId).set(data);
+
+      // 본인 계정 수정 — 화면 헤더와 currentTeacher 갱신, localStorage도 최신화
+      if (origId === currentTeacher.id) {
+        currentTeacher = {
+          ...currentTeacher,
+          name,
+          role,
+          isAdmin: !!isAdmin
+        };
+        document.getElementById('hdrName').textContent = name + ' 선생님';
+        document.getElementById('hdrTag').textContent = role || '인솔 교사';
+        document.body.classList.toggle('is-admin', !!isAdmin);
+        if (pw) saveLoginState(origId, pw);
+      }
+
+      cancelAccountEdit();
+      alert('✅ 계정이 수정되었습니다');
+    } catch (e) {
+      alert('저장 실패: ' + (e.message || '알 수 없음'));
+    }
+  }
+}
+
+function startAccountEdit(id) {
+  if (!currentTeacher?.isAdmin) { alert('관리자만 가능합니다'); return; }
+  const a = TEACHER_ACCOUNTS_CACHE[id];
+  if (!a) return;
+  editingAccountId = id;
+  document.getElementById('acctId').value = id;
+  document.getElementById('acctId').disabled = true;  // 편집 중엔 아이디 변경 불가
+  document.getElementById('acctName').value = a.name || '';
+  document.getElementById('acctRole').value = a.role || '';
+  document.getElementById('acctPw').value = '';  // 비번은 공란 (입력해야 바뀜)
+  document.getElementById('acctPw').placeholder = '비밀번호 (비우면 기존 유지)';
+  document.getElementById('acctIsAdmin').checked = !!a.isAdmin;
+  document.getElementById('acctSubmitBtn').textContent = '✏️ 수정 완료';
+  document.getElementById('acctCancelBtn').style.display = '';
+  document.getElementById('acctId').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  renderTeacherAccounts();
+}
+
+function cancelAccountEdit() {
+  editingAccountId = null;
+  clearAccountForm();
+  renderTeacherAccounts();
+}
+
+function clearAccountForm() {
+  const idEl = document.getElementById('acctId');
+  idEl.value = '';
+  idEl.disabled = false;
+  document.getElementById('acctName').value = '';
+  document.getElementById('acctRole').value = '';
+  document.getElementById('acctPw').value = '';
+  document.getElementById('acctPw').placeholder = '비밀번호 (최소 4자)';
+  document.getElementById('acctIsAdmin').checked = false;
+  document.getElementById('acctSubmitBtn').textContent = '➕ 계정 추가';
+  document.getElementById('acctCancelBtn').style.display = 'none';
+}
+
+async function toggleAccountDisabled(id) {
+  if (!currentTeacher?.isAdmin) return;
+  const a = TEACHER_ACCOUNTS_CACHE[id];
+  if (!a) return;
+  if (id === currentTeacher.id) {
+    alert('본인 계정은 비활성화할 수 없어요');
+    return;
+  }
+  const newState = !a.disabled;
+  try {
+    await db.ref(FIREBASE_PATH + '/teacher-accounts/' + id).update({
+      disabled: newState,
+      updatedAt: Date.now(),
+      updatedBy: currentTeacher.name
+    });
+  } catch (e) {
+    alert('변경 실패: ' + (e.message || '알 수 없음'));
+  }
+}
+
+async function deleteTeacherAccount(id) {
+  if (!currentTeacher?.isAdmin) { alert('관리자만 가능합니다'); return; }
+  if (id === currentTeacher.id) {
+    alert('본인 계정은 이 화면에서 삭제할 수 없어요');
+    return;
+  }
+  const a = TEACHER_ACCOUNTS_CACHE[id];
+  if (!a) return;
+  if (!confirm(`계정 "${a.name} (${id})"을(를) 정말 삭제할까요?\n이 교사는 더 이상 로그인할 수 없게 됩니다.`)) return;
+  try {
+    await db.ref(FIREBASE_PATH + '/teacher-accounts/' + id).remove();
+    if (editingAccountId === id) cancelAccountEdit();
+  } catch (e) {
+    alert('삭제 실패: ' + (e.message || '알 수 없음'));
+  }
+}
+
 
 // ═══════════════════════════════════════════════════
 // 교사 위치 전송 (ENABLE_TEACHER_LOCATION_SHARING 플래그로 제어)
@@ -5805,6 +6116,8 @@ function goTab(name) {
     }
     // CSV 내보내기 카운트 갱신
     updateExportCounts();
+    // 교사 계정 목록 렌더
+    renderTeacherAccounts();
   }
 }
 
