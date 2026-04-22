@@ -3585,22 +3585,26 @@ async function initAuthListener() {
     const saved = localStorage.getItem(LOGIN_STORAGE_KEY);
     if (saved) {
       const info = JSON.parse(saved);
-      if (info && info.id && info.name) {
-        console.log('[Auth] 저장된 로그인 복원:', info.id);
+      if (info && info.id && info.password) {
+        console.log('[Auth] 저장된 로그인 복원 시도:', info.id);
         // 저장된 비밀번호와 현재 DB를 재검증해서 무효화된 계정 방어
         await new Promise(r => setTimeout(r, 300));  // teacher-accounts 첫 로드 대기
         const acct = TEACHER_ACCOUNTS_CACHE[info.id];
         const isBootstrap = info.id === BOOTSTRAP_ACCOUNT.id && Object.keys(TEACHER_ACCOUNTS_CACHE).length === 0;
-        if (acct && acct.password === info.password) {
+        if (acct && acct.password === info.password && !acct.disabled) {
+          console.log('[Auth] 복원 성공:', info.id);
           completeLogin({ id: info.id, name: acct.name, role: acct.role, isAdmin: !!acct.isAdmin });
         } else if (isBootstrap && info.password === BOOTSTRAP_ACCOUNT.password) {
+          console.log('[Auth] 부트스트랩 복원');
           completeLogin({ id: BOOTSTRAP_ACCOUNT.id, name: BOOTSTRAP_ACCOUNT.name, role: BOOTSTRAP_ACCOUNT.role, isAdmin: true });
         } else {
-          // 계정이 사라졌거나 비번이 바뀜 — 세션 폐기
-          console.warn('[Auth] 저장된 계정 무효, 로그아웃');
+          // 계정이 사라졌거나 비번이 바뀌거나 비활성화됨 — 세션 폐기
+          console.warn('[Auth] 저장된 계정 무효, 로그아웃. acct 있음?', !!acct, 'disabled?', acct?.disabled);
           localStorage.removeItem(LOGIN_STORAGE_KEY);
         }
       }
+    } else {
+      console.log('[Auth] 저장된 로그인 정보 없음 (첫 접속 또는 로그아웃 상태)');
     }
   } catch (e) {
     console.warn('[Auth] 로그인 복원 실패:', e);
