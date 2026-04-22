@@ -3417,26 +3417,46 @@ function initAuthListener() {
 
   firebase.auth().onAuthStateChanged(async (user) => {
     console.log('[onAuthStateChanged] user=', user ? user.email : 'null');
-    if (user) {
-      // 이미 로그인 처리된 상태면 재처리 방지
-      if (currentTeacher && currentTeacher.uid === user.uid) {
-        console.log('[onAuthStateChanged] 이미 완료된 로그인, 스킵');
-        return;
-      }
+    try {
+      if (user) {
+        // 이미 로그인 처리된 상태면 재처리 방지
+        if (currentTeacher && currentTeacher.uid === user.uid) {
+          console.log('[onAuthStateChanged] 이미 완료된 로그인, 스킵');
+          // 화면은 혹시 모르니 강제로 메인으로
+          const loginEl = document.getElementById('login');
+          const mainEl = document.getElementById('main');
+          if (loginEl && loginEl.style.display !== 'none') {
+            console.warn('[onAuthStateChanged] 이미 로그인됐는데 화면이 로그인 상태 — 강제 전환');
+            loginEl.style.display = 'none';
+            if (mainEl) mainEl.classList.add('active');
+          }
+          return;
+        }
 
-      // 이미 로그인된 상태 (이전 세션 유지 or 리디렉트 복귀)
-      const info = lookupTeacher(user.email);
-      if (!info) {
-        console.warn('[onAuthStateChanged] 화이트리스트에 없음:', user.email);
-        // 화이트리스트에 없으면 로그아웃
-        await firebase.auth().signOut();
-        showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
-        return;
+        // 이미 로그인된 상태 (이전 세션 유지 or 리디렉트 복귀)
+        const info = lookupTeacher(user.email);
+        if (!info) {
+          console.warn('[onAuthStateChanged] 화이트리스트에 없음:', user.email);
+          // 화이트리스트에 없으면 로그아웃
+          await firebase.auth().signOut();
+          showLoginError(`이 계정(${user.email})은 등록되지 않았습니다.\n담당 선생님(박효덕)께 문의하세요.`);
+          return;
+        }
+        await completeLogin(user, info);
+      } else {
+        // 로그아웃 상태 — 로그인 화면 유지
+        currentTeacher = null;
       }
-      await completeLogin(user, info);
-    } else {
-      // 로그아웃 상태 — 로그인 화면 유지
-      currentTeacher = null;
+    } catch (e) {
+      console.error('[onAuthStateChanged] 처리 중 예외:', e);
+      // 예외가 터져도 로그인 자체는 성공한 상태일 수 있으므로
+      // currentTeacher가 세팅됐다면 화면은 메인으로 강제 전환
+      if (currentTeacher) {
+        try {
+          document.getElementById('login').style.display = 'none';
+          document.getElementById('main').classList.add('active');
+        } catch {}
+      }
     }
   });
 }
