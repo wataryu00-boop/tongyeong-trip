@@ -3404,10 +3404,16 @@ async function initAuthListener() {
   // 2단계: 리디렉트 로그인 복귀 처리 (모바일에서 돌아왔을 때)
   //    ★ 중요: 이전에는 onAuthStateChanged에만 맡겼지만, 모바일에서 일부 환경은
   //      리스너 발화가 지연되거나 누락되므로 여기서 직접 completeLogin 호출
+  let redirectPending = false;
+  try {
+    redirectPending = !!sessionStorage.getItem('auth_redirect_pending');
+  } catch (e) {}
+
   try {
     const result = await firebase.auth().getRedirectResult();
     if (result && result.user) {
       console.log('[Auth] 리디렉트 복귀 성공:', result.user.email);
+      try { sessionStorage.removeItem('auth_redirect_pending'); } catch (e) {}
       const btn = document.getElementById('googleLoginBtn');
       if (btn) btn.disabled = false;
 
@@ -3420,11 +3426,31 @@ async function initAuthListener() {
         // 직접 completeLogin 호출 — onAuthStateChanged가 중복 호출하면 가드로 스킵됨
         await completeLogin(result.user, info);
       }
+    } else if (redirectPending) {
+      // ★ 리디렉트 대기 플래그는 있는데 getRedirectResult가 null인 경우
+      //   (= 쿠키/세션 유실로 복귀 실패한 상태)
+      //   → onAuthStateChanged가 이어서 발화할 때까지 최대 3초 대기, 아니면 에러 안내
+      console.warn('[Auth] 리디렉트 대기 중인데 복귀 결과 없음 — 3초 대기');
+      try { sessionStorage.removeItem('auth_redirect_pending'); } catch (e) {}
+
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      if (!currentTeacher && !firebase.auth().currentUser) {
+        const errEl = document.getElementById('loginError');
+        if (errEl) {
+          errEl.innerHTML = '로그인 세션 복구에 실패했습니다.<br>' +
+            '• 브라우저의 <b>쿠키 허용</b> 및 <b>크로스 사이트 추적 방지 끄기</b> 설정 확인<br>' +
+            '• iOS Safari: 설정 → Safari → 크로스 사이트 추적 방지 <b>끄기</b><br>' +
+            '• 그래도 안 되면 데스크톱에서 사용해주세요';
+        }
+        const btn = document.getElementById('googleLoginBtn');
+        if (btn) btn.disabled = false;
+      }
     } else {
       console.log('[Auth] 리디렉트 복귀 결과 없음 (일반 접속)');
     }
   } catch (e) {
     console.error('[Auth] getRedirectResult 실패:', e);
+    try { sessionStorage.removeItem('auth_redirect_pending'); } catch (e2) {}
     const err = document.getElementById('loginError');
     if (err && e.code !== 'auth/no-auth-event') {
       err.textContent = '로그인 복귀 실패: ' + (e.message || e.code || '알 수 없는 오류');
@@ -3512,10 +3538,19 @@ async function signInWithGoogle() {
     // 항상 계정 선택 화면 표시 (여러 계정 있는 경우 대비)
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    // 모바일·데스크톱 모두 팝업 방식 사용
-    // (이전에 모바일은 리디렉트였지만, iOS ITP/Android 쿠키 파티셔닝 이슈로
-    //  리디렉트 후 세션이 유실되는 사례가 많음 → 팝업이 더 안정적)
-    console.log('[signInWithGoogle] 팝업 로그인 시작');
+    if (isMobileDevice()) {
+      // 모바일 — 리디렉트 방식 (팝업은 모바일에서 postMessage 통신 문제 잦음)
+      meta.textContent = 'Google 로그인 페이지로 이동합니다…';
+      console.log('[signInWithGoogle] 모바일 리디렉트 시작');
+      // 로그인 시도 플래그 — 돌아왔을 때 getRedirectResult 실패해도 감지 가능
+      try { sessionStorage.setItem('auth_redirect_pending', String(Date.now())); } catch (e) {}
+      await firebase.auth().signInWithRedirect(provider);
+      // 이 줄 이후의 코드는 실행되지 않음 — 페이지 리로드됨
+      return;
+    }
+
+    // 데스크톱 — 팝업 방식
+    console.log('[signInWithGoogle] 데스크톱 팝업 로그인 시작');
     const result = await firebase.auth().signInWithPopup(provider);
     const user = result.user;
     console.log('[signInWithPopup] 성공:', user.email);
