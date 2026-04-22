@@ -3512,16 +3512,10 @@ async function signInWithGoogle() {
     // 항상 계정 선택 화면 표시 (여러 계정 있는 경우 대비)
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    if (isMobileDevice()) {
-      // 모바일 — 리디렉트 방식 (페이지가 Google로 이동 후 돌아옴)
-      meta.textContent = 'Google 로그인 페이지로 이동합니다…';
-      console.log('[signInWithGoogle] 모바일 리디렉트 시작');
-      await firebase.auth().signInWithRedirect(provider);
-      // 이 줄 이후의 코드는 실행되지 않음 — 페이지 리로드됨
-      return;
-    }
-
-    // 데스크톱 — 팝업 방식
+    // 모바일·데스크톱 모두 팝업 방식 사용
+    // (이전에 모바일은 리디렉트였지만, iOS ITP/Android 쿠키 파티셔닝 이슈로
+    //  리디렉트 후 세션이 유실되는 사례가 많음 → 팝업이 더 안정적)
+    console.log('[signInWithGoogle] 팝업 로그인 시작');
     const result = await firebase.auth().signInWithPopup(provider);
     const user = result.user;
     console.log('[signInWithPopup] 성공:', user.email);
