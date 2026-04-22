@@ -238,6 +238,26 @@ header button:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
+/* SOS 알림 토글 버튼 */
+.alert-toggle {
+  padding: 6px 9px !important;
+  font-size: 14px !important;
+  line-height: 1;
+  min-width: 32px;
+}
+.alert-toggle.muted {
+  opacity: 0.4;
+}
+.alert-toggle.ringing {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+  animation: alertRing 0.6s ease infinite;
+}
+@keyframes alertRing {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
 
 /* SOS 알림 배너 */
 .sos-banner {
@@ -716,6 +736,73 @@ header button:hover {
   flex-wrap: wrap;
   gap: 6px;
 }
+/* 학생 모달 — 이 학생 기록 섹션 */
+.sm-records-section {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.sm-records-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+  margin-bottom: 10px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sm-records-count {
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.sm-records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.sm-record {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ink-mute);
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+.sm-record.tag-긍정 { border-left-color: #22c55e; }
+.sm-record.tag-주의 { border-left-color: #f59e0b; }
+.sm-record.tag-건강 { border-left-color: #ef4444; }
+.sm-record.tag-기타 { border-left-color: #6366f1; }
+.sm-record-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 6px;
+}
+.sm-record-tag {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 11px;
+}
+.sm-record-meta {
+  font-size: 10px;
+  color: var(--ink-mute);
+}
+.sm-record-body {
+  color: var(--ink-soft);
+  line-height: 1.4;
+  font-size: 12px;
+  word-break: break-word;
+}
 .gm-chip.has-tel {
   padding-right: 4px;
 }
@@ -776,6 +863,10 @@ header button:hover {
   flex-wrap: wrap;
   gap: 6px;
 }
+/* 관리자 전용 탭 — JS로 is-admin 클래스가 body에 붙었을 때만 보임 */
+.tab.admin-only { display: none; }
+body.is-admin .tab.admin-only { display: inline-flex; }
+
 /* 반 필터 선택됐을 때: 해당 반 학생은 강조, 다른 반은 흐리게 */
 .gm-chip.hi {
   background: var(--accent-soft);
@@ -1377,6 +1468,25 @@ header button:hover {
   cursor: pointer;
   letter-spacing: 0.05em;
 }
+.announce-form-btns {
+  display: flex;
+  gap: 8px;
+}
+.announce-cancel-btn {
+  flex: 0 0 90px;
+  background: var(--surface) !important;
+  color: var(--ink-soft) !important;
+  border: 1px solid var(--line) !important;
+}
+.announce-edit-banner {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
 .announce-history-item {
   background: var(--surface-2);
   border: 1px solid var(--line);
@@ -1388,6 +1498,28 @@ header button:hover {
   align-items: center;
   gap: 8px;
 }
+.announce-history-item.editing {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.announce-history-btns {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.announce-history-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-mute);
+  font-size: 10px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.announce-history-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 .announce-history-del {
   background: transparent;
   border: 1px solid var(--line);
@@ -1396,6 +1528,158 @@ header button:hover {
   padding: 3px 8px;
   cursor: pointer;
   font-family: inherit;
+}
+
+/* 교사 쪽지 (teacher memos) */
+.memo-form {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.memo-form textarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  outline: none;
+  resize: vertical;
+  margin-bottom: 8px;
+}
+.memo-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.memo-form-row #memoSubmitBtn {
+  margin-left: auto;
+  padding: 8px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.memo-cancel-btn {
+  padding: 8px 12px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.memo-item {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ink-soft);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+}
+.memo-item.mine {
+  border-left-color: var(--accent);
+}
+.memo-item.editing {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.memo-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+  gap: 6px;
+}
+.memo-item-author {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.memo-item-time {
+  font-size: 10px;
+  color: var(--ink-mute);
+}
+.memo-item-body {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 6px;
+}
+.memo-item-btns {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.memo-item-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-mute);
+  font-size: 10px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.memo-item-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.memo-edited-tag {
+  color: var(--accent);
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+/* 데이터 내보내기 섹션 (관리자 전용) */
+.export-section {
+  padding: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.export-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.export-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.export-btn:hover {
+  border-color: var(--accent);
+}
+.export-btn:active {
+  opacity: 0.8;
+}
+.export-btn-ico {
+  font-size: 22px;
+}
+.export-btn-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+.export-btn-sub {
+  font-size: 10px;
+  color: var(--ink-mute);
 }
 
 /* Student detail modal */
@@ -1772,6 +2056,7 @@ header button:hover {
           <span class="conn-dot" id="connDot"></span>
           <span id="connText">연결 중</span>
         </span>
+        <button id="alertToggleBtn" class="alert-toggle" onclick="toggleSOSAlerts()" title="SOS 알림음·진동 켜기/끄기">🔔</button>
         <button onclick="teacherLogout()">로그아웃</button>
       </div>
     </header>
@@ -1792,11 +2077,12 @@ header button:hover {
       <div class="tab" data-panel="classmap">🏫 반별</div>
       <div class="tab" data-panel="students">👥 학생</div>
       <div class="tab" data-panel="groups">🧭 조정보</div>
-      <div class="tab" data-panel="rooms">🏨 숙소</div>
+      <div class="tab" data-panel="rooms">🏨 숙소<span class="badge" id="rollCallBadge" style="display:none;">0</span></div>
       <div class="tab" data-panel="sos">🆘 SOS<span class="badge" id="sosBadge" style="display:none;">0</span></div>
       <div class="tab" data-panel="announce">📢 공지</div>
+      <div class="tab" data-panel="memos">💬 교사쪽지<span class="badge" id="memoBadge" style="display:none;">0</span></div>
       <div class="tab" data-panel="records">📝 기록</div>
-      <div class="tab" data-panel="notes">🛡️ 유의사항</div>
+      <div class="tab admin-only" data-panel="notes">🛡️ 유의사항</div>
     </nav>
 
     <!-- MAP PANEL (조별) -->
@@ -1814,7 +2100,7 @@ header button:hover {
           <option value="all">반 전체</option>
         </select>
         <select class="map-ctrl-select" id="mapGroupSelect" onchange="setMapFilter(this.value)" title="특정 조로 필터">
-          <option value="__placeholder">조 선택…</option>
+          <option value="all">조 전체</option>
         </select>
         <button class="map-ctrl-btn" onclick="recenterMap()">⟲ 초기화</button>
       </div>
@@ -1907,13 +2193,42 @@ header button:hover {
         <h2 class="section-title">공지 전송</h2>
 
         <div class="announce-form">
+          <div id="announceEditBanner" class="announce-edit-banner" style="display:none;">
+            ✏️ 공지 수정 중 — <span id="announceEditTitle"></span>
+          </div>
           <input type="text" id="anTitle" placeholder="공지 제목 (예: 저녁 집합 시간 변경)">
           <textarea id="anBody" placeholder="공지 내용 (선택)"></textarea>
-          <button onclick="sendAnnouncement()">📢 모든 학생에게 전송</button>
+          <div class="announce-form-btns">
+            <button id="announceSubmitBtn" onclick="submitAnnouncement()">📢 모든 학생에게 전송</button>
+            <button id="announceCancelBtn" class="announce-cancel-btn" onclick="cancelAnnouncementEdit()" style="display:none;">취소</button>
+          </div>
         </div>
 
         <div class="section-label">최근 공지</div>
         <div id="announceHistory"></div>
+      </div>
+    </section>
+
+    <!-- MEMOS PANEL (교사 간 쪽지 게시판) -->
+    <section id="panel-memos" class="panel">
+      <div class="panel-inner">
+        <div class="section-label">TEACHER NOTES</div>
+        <h2 class="section-title">교사 쪽지</h2>
+        <div style="font-size:11px; color:var(--ink-mute); margin-bottom:10px;">
+          💡 교사들끼리만 보는 쪽지 게시판입니다. 학생에게는 절대 보이지 않아요.
+        </div>
+
+        <div class="memo-form">
+          <textarea id="memoBody" placeholder="예) 2-7 김철수 배탈 — 보건실 잠깐 머물 예정&#10;예) 남산타워 집합 5분 지연" maxlength="500" oninput="onMemoBodyInput()"></textarea>
+          <div class="memo-form-row">
+            <span id="memoCounter" style="font-size:11px; color:var(--ink-mute);">0 / 500</span>
+            <button id="memoSubmitBtn" onclick="submitTeacherMemo()">💬 쪽지 올리기</button>
+            <button id="memoCancelBtn" class="memo-cancel-btn" onclick="cancelMemoEdit()" style="display:none;">취소</button>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:14px;">최근 쪽지</div>
+        <div id="memoList"></div>
       </div>
     </section>
 
@@ -1958,6 +2273,48 @@ header button:hover {
     <!-- NOTES PANEL (학생 앱 일정 탭 하단 유의사항 편집) -->
     <section id="panel-notes" class="panel">
       <div class="panel-inner">
+
+        <!-- 데이터 내보내기 (관리자 전용 패널이므로 여기에 배치) -->
+        <div class="export-section">
+          <div class="section-label">DATA EXPORT</div>
+          <h2 class="section-title" style="margin-bottom:8px;">📥 데이터 내보내기</h2>
+          <div style="font-size:11px; color:var(--ink-mute); margin-bottom:12px;">
+            여행 후 결재·보고용. CSV 파일은 Excel·구글 시트에서 바로 열 수 있어요 (한글 UTF-8).
+          </div>
+          <div class="export-grid">
+            <button class="export-btn" onclick="exportStudentsCSV()">
+              <span class="export-btn-ico">👥</span>
+              <span class="export-btn-label">학생 명단</span>
+              <span class="export-btn-sub" id="exportStudentsCount">—</span>
+            </button>
+            <button class="export-btn" onclick="exportSOSCSV()">
+              <span class="export-btn-ico">🆘</span>
+              <span class="export-btn-label">SOS 기록</span>
+              <span class="export-btn-sub" id="exportSOSCount">—</span>
+            </button>
+            <button class="export-btn" onclick="exportRecordsCSV()">
+              <span class="export-btn-ico">📝</span>
+              <span class="export-btn-label">교사 기록</span>
+              <span class="export-btn-sub" id="exportRecordsCount">—</span>
+            </button>
+            <button class="export-btn" onclick="exportRollCallCSV()">
+              <span class="export-btn-ico">📋</span>
+              <span class="export-btn-label">점호 기록</span>
+              <span class="export-btn-sub" id="exportRollCallCount">—</span>
+            </button>
+            <button class="export-btn" onclick="exportAnnouncementsCSV()">
+              <span class="export-btn-ico">📢</span>
+              <span class="export-btn-label">공지 이력</span>
+              <span class="export-btn-sub" id="exportAnnouncementsCount">—</span>
+            </button>
+            <button class="export-btn" onclick="exportTeacherMemosCSV()">
+              <span class="export-btn-ico">💬</span>
+              <span class="export-btn-label">교사 쪽지</span>
+              <span class="export-btn-sub" id="exportMemosCount">—</span>
+            </button>
+          </div>
+        </div>
+
         <div class="section-label">DAY NOTES</div>
         <h2 class="section-title">일정별 유의사항 편집</h2>
 
@@ -2099,6 +2456,18 @@ const TEACHER_WHITELIST = {
 
 const FIREBASE_PATH = 'field-trip-2026';
 
+// ═══════════════════════════════════════════════════
+// 관리자 전용 기능 접근 가능 계정 (유의사항 편집 등)
+// ═══════════════════════════════════════════════════
+const ADMIN_EMAILS = new Set([
+  'wataryu00@gmail.com',
+]);
+
+function isAdminTeacher() {
+  if (!currentTeacher || !currentTeacher.email) return false;
+  return ADMIN_EMAILS.has(currentTeacher.email.toLowerCase());
+}
+
 // 기본 회색 — "전체 보기" 상태일 때 모든 마커 공통 색
 const NEUTRAL_COLOR = '#9ca3af';
 
@@ -2146,6 +2515,15 @@ function paletteColor(idx) {
   return PALETTE_30[idx % PALETTE_30.length];
 }
 
+// 조 번호 → 팔레트 색 매핑 (정렬된 조 키 기준 인덱스)
+// 한 곳에서만 색을 분배해서 지도·목록·카드 모두 같은 색 사용
+function groupColorByNo(gno) {
+  if (gno == null || gno === '') return NEUTRAL_COLOR;
+  const allKeys = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+  const idx = allKeys.indexOf(String(gno).trim());
+  return idx === -1 ? NEUTRAL_COLOR : paletteColor(idx);
+}
+
 // 기본 지도 중심 (서울 광화문)
 const DEFAULT_CENTER = { lat: 37.5759, lng: 126.9768 };
 
@@ -2164,6 +2542,10 @@ const ENABLE_TEACHER_LOCATION_SHARING = false;
 let db = null;
 let firebaseReady = false;
 let currentTeacher = null;
+
+let TEACHER_MEMOS = [];  // [{id, body, author, authorEmail, ts, editedAt}, ...]
+let editingMemoId = null;
+let memoSeenTs = 0;  // 이 시간보다 뒤의 쪽지만 "새 쪽지"로 간주 (배지)
 
 let STUDENTS = {};
 let GROUPS = {};
@@ -2185,6 +2567,12 @@ let currentClassMapFilter = 'all'; // 반별 지도의 '특정 반' 필터 ('all
 
 let teacherLocationInterval = null;
 let seenSOSIds = new Set();
+
+// SOS 알림 상태
+let sosAlertsEnabled = true;             // 기본 켜짐 (localStorage에서 복원)
+let sosInitialLoadDone = false;          // 최초 로드 시 알림 울리지 않게
+let sosAlertAudio = null;                // 오디오 객체 (lazy 생성)
+let sosReminderInterval = null;          // 미해결 SOS 리마인더 타이머
 
 // 사진 조회 상태
 let storage = null;
@@ -2410,6 +2798,7 @@ function initFirebase() {
         renderGroupClassSelect();
         renderRoomClassSelect();
         renderRoomList();
+        updateRollCallBadge();
         renderStudentFilters();
         renderStudentClassSelect();
         renderMapClassSelect();
@@ -2451,9 +2840,19 @@ function initFirebase() {
     });
     db.ref(FIREBASE_PATH + '/sos').on('value', snap => {
       const v = snap.val() || {};
+      const prevIds = new Set(SOS.filter(s => !s.resolved).map(s => s.id));
       SOS = Object.entries(v)
         .map(([id, s]) => ({ id, ...s }))
         .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      // 최초 로드가 아닌 경우, 새로 들어온 미해결 SOS 감지 → 알림
+      if (sosInitialLoadDone) {
+        const newOnes = SOS.filter(s => !s.resolved && !prevIds.has(s.id));
+        if (newOnes.length > 0) {
+          triggerSOSAlert();
+        }
+      }
+      sosInitialLoadDone = true;
+      updateSOSReminder();
       if (currentTeacher) {
         renderSOSList();
         updateSOSBanner();
@@ -2487,6 +2886,17 @@ function initFirebase() {
       ROLL_CALL = snap.val() || {};
       if (currentTeacher && document.getElementById('rollCallModal')?.classList.contains('active')) {
         renderRollCallModal();
+      }
+      updateRollCallBadge();
+    });
+    db.ref(FIREBASE_PATH + '/teacher-memos').on('value', snap => {
+      const v = snap.val() || {};
+      TEACHER_MEMOS = Object.entries(v)
+        .map(([id, m]) => ({ id, ...m }))
+        .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      if (currentTeacher) {
+        renderMemoList();
+        updateMemoBadge();
       }
     });
     // 교사 위치 구독은 기능 플래그가 켜졌을 때만 — 불필요한 다운로드/구독 방지
@@ -2659,29 +3069,22 @@ function updateMapMarkers() {
     const hasGroupFilter = currentMapFilter.startsWith('g');
 
     // 색 매핑: group number -> color
-    let groupColorMap = null;
-    if (hasClassFilter) {
-      // 반 필터가 걸려 있으면 해당 반 조들에 팔레트 색 분배
-      const visibleGroups = getVisibleGroupKeys();  // 반 필터 적용된 정렬된 배열
-      groupColorMap = {};
-      visibleGroups.forEach((gno, idx) => {
-        groupColorMap[gno] = paletteColor(idx);
-      });
-    } else if (hasGroupFilter) {
-      // 반 필터 없이 조만 선택한 경우 — 그 조만 강조색, 나머지는 (어차피 숨겨질 예정)
-      const gno = currentMapFilter.replace('g', '');
-      groupColorMap = { [gno]: paletteColor(0) };
-    }
+    // ★ 기본 원칙: "전체 조"를 대상으로 한 번만 색을 분배 (반 필터와 무관)
+    //    그래야 반 필터를 바꿔도 같은 조는 같은 색이 유지됨 + 필터 없어도 색이 보임
+    const allGroups = Object.keys(GROUPS).sort((a, b) => Number(a) - Number(b));
+    const groupColorMap = {};
+    allGroups.forEach((gno, idx) => {
+      groupColorMap[String(gno).trim()] = paletteColor(idx);
+    });
 
-    const visibleGroupSet = hasClassFilter ? new Set(Object.keys(groupColorMap)) : null;
-
-    // 진단용: 반 선택됐는데 회색으로 빠지는 학생이 있으면 콘솔에 모아서 출력
-    const diagMiss = [];
+    // 반 필터가 있으면 "보일 조"만 제한 (색은 위에서 이미 정해짐)
+    const visibleGroupSet = hasClassFilter
+      ? new Set(getVisibleGroupKeys().map(k => String(k).trim()))
+      : null;
 
     Object.entries(LOCATIONS).forEach(([studentId, loc]) => {
       if (!loc.lat || !loc.lng) return;
       const student = STUDENTS[studentId] || { name: loc.name, group: loc.group };
-      // ★ 학생의 조 키를 문자열로 정규화 (공백도 제거) — groupColorMap 키와 동일 형태
       const studentGroupKey = String(student.group ?? '').trim();
 
       // 반 필터 — 학생의 조가 해당 반 조 목록에 없으면 숨김
@@ -2694,31 +3097,11 @@ function updateMapMarkers() {
       }
       if (currentMapFilter === 'teachers') return;
 
-      let color = NEUTRAL_COLOR;
-      if (groupColorMap) {
-        const mapped = groupColorMap[studentGroupKey];
-        if (mapped) {
-          color = mapped;
-        } else if (hasClassFilter) {
-          // ★ 이게 발생하면 visibleGroupSet 통과는 했는데 groupColorMap에는 키가 없다는 뜻
-          //   → 이론상 불가능하므로 진단 로그
-          diagMiss.push({
-            studentId,
-            name: student.name,
-            groupRaw: student.group,
-            groupKey: studentGroupKey,
-            inSet: visibleGroupSet?.has(studentGroupKey),
-            mapKeys: Object.keys(groupColorMap)
-          });
-        }
-      }
+      // 조 색 — 매핑 없으면 회색 폴백 (조 배정 안 된 학생 대비)
+      const color = groupColorMap[studentGroupKey] || NEUTRAL_COLOR;
       const marker = createStudentMarker(loc, student, color);
       markers[studentId] = marker;
     });
-
-    if (diagMiss.length > 0) {
-      console.warn('[조별 지도] groupColorMap 매칭 실패:', diagMiss);
-    }
   }
 
   updateStats();
@@ -2800,8 +3183,8 @@ function updateTeacherMarkers() {
 }
 
 function setMapFilter(filter) {
-  // 드롭다운의 placeholder 선택 시 무시
-  if (filter === '__placeholder') return;
+  // 방어: 빈 값 무시
+  if (!filter) return;
   currentMapFilter = filter;
   document.querySelectorAll('.map-ctrl-btn[data-filter]').forEach(b => {
     b.classList.toggle('active', b.dataset.filter === filter);
@@ -2813,7 +3196,8 @@ function setMapFilter(filter) {
       sel.value = filter;
       sel.classList.add('active');
     } else {
-      sel.value = '__placeholder';
+      // 'all' 또는 'teachers' 등 → 드롭다운도 "조 전체"로
+      sel.value = 'all';
       sel.classList.remove('active');
     }
   }
@@ -2881,7 +3265,7 @@ function renderMapGroupSelect() {
   if (!sel) return;
   const groupKeys = getVisibleGroupKeys();  // 반 필터 적용된 조 목록
   const current = sel.value;
-  const opts = ['<option value="__placeholder">조 선택…</option>']
+  const opts = ['<option value="all">조 전체</option>']
     .concat(groupKeys.map(k => {
       const name = getGroupName(k);
       const label = name === `${k}조` ? `${k}조` : `${name} (${k}조)`;
@@ -2891,6 +3275,8 @@ function renderMapGroupSelect() {
   // 현재 필터가 조 필터면 복원
   if (current && current.startsWith('g') && groupKeys.includes(current.replace('g',''))) {
     sel.value = current;
+  } else {
+    sel.value = 'all';
   }
 }
 
@@ -3160,6 +3546,9 @@ async function completeLogin(user, info) {
     uid: user.uid
   };
 
+  // 관리자 표시 클래스 적용 (유의사항 탭 등)
+  document.body.classList.toggle('is-admin', isAdminTeacher());
+
   // 로그인 화면 → 메인 화면
   document.getElementById('login').style.display = 'none';
   document.getElementById('main').classList.add('active');
@@ -3169,6 +3558,8 @@ async function completeLogin(user, info) {
   document.getElementById('loginMeta').textContent = '';
 
   // 전체 렌더링
+  restoreSOSAlertsState();
+  restoreMemoSeenTs();
   renderStudentFilters();
   renderStudentClassSelect();
   renderStudentList();
@@ -3177,11 +3568,14 @@ async function completeLogin(user, info) {
   renderRoomClassSelect();
   renderRoomList();
   updateRollCallButton();
+  updateRollCallBadge();
   renderMapClassSelect();
   renderMapGroupSelect();
   renderClassMapSelect();
   renderSOSList();
   renderAnnounceHistory();
+  renderMemoList();
+  updateMemoBadge();
   renderRecordList();
   populateRecTargets();
   updateStats();
@@ -3197,6 +3591,7 @@ async function teacherLogout() {
   if (!confirm('로그아웃할까요?')) return;
   stopTeacherLocation();
   currentTeacher = null;
+  document.body.classList.remove('is-admin');
   try {
     await firebase.auth().signOut();
   } catch (e) {
@@ -3375,7 +3770,7 @@ function renderStudentList() {
     }
     return `<div class="student-item" onclick="showStudentDetail('${s.id}')">
       <div class="si-main">
-        <div class="group-badge" style="background:${NEUTRAL_COLOR}">${s.group || '?'}</div>
+        <div class="group-badge" style="background:${groupColorByNo(s.group)}">${s.group || '?'}</div>
         <div class="si-info">
           <div class="nm">${s.name}</div>
           <div class="meta">${s.class || ''} · ${s.id} · ${s.room || '?'}호</div>
@@ -3477,7 +3872,7 @@ function renderGroupList() {
 
     return `<div class="group-card">
       <div class="group-card-head">
-        <span class="dot" style="background:${NEUTRAL_COLOR}"></span>
+        <span class="dot" style="background:${groupColorByNo(k)}"></span>
         <span class="gname">${escapeHtml(displayName)}${hasRealName ? ` <span style="color:var(--ink-mute); font-weight:400; font-size:12px;">· ${k}조</span>` : ''}</span>
         <span class="gcount">${active}/${members.length}명 활동</span>
       </div>
@@ -3638,6 +4033,37 @@ function defaultRcDay() {
   if (d <= 6) return 1;
   if (d === 7) return 2;
   return 2;
+}
+
+// 숙소 탭 라벨의 점호 배지 업데이트 — 담임 교사일 때만 표시
+function updateRollCallBadge() {
+  const badge = document.getElementById('rollCallBadge');
+  if (!badge) return;
+  const klass = myHomeroomClass();
+  if (klass == null) {
+    badge.style.display = 'none';
+    return;
+  }
+
+  // 오늘 기준 해당 날짜의 미완료 학생 수 계산
+  const day = defaultRcDay();
+  const dayData = rcGetClassDayData(klass, day);
+  const checks = dayData.students || {};
+
+  let totalStudents = 0, checkedCount = 0;
+  Object.keys(STUDENTS).forEach(sid => {
+    if (classNoFromStudentId(sid) !== klass) return;
+    totalStudents++;
+    if (checks[sid]?.present) checkedCount++;
+  });
+
+  const remaining = totalStudents - checkedCount;
+  if (totalStudents === 0 || remaining === 0) {
+    badge.style.display = 'none';
+  } else {
+    badge.textContent = remaining;
+    badge.style.display = 'inline-block';
+  }
 }
 
 function rcPathForClass(klass, day) {
@@ -3910,24 +4336,185 @@ function updateSOSBanner() {
 }
 
 // ═══════════════════════════════════════════════════
+// 🔔 SOS 알림 (소리·진동)
+// ═══════════════════════════════════════════════════
+
+// 간단한 비프음 (Web Audio API — 외부 파일 의존 없음)
+function playSOSBeep() {
+  if (!sosAlertsEnabled) return;
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    // 3회 연속 삐-삐-삐 패턴 (긴급함 강조, 너무 시끄럽지 않게)
+    const beepPattern = [
+      { freq: 880, start: 0.0,  duration: 0.18 },
+      { freq: 880, start: 0.25, duration: 0.18 },
+      { freq: 1100, start: 0.50, duration: 0.35 }
+    ];
+    beepPattern.forEach(({ freq, start, duration }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, ctx.currentTime + start);
+      gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + start + 0.02);
+      gain.gain.setValueAtTime(0.35, ctx.currentTime + start + duration - 0.04);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + start + duration);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration + 0.01);
+    });
+    // 자원 정리
+    setTimeout(() => { try { ctx.close(); } catch {} }, 1500);
+  } catch (e) {
+    console.warn('비프음 실패:', e);
+  }
+}
+
+function vibrateSOS() {
+  if (!sosAlertsEnabled) return;
+  try {
+    if (navigator.vibrate) navigator.vibrate([250, 120, 250, 120, 400]);
+  } catch (e) {}
+}
+
+// 헤더의 알림 아이콘에 1초간 반짝 효과
+function flashAlertButton() {
+  const btn = document.getElementById('alertToggleBtn');
+  if (!btn) return;
+  btn.classList.add('ringing');
+  setTimeout(() => btn.classList.remove('ringing'), 1500);
+}
+
+function triggerSOSAlert() {
+  playSOSBeep();
+  vibrateSOS();
+  flashAlertButton();
+}
+
+function toggleSOSAlerts() {
+  sosAlertsEnabled = !sosAlertsEnabled;
+  try { localStorage.setItem('sosAlertsEnabled', sosAlertsEnabled ? '1' : '0'); } catch (e) {}
+  updateAlertButtonUI();
+  if (sosAlertsEnabled) {
+    // 켤 때 짧은 테스트 비프
+    playSOSBeep();
+  }
+}
+
+function updateAlertButtonUI() {
+  const btn = document.getElementById('alertToggleBtn');
+  if (!btn) return;
+  if (sosAlertsEnabled) {
+    btn.textContent = '🔔';
+    btn.classList.remove('muted');
+    btn.title = 'SOS 알림 켜짐 (클릭하여 끄기)';
+  } else {
+    btn.textContent = '🔕';
+    btn.classList.add('muted');
+    btn.title = 'SOS 알림 꺼짐 (클릭하여 켜기)';
+  }
+}
+
+function restoreSOSAlertsState() {
+  try {
+    const saved = localStorage.getItem('sosAlertsEnabled');
+    if (saved === '0') sosAlertsEnabled = false;
+    else sosAlertsEnabled = true;
+  } catch (e) { sosAlertsEnabled = true; }
+  updateAlertButtonUI();
+}
+
+// SOS 새로 들어왔거나 아직 미해결인 것이 있으면 30초마다 한 번씩 상기
+function updateSOSReminder() {
+  const unresolved = SOS.filter(s => !s.resolved);
+  if (sosReminderInterval) {
+    clearInterval(sosReminderInterval);
+    sosReminderInterval = null;
+  }
+  if (unresolved.length > 0 && sosAlertsEnabled) {
+    sosReminderInterval = setInterval(() => {
+      const stillUnresolved = SOS.some(s => !s.resolved);
+      if (stillUnresolved) {
+        triggerSOSAlert();
+      } else {
+        clearInterval(sosReminderInterval);
+        sosReminderInterval = null;
+      }
+    }, 30000);  // 30초마다 재알림
+  }
+}
+
+// ═══════════════════════════════════════════════════
 // 공지
 // ═══════════════════════════════════════════════════
 
-function sendAnnouncement() {
+// 편집 중인 공지 id (null이면 새 작성 모드)
+let editingAnnouncementId = null;
+
+function submitAnnouncement() {
   if (!firebaseReady || !currentTeacher) return;
   const title = document.getElementById('anTitle').value.trim();
   const body = document.getElementById('anBody').value.trim();
   if (!title) { alert('공지 제목을 입력하세요'); return; }
 
-  const ref = db.ref(FIREBASE_PATH + '/announcements').push();
-  ref.set({
-    title, body, author: currentTeacher.name, ts: Date.now()
-  }).then(() => {
-    document.getElementById('anTitle').value = '';
-    document.getElementById('anBody').value = '';
-    alert('✅ 공지가 모든 학생에게 전송되었습니다');
-  }).catch(e => alert('전송 실패: ' + e.message));
+  if (editingAnnouncementId) {
+    // 편집 모드 — 기존 공지 수정
+    const id = editingAnnouncementId;
+    db.ref(FIREBASE_PATH + '/announcements/' + id).update({
+      title, body,
+      editedAt: Date.now(),
+      editedBy: currentTeacher.name
+    }).then(() => {
+      cancelAnnouncementEdit();
+      alert('✅ 공지가 수정되었습니다');
+    }).catch(e => {
+      alert('수정 실패: ' + (e.message || '알 수 없음'));
+    });
+  } else {
+    // 새 공지 전송
+    const ref = db.ref(FIREBASE_PATH + '/announcements').push();
+    ref.set({
+      title, body, author: currentTeacher.name, ts: Date.now()
+    }).then(() => {
+      document.getElementById('anTitle').value = '';
+      document.getElementById('anBody').value = '';
+      alert('✅ 공지가 모든 학생에게 전송되었습니다');
+    }).catch(e => {
+      alert('전송 실패: ' + (e.message || '알 수 없음'));
+    });
+  }
 }
+
+function startAnnouncementEdit(id) {
+  const a = ANNOUNCEMENTS.find(x => x.id === id);
+  if (!a) return;
+  editingAnnouncementId = id;
+  document.getElementById('anTitle').value = a.title || '';
+  document.getElementById('anBody').value = a.body || '';
+  document.getElementById('announceEditTitle').textContent = a.title || '';
+  document.getElementById('announceEditBanner').style.display = '';
+  document.getElementById('announceSubmitBtn').textContent = '✏️ 수정 완료';
+  document.getElementById('announceCancelBtn').style.display = '';
+  // 폼으로 스크롤
+  document.getElementById('anTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('anTitle').focus();
+  renderAnnounceHistory();  // 편집 중 카드 강조
+}
+
+function cancelAnnouncementEdit() {
+  editingAnnouncementId = null;
+  document.getElementById('anTitle').value = '';
+  document.getElementById('anBody').value = '';
+  document.getElementById('announceEditBanner').style.display = 'none';
+  document.getElementById('announceSubmitBtn').textContent = '📢 모든 학생에게 전송';
+  document.getElementById('announceCancelBtn').style.display = 'none';
+  renderAnnounceHistory();
+}
+
+// 이전 sendAnnouncement 유지 (다른 호출이 있을 수 있으니 alias)
+function sendAnnouncement() { submitAnnouncement(); }
 
 function renderAnnounceHistory() {
   const el = document.getElementById('announceHistory');
@@ -3939,17 +4526,179 @@ function renderAnnounceHistory() {
   el.innerHTML = ANNOUNCEMENTS.map(a => {
     const d = new Date(a.ts || 0);
     const t = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    return `<div class="announce-history-item">
-      <span><strong>${escapeHtml(a.title)}</strong><br><span style="color:var(--ink-mute);">${t} · ${a.author || ''}</span></span>
-      <button class="announce-history-del" onclick="deleteAnnouncement('${a.id}')">삭제</button>
+    const editedMark = a.editedAt ? ' <span style="color:var(--accent); font-size:10px;">(수정됨)</span>' : '';
+    const isEditing = editingAnnouncementId === a.id;
+    return `<div class="announce-history-item ${isEditing ? 'editing' : ''}">
+      <span><strong>${escapeHtml(a.title)}</strong>${editedMark}<br><span style="color:var(--ink-mute);">${t} · ${a.author || ''}</span></span>
+      <div class="announce-history-btns">
+        <button class="announce-history-btn" onclick="startAnnouncementEdit('${a.id}')">편집</button>
+        <button class="announce-history-del" onclick="deleteAnnouncement('${a.id}')">삭제</button>
+      </div>
     </div>`;
   }).join('');
 }
 
 function deleteAnnouncement(id) {
   if (!firebaseReady) return;
-  if (!confirm('이 공지를 삭제할까요?')) return;
+  if (!confirm('이 공지를 삭제할까요?\n학생 앱에서도 사라집니다.')) return;
+  // 편집 중이던 공지를 삭제하면 편집 상태도 해제
+  if (editingAnnouncementId === id) cancelAnnouncementEdit();
   db.ref(FIREBASE_PATH + '/announcements/' + id).remove();
+}
+
+// ═══════════════════════════════════════════════════
+// 💬 교사 쪽지 (교사끼리만 보이는 게시판)
+// ═══════════════════════════════════════════════════
+
+function onMemoBodyInput() {
+  const ta = document.getElementById('memoBody');
+  const counter = document.getElementById('memoCounter');
+  if (!ta || !counter) return;
+  counter.textContent = `${ta.value.length} / 500`;
+}
+
+function submitTeacherMemo() {
+  if (!firebaseReady || !currentTeacher) return;
+  const body = document.getElementById('memoBody').value.trim();
+  if (!body) { alert('쪽지 내용을 입력하세요'); return; }
+  if (body.length > 500) { alert('500자 이내로 작성하세요'); return; }
+
+  if (editingMemoId) {
+    // 편집 모드
+    const m = TEACHER_MEMOS.find(x => x.id === editingMemoId);
+    if (!m) { cancelMemoEdit(); return; }
+    // 본인 글만 편집 가능 (방어선)
+    if (m.authorEmail !== currentTeacher.email) {
+      alert('다른 교사의 쪽지는 편집할 수 없어요');
+      cancelMemoEdit();
+      return;
+    }
+    db.ref(FIREBASE_PATH + '/teacher-memos/' + editingMemoId).update({
+      body,
+      editedAt: Date.now()
+    }).then(() => {
+      cancelMemoEdit();
+    }).catch(e => alert('수정 실패: ' + (e.message || '알 수 없음')));
+  } else {
+    // 새 쪽지
+    const ref = db.ref(FIREBASE_PATH + '/teacher-memos').push();
+    ref.set({
+      body,
+      author: currentTeacher.name,
+      authorEmail: currentTeacher.email,
+      ts: Date.now()
+    }).then(() => {
+      document.getElementById('memoBody').value = '';
+      onMemoBodyInput();
+    }).catch(e => alert('전송 실패: ' + (e.message || '알 수 없음')));
+  }
+}
+
+function startMemoEdit(id) {
+  const m = TEACHER_MEMOS.find(x => x.id === id);
+  if (!m) return;
+  if (m.authorEmail !== currentTeacher?.email) {
+    alert('본인 쪽지만 편집할 수 있어요');
+    return;
+  }
+  editingMemoId = id;
+  document.getElementById('memoBody').value = m.body || '';
+  onMemoBodyInput();
+  document.getElementById('memoSubmitBtn').textContent = '✏️ 수정 완료';
+  document.getElementById('memoCancelBtn').style.display = '';
+  document.getElementById('memoBody').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('memoBody').focus();
+  renderMemoList();
+}
+
+function cancelMemoEdit() {
+  editingMemoId = null;
+  document.getElementById('memoBody').value = '';
+  onMemoBodyInput();
+  document.getElementById('memoSubmitBtn').textContent = '💬 쪽지 올리기';
+  document.getElementById('memoCancelBtn').style.display = 'none';
+  renderMemoList();
+}
+
+function deleteMemo(id) {
+  if (!firebaseReady) return;
+  const m = TEACHER_MEMOS.find(x => x.id === id);
+  if (!m) return;
+  if (m.authorEmail !== currentTeacher?.email) {
+    alert('본인 쪽지만 삭제할 수 있어요');
+    return;
+  }
+  if (!confirm('이 쪽지를 삭제할까요?')) return;
+  if (editingMemoId === id) cancelMemoEdit();
+  db.ref(FIREBASE_PATH + '/teacher-memos/' + id).remove();
+}
+
+function renderMemoList() {
+  const el = document.getElementById('memoList');
+  if (!el) return;
+  if (TEACHER_MEMOS.length === 0) {
+    el.innerHTML = '<div class="empty">아직 쪽지가 없어요</div>';
+    return;
+  }
+  el.innerHTML = TEACHER_MEMOS.map(m => {
+    const d = new Date(m.ts || 0);
+    const t = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const isMine = m.authorEmail === currentTeacher?.email;
+    const isEditing = editingMemoId === m.id;
+    const editedMark = m.editedAt
+      ? `<span class="memo-edited-tag">(수정됨)</span>`
+      : '';
+    const btns = isMine
+      ? `<div class="memo-item-btns">
+          <button class="memo-item-btn" onclick="startMemoEdit('${m.id}')">편집</button>
+          <button class="memo-item-btn" onclick="deleteMemo('${m.id}')">삭제</button>
+        </div>`
+      : '';
+    return `<div class="memo-item ${isMine ? 'mine' : ''} ${isEditing ? 'editing' : ''}">
+      <div class="memo-item-head">
+        <span class="memo-item-author">${escapeHtml(m.author || '—')}${isMine ? ' (나)' : ''}${editedMark}</span>
+        <span class="memo-item-time">${t}</span>
+      </div>
+      <div class="memo-item-body">${escapeHtml(m.body || '')}</div>
+      ${btns}
+    </div>`;
+  }).join('');
+}
+
+// 교사쪽지 탭 배지 — 마지막으로 본 시각 이후의 쪽지 수
+function updateMemoBadge() {
+  const badge = document.getElementById('memoBadge');
+  if (!badge) return;
+  // 현재 쪽지 탭을 보고 있으면 배지 표시 안 함
+  const onMemoTab = document.querySelector('.tab[data-panel="memos"]')?.classList.contains('active');
+  if (onMemoTab) {
+    badge.style.display = 'none';
+    return;
+  }
+  const unseen = TEACHER_MEMOS.filter(m =>
+    (m.ts || 0) > memoSeenTs &&
+    m.authorEmail !== currentTeacher?.email  // 내가 쓴 건 제외
+  ).length;
+  if (unseen > 0) {
+    badge.textContent = unseen;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// 쪽지 탭 진입 시 "본 것"으로 처리
+function markMemosAsSeen() {
+  memoSeenTs = Date.now();
+  try { localStorage.setItem('memoSeenTs', String(memoSeenTs)); } catch (e) {}
+  updateMemoBadge();
+}
+
+function restoreMemoSeenTs() {
+  try {
+    const saved = localStorage.getItem('memoSeenTs');
+    memoSeenTs = saved ? parseInt(saved, 10) || 0 : 0;
+  } catch (e) { memoSeenTs = 0; }
 }
 
 // ═══════════════════════════════════════════════════
@@ -4023,6 +4772,185 @@ function renderRecordList() {
       <div class="record-item-body">${escapeHtml(r.body).replace(/\n/g, '<br>')}</div>
     </div>`;
   }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// 📥 데이터 내보내기 (CSV)
+// ═══════════════════════════════════════════════════
+
+// 한 필드를 CSV 안전한 형태로 이스케이프
+function csvField(v) {
+  if (v === null || v === undefined) return '';
+  const s = String(v);
+  // 쉼표·따옴표·개행이 들어있으면 큰따옴표로 감싸고 내부 따옴표는 두 번 반복
+  if (/[",\r\n]/.test(s)) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+// rows: 2D 배열 (첫 행은 헤더). filename: 기본 파일명(.csv 확장자 자동 추가 안 함 — 함수에서 붙임)
+function downloadCSV(rows, filename) {
+  // UTF-8 BOM 포함 — Excel 한글 깨짐 방지
+  const BOM = '\ufeff';
+  const csv = BOM + rows.map(row => row.map(csvField).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  a.download = `${filename}_${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
+}
+
+function formatTS(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function exportStudentsCSV() {
+  const rows = [['학번','이름','반','조번호','조이름','방','층','버스','전화','성별']];
+  Object.entries(STUDENTS).sort(([a], [b]) => a.localeCompare(b)).forEach(([sid, s]) => {
+    const gno = s.group || '';
+    const gName = gno ? getGroupName(gno) : '';
+    rows.push([
+      sid, s.name || '', s.class || '', gno, gName,
+      s.room || '', s.floor || '', s.bus || '', s.tel || '', s.gender || ''
+    ]);
+  });
+  if (rows.length === 1) { alert('학생 데이터가 없습니다'); return; }
+  downloadCSV(rows, '학생명단');
+}
+
+function exportSOSCSV() {
+  const rows = [['시각','학번','이름','반','조','방','위도','경도','정확도(m)','메시지','해결여부','해결교사','해결시각']];
+  SOS.slice().sort((a, b) => (a.ts||0) - (b.ts||0)).forEach(s => {
+    rows.push([
+      formatTS(s.ts),
+      s.studentId || '',
+      s.name || '',
+      s.class || '',
+      s.group ? getGroupName(s.group) : '',
+      s.room || '',
+      s.lat || '',
+      s.lng || '',
+      s.accuracy || '',
+      s.message || '',
+      s.resolved ? '해결' : '미해결',
+      s.resolvedBy || '',
+      s.resolvedAt ? formatTS(s.resolvedAt) : ''
+    ]);
+  });
+  if (rows.length === 1) { alert('SOS 기록이 없습니다'); return; }
+  downloadCSV(rows, 'SOS기록');
+}
+
+function exportRecordsCSV() {
+  const rows = [['시각','대상학번','대상이름','반','태그','내용','작성자','공개범위']];
+  RECORDS.slice().sort((a, b) => (a.ts||0) - (b.ts||0)).forEach(r => {
+    const target = r.targetId === '__all' ? null : STUDENTS[r.targetId];
+    const className = target ? (target.class || '') : (r.targetId === '__all' ? '전체' : '');
+    rows.push([
+      formatTS(r.ts),
+      r.targetId === '__all' ? '' : (r.targetId || ''),
+      r.targetName || '',
+      className,
+      r.tag || '',
+      r.body || '',
+      r.author || '',
+      r.visibility === 'private' ? '교사만' : '학생열람가능'
+    ]);
+  });
+  if (rows.length === 1) { alert('기록이 없습니다'); return; }
+  downloadCSV(rows, '교사기록');
+}
+
+function exportRollCallCSV() {
+  const rows = [['날짜','반','학번','이름','방','층','체크여부','체크교사','체크시각']];
+  // ROLL_CALL 구조: { 'class-N': { 'day-1': {students:{학번:{present,ts,by}}, updatedAt, updatedBy}, 'day-2': {...} } }
+  const dayLabels = { 1: '5/6 1일차', 2: '5/7 2일차' };
+  Object.entries(ROLL_CALL).forEach(([classKey, classData]) => {
+    const classNum = classKey.replace('class-', '');
+    [1, 2].forEach(day => {
+      const dayData = classData[`day-${day}`];
+      if (!dayData || !dayData.students) return;
+      Object.entries(dayData.students).forEach(([sid, chk]) => {
+        const s = STUDENTS[sid] || {};
+        rows.push([
+          dayLabels[day] || `day-${day}`,
+          `2-${classNum}`,
+          sid,
+          s.name || '',
+          s.room || '',
+          s.floor || '',
+          chk.present ? '확인' : '미확인',
+          chk.by || '',
+          chk.ts ? formatTS(chk.ts) : ''
+        ]);
+      });
+    });
+  });
+  if (rows.length === 1) { alert('점호 기록이 없습니다'); return; }
+  downloadCSV(rows, '점호기록');
+}
+
+function exportAnnouncementsCSV() {
+  const rows = [['전송시각','제목','내용','작성자','수정시각','수정자']];
+  ANNOUNCEMENTS.slice().sort((a, b) => (a.ts||0) - (b.ts||0)).forEach(a => {
+    rows.push([
+      formatTS(a.ts),
+      a.title || '',
+      a.body || '',
+      a.author || '',
+      a.editedAt ? formatTS(a.editedAt) : '',
+      a.editedBy || ''
+    ]);
+  });
+  if (rows.length === 1) { alert('공지 이력이 없습니다'); return; }
+  downloadCSV(rows, '공지이력');
+}
+
+function exportTeacherMemosCSV() {
+  const rows = [['작성시각','작성자','내용','수정시각']];
+  TEACHER_MEMOS.slice().sort((a, b) => (a.ts||0) - (b.ts||0)).forEach(m => {
+    rows.push([
+      formatTS(m.ts),
+      m.author || '',
+      m.body || '',
+      m.editedAt ? formatTS(m.editedAt) : ''
+    ]);
+  });
+  if (rows.length === 1) { alert('쪽지 기록이 없습니다'); return; }
+  downloadCSV(rows, '교사쪽지');
+}
+
+// 내보내기 버튼에 건수 표시
+function updateExportCounts() {
+  const set = (id, n) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = n > 0 ? `${n}건` : '없음';
+  };
+  set('exportStudentsCount', Object.keys(STUDENTS).length);
+  set('exportSOSCount', SOS.length);
+  set('exportRecordsCount', RECORDS.length);
+  // 점호: 체크된 학생 수 총합
+  let rcCount = 0;
+  Object.values(ROLL_CALL).forEach(cls => {
+    [1, 2].forEach(day => {
+      const students = cls?.[`day-${day}`]?.students;
+      if (students) rcCount += Object.values(students).filter(s => s.present).length;
+    });
+  });
+  set('exportRollCallCount', rcCount);
+  set('exportAnnouncementsCount', ANNOUNCEMENTS.length);
+  set('exportMemosCount', TEACHER_MEMOS.length);
 }
 
 // ═══════════════════════════════════════════════════
@@ -4361,6 +5289,31 @@ function showStudentDetail(studentId) {
     ? `<div class="clickable-cell" onclick="smScrollTo('smGroupSection')"><div class="k">조 ↓</div><div class="v">${escapeHtml(gDisplay)}${hasRealName ? ` <span style="color:var(--ink-mute); font-size:11px;">(${s.group}조)</span>` : ''}</div></div>`
     : `<div><div class="k">조</div><div class="v">—</div></div>`;
 
+  // 이 학생 관련 기록 (targetId가 학번 또는 "__all"(전체)인 경우)
+  const myRecords = RECORDS.filter(r => r.targetId === studentId || r.targetId === '__all');
+  let recordsHtml = '';
+  if (myRecords.length > 0) {
+    const items = myRecords.slice(0, 30).map(r => {
+      const d = new Date(r.ts || 0);
+      const t = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const visTag = r.visibility === 'private' ? '🔒' : '👁';
+      const allTag = r.targetId === '__all' ? ' <span style="color:var(--ink-mute); font-size:10px;">(전체 대상)</span>' : '';
+      return `<div class="sm-record tag-${r.tag || 'note'}">
+        <div class="sm-record-head">
+          <span class="sm-record-tag">${escapeHtml(r.tag || '기타')} ${visTag}</span>
+          <span class="sm-record-meta">${t} · ${escapeHtml(r.author || '')}${allTag}</span>
+        </div>
+        <div class="sm-record-body">${escapeHtml(r.body || '').replace(/\n/g, '<br>')}</div>
+      </div>`;
+    }).join('');
+    recordsHtml = `
+      <div class="sm-records-section">
+        <div class="sm-records-label">📝 이 학생 기록 <span class="sm-records-count">${myRecords.length}건</span></div>
+        <div class="sm-records-list">${items}</div>
+      </div>
+    `;
+  }
+
   document.getElementById('smBody').innerHTML = `
     <div class="detail-grid">
       <div><div class="k">학번</div><div class="v">${s.id || studentId}</div></div>
@@ -4374,6 +5327,7 @@ function showStudentDetail(studentId) {
     <div class="detail-actions">${actions.join('')}</div>
     ${roommatesHtml}
     ${groupMatesHtml}
+    ${recordsHtml}
 
     <div class="photos-section">
       <div class="photos-head">
@@ -4710,6 +5664,11 @@ function getVisibleGroupKeys() {
 }
 
 function goTab(name) {
+  // 관리자 전용 탭 접근 차단
+  if (name === 'notes' && !isAdminTeacher()) {
+    alert('유의사항 편집은 관리자 권한이 필요합니다.');
+    return;
+  }
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelector(`.tab[data-panel="${name}"]`)?.classList.add('active');
@@ -4741,12 +5700,18 @@ function goTab(name) {
     SOS.forEach(s => seenSOSIds.add(s.id));
     updateSOSBanner();
   }
+  if (name === 'memos') {
+    // 쪽지 탭 진입 — 모두 읽음으로 처리
+    markMemosAsSeen();
+  }
   if (name === 'notes') {
     // 에디터가 비어있으면 현재 day 로드 (dirty 유지)
     const editor = document.getElementById('notesEditor');
     if (editor && !editor.value && !notesDirty[notesCurrentDay]) {
       loadNotesEditor(notesCurrentDay, false);
     }
+    // CSV 내보내기 카운트 갱신
+    updateExportCounts();
   }
 }
 
