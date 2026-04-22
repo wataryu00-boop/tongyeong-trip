@@ -333,9 +333,16 @@ header button:hover {
   position: sticky;
   top: 62px;
   z-index: 9;
+  /* 탭이 많아지면 가로 스크롤로 처리 (두 줄 꺾임 방지) */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
+.tabs::-webkit-scrollbar { display: none; }
 .tab {
-  flex: 1;
+  flex: 1 0 auto;         /* 공간이 모자라면 내용 크기 유지, 남으면 균등 분배 */
+  min-width: 64px;
   padding: 14px 8px;
   font-size: 12px;
   color: var(--ink-mute);
@@ -344,6 +351,7 @@ header button:hover {
   border-bottom: 2px solid transparent;
   font-weight: 500;
   transition: all 0.2s;
+  white-space: nowrap;    /* 두 줄로 꺾이지 않게 */
 }
 .tab.active {
   color: var(--ink);
@@ -376,7 +384,7 @@ header button:hover {
 }
 .map-controls {
   position: absolute;
-  top: 140px;
+  top: 130px;
   right: 12px;
   display: flex;
   flex-direction: column;
@@ -389,8 +397,8 @@ header button:hover {
 .sos-banner.active ~ nav.tabs ~ section .map-stats {
   /* 선택자만 남기는 용도 — 실제 규칙은 JS로 토글하는 편이 확실 */
 }
-.main.sos-visible .map-controls { top: 200px; }
-.main.sos-visible .map-stats { top: 200px; }
+.main.sos-visible .map-controls { top: 190px; }
+.main.sos-visible .map-stats { top: 190px; }
 .map-ctrl-btn {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -498,7 +506,7 @@ header button:hover {
 
 .map-stats {
   position: absolute;
-  top: 140px;
+  top: 130px;
   left: 12px;
   background: rgba(26, 26, 26, 0.92);
   border: 1px solid var(--line);
