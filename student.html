@@ -18,28 +18,29 @@
      디자인 시스템
      ═══════════════════════════════════════════════════ */
   :root {
-    /* 시안 S 팔레트 — 따뜻한 크림 라이트 */
-    --bg: #F7F5F0;
+    /* 인디고 팔레트 — 차분하고 학술적인 느낌 */
+    --bg: #F5F6FB;
     --surface: #FFFFFF;
-    --surface-2: #F0EDE6;
-    --surface-3: #E7E3D9;
+    --surface-2: #E8EAF9;
+    --surface-3: #DDE0F4;
 
     /* 텍스트 */
-    --ink: #1A1917;
-    --ink-2: #4A4843;
-    --ink-3: #8B887F;
-    --ink-4: #B8B4A8;
+    --ink: #1F2A80;
+    --ink-2: #3A4599;
+    --ink-3: #8489B8;
+    --ink-4: #B0B4D4;
 
     /* 테두리 */
-    --line: rgba(26, 25, 23, 0.08);
-    --line-2: rgba(26, 25, 23, 0.14);
+    --line: rgba(31, 42, 128, 0.08);
+    --line-2: rgba(31, 42, 128, 0.14);
 
-    /* 브랜드 · 포인트 */
-    --coral: #D85A30;
-    --coral-ink: #5E1E0A;
-    --coral-bg: #FBECE4;
-    --coral-deep: #B8431E;
+    /* 브랜드 · 포인트 — 인디고 메인 */
+    --coral: #4F5BD5;
+    --coral-ink: #1F2A80;
+    --coral-bg: #E8EAF9;
+    --coral-deep: #2C38A8;
 
+    /* 보조 악센트 (알림·경고 등은 시인성을 위해 유지) */
     --amber: #BA7517;
     --amber-ink: #633806;
     --amber-bg: #FAEEDA;
@@ -228,32 +229,64 @@
   .home-head {
     padding: 22px 20px 18px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 12px;
   }
+  .home-head .home-head-left { flex: 1; min-width: 0; }
   .home-head .hello {
     font-size: 11px;
     color: var(--ink-3);
-    letter-spacing: 0.1em;
-    margin-bottom: 3px;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-transform: uppercase;
   }
   .home-head .name {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .home-head .name .accent-name {
+    color: var(--coral);
+  }
+  .home-head .sub-greeting {
+    font-family: 'Gowun Batang', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-2);
+    margin-top: 5px;
+    letter-spacing: -0.01em;
   }
   .home-head .group-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: var(--coral-bg);
     color: var(--coral-ink);
-    font-weight: 600;
-    font-size: 13px;
-    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 7px 12px;
     border-radius: 999px;
     letter-spacing: -0.01em;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .home-head .group-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--coral);
   }
   .home-head .head-right {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+    margin-top: 4px;
   }
   .home-head .homeroom-btn {
     display: inline-flex;
@@ -315,37 +348,66 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     D-day 카드
+     D-day 히어로 카드 (시안 기반)
      ═══════════════════════════════════════════════════ */
   .dday-card {
-    background: var(--amber-bg);
-    border-radius: 14px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--coral-deep) 100%);
+    border-radius: 22px;
+    padding: 22px 22px 20px;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(79, 91, 213, 0.22);
   }
+  .dday-card::before {
+    /* 하단 웨이브 장식 SVG */
+    content: '';
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 200px;
+    height: 100px;
+    opacity: 0.18;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'><path d='M0 80 Q30 60 60 70 T120 65 T200 55 L200 100 L0 100 Z' fill='%23fff'/><path d='M0 85 Q40 70 80 78 T160 72 T200 68 L200 100 L0 100 Z' fill='%23fff' opacity='0.5'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 200px 100px;
+    pointer-events: none;
+  }
+  .dday-card > * { position: relative; z-index: 1; }
   .dday-label {
-    font-size: 11px;
-    color: var(--amber-ink);
-    opacity: 0.85;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    font-size: 12px;
+    color: #fff;
+    opacity: 0.9;
+    letter-spacing: -0.01em;
+    font-weight: 500;
+    margin-bottom: 2px;
   }
   .dday-num {
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--amber-ink);
-    letter-spacing: -0.03em;
-    line-height: 1;
+    font-size: 52px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin-top: 2px;
   }
   .dday-right {
-    text-align: right;
-    font-size: 11px;
-    color: var(--amber-ink);
-    opacity: 0.85;
-    line-height: 1.5;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: #fff;
+    opacity: 0.9;
+    line-height: 1.4;
+    font-family: inherit;
+    text-align: left;
+  }
+  .dday-right .dday-date {
     font-family: 'Gowun Batang', serif;
+  }
+  .dday-right .dday-when {
+    opacity: 0.92;
   }
 
   /* ═══════════════════════════════════════════════════
@@ -384,6 +446,123 @@
     color: var(--red-ink);
     line-height: 1.5;
     opacity: 0.9;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     🎒 짐 체크리스트 배너 (홈)
+     ═══════════════════════════════════════════════════ */
+  .packing-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FEF6EE;
+    border: 1px solid rgba(186, 117, 23, 0.18);
+    border-radius: 14px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .packing-alert:hover { background: #FDF0E0; }
+  .packing-alert:active { transform: scale(0.99); }
+  .packing-alert-ico {
+    width: 22px; height: 22px;
+    border-radius: 999px;
+    background: var(--amber);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .packing-alert-body { flex: 1; min-width: 0; }
+  .packing-alert-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+  .packing-alert-sub {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+  .packing-alert-chevron {
+    color: var(--ink-3);
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  /* 짐 체크리스트 모달 내부 */
+  .packing-progress {
+    padding: 10px 18px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .packing-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .packing-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--coral), var(--coral-deep));
+    transition: width 0.25s ease;
+  }
+  .packing-progress-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
+    text-align: right;
+  }
+  .packing-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 8px 0 12px;
+  }
+  .packing-group {
+    padding: 8px 18px;
+  }
+  .packing-group-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 10px 0 6px;
+  }
+  .packing-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .packing-item:last-child { border-bottom: none; }
+  .packing-item input[type="checkbox"] {
+    width: 20px; height: 20px;
+    accent-color: var(--coral);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .packing-item-label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .packing-item.done .packing-item-label {
+    color: var(--ink-3);
+    text-decoration: line-through;
   }
 
   /* ═══════════════════════════════════════════════════
@@ -691,54 +870,13 @@
   /* ═══════════════════════════════════════════════════
      오늘의 일정
      ═══════════════════════════════════════════════════ */
-  .schedule-list {
-    background: var(--surface);
-    border: 0.5px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-  .schedule-item {
-    display: flex;
-    gap: 12px;
-    padding: 12px 14px;
-    border-bottom: 0.5px solid var(--line);
-    transition: background 0.15s;
-  }
-  .schedule-item:last-child { border-bottom: none; }
-  .schedule-item.now {
-    background: var(--blue-bg);
-  }
-  .schedule-item.now .time {
-    color: var(--blue-ink);
-    font-weight: 600;
-  }
-  .schedule-item.past {
-    opacity: 0.45;
-  }
-  .schedule-item .time {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ink-2);
-    width: 50px;
-    flex-shrink: 0;
-    font-variant-numeric: tabular-nums;
-  }
-  .schedule-item .what {
-    font-size: 13px;
-    color: var(--ink);
-    flex: 1;
-    line-height: 1.5;
-  }
-  .schedule-item .what .note {
-    display: block;
-    font-size: 11px;
-    color: var(--ink-3);
-    margin-top: 2px;
-  }
+  /* ═══════════════════════════════════════════════════
+     📅 일정 페이지 — 일자 전환 버튼 스타일
+     ═══════════════════════════════════════════════════ */
   .schedule-day-switcher {
     display: flex;
     gap: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
   }
   .schedule-day-btn {
     flex: 1;
@@ -976,54 +1114,94 @@
     margin-top: 2px;
   }
 
-  /* 집결 정보 배너 (각 날짜별 최상단) */
+  /* 집결 정보 배너 — 시안 스타일 다크 카드 */
   .meet-banner {
-    background: var(--coral-bg);
-    border-radius: 14px;
-    padding: 14px 16px;
+    background: #1A1917;
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 18px;
     margin-bottom: 18px;
+    position: relative;
+  }
+  .meet-banner .mb-top {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
-  }
-  .meet-banner .mb-left {
-    flex: 1;
-    min-width: 0;
+    margin-bottom: 4px;
   }
   .meet-banner .mb-label {
     font-size: 11px;
-    color: var(--coral-ink);
-    opacity: 0.8;
-    margin-bottom: 4px;
-  }
-  .meet-banner .mb-time {
-    font-size: 20px;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.08em;
     font-weight: 600;
-    color: var(--coral-ink);
+    text-transform: uppercase;
+  }
+  .meet-banner .mb-status {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    letter-spacing: -0.01em;
+  }
+  .meet-banner .mb-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
     letter-spacing: -0.02em;
-    line-height: 1;
-    margin-bottom: 4px;
+    line-height: 1.15;
+    margin: 4px 0 2px;
   }
   .meet-banner .mb-place {
-    font-size: 12px;
-    color: var(--coral-ink);
-    opacity: 0.9;
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .meet-banner .mb-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .meet-banner .mb-time-wrap { flex: 1; min-width: 0; }
+  .meet-banner .mb-time-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .meet-banner .mb-time {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
   .meet-banner .map-btn {
     background: var(--coral);
     color: #fff;
     border: none;
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     flex-shrink: 0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
+    text-decoration: none;
+    letter-spacing: -0.01em;
   }
-  .meet-banner .map-btn:active { opacity: 0.85; }
+  .meet-banner .map-btn:active { opacity: 0.85; transform: scale(0.97); }
+  .meet-banner .map-btn svg { width: 12px; height: 12px; stroke: #fff; stroke-width: 2; }
 
   /* 구역 카드 */
   .zone-card {
@@ -1280,82 +1458,129 @@
   /* 타임라인 */
   .timeline {
     position: relative;
-    padding-left: 8px;
     margin-bottom: 22px;
   }
   .timeline::before {
     content: '';
     position: absolute;
-    left: 14px;
-    top: 14px;
-    bottom: 14px;
-    width: 1.5px;
-    background: var(--line-2);
+    left: 68px;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    background: var(--surface-3);
+    border-radius: 1px;
   }
   .tl-item {
     position: relative;
-    padding: 8px 0 8px 28px;
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 0;
+    padding: 6px 0;
+  }
+  .tl-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-2);
+    width: 58px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    padding-top: 18px;
+    letter-spacing: -0.01em;
   }
   .tl-item::before {
     content: '';
     position: absolute;
-    left: 8px;
-    top: 14px;
-    width: 13px;
-    height: 13px;
+    left: 62px;
+    top: 22px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: var(--surface);
-    border: 2px solid var(--line-2);
-    z-index: 1;
+    border: 2px solid var(--ink-4);
+    z-index: 2;
+    box-sizing: border-box;
+  }
+  /* 현재 진행 중 */
+  .tl-item.now .tl-time {
+    color: var(--coral);
   }
   .tl-item.now::before {
     background: var(--coral);
     border-color: var(--coral);
-    box-shadow: 0 0 0 4px rgba(216, 90, 48, 0.2);
+    box-shadow: 0 0 0 4px var(--coral-bg);
   }
+  /* 과거 (체크됨) */
   .tl-item.past::before {
-    background: var(--ink-3);
-    border-color: var(--ink-3);
+    background: var(--coral);
+    border-color: var(--coral);
   }
-  .tl-item.past {
-    opacity: 0.5;
+  .tl-item.past::after {
+    content: '✓';
+    position: absolute;
+    left: 65px;
+    top: 22px;
+    width: 14px;
+    height: 14px;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 14px;
+    text-align: center;
+    z-index: 3;
   }
-  .tl-time {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink-2);
-    width: 50px;
-    flex-shrink: 0;
-    font-variant-numeric: tabular-nums;
-    padding-top: 1px;
-  }
-  .tl-item.now .tl-time {
-    color: var(--coral-ink);
+  .tl-item.past .tl-time {
+    color: var(--ink-3);
   }
   .tl-content {
     flex: 1;
     min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-left: 20px;
+  }
+  .tl-item.now .tl-content {
+    background: var(--coral-bg);
+    border-color: var(--coral);
+  }
+  .tl-item.past .tl-content {
+    opacity: 0.55;
+    background: var(--surface-2);
+  }
+  .tl-item.now .tl-content::before {
+    content: '진행 중';
+    display: inline-block;
+    background: var(--coral);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
   }
   .tl-what {
     font-size: 14px;
+    font-weight: 700;
     color: var(--ink);
     line-height: 1.4;
-    margin-bottom: 2px;
     letter-spacing: -0.01em;
   }
   .tl-item.now .tl-what {
-    font-weight: 600;
     color: var(--coral-ink);
   }
   .tl-note {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--ink-3);
     line-height: 1.4;
+    margin-top: 4px;
   }
-  /* 타임라인 지도 버튼 (이벤트에 map이 있을 때만) */
+  .tl-note::before {
+    content: '📍 ';
+    opacity: 0.6;
+  }
+  /* 타임라인 지도 버튼 */
   .tl-map {
     flex-shrink: 0;
     display: inline-flex;
@@ -1370,7 +1595,8 @@
     font-weight: 500;
     text-decoration: none;
     align-self: flex-start;
-    margin-top: 1px;
+    margin-top: 14px;
+    margin-left: 6px;
     transition: transform 0.12s ease, background 0.12s ease;
   }
   .tl-map:active {
@@ -1384,7 +1610,7 @@
   }
   .tl-item.now .tl-map {
     background: var(--surface);
-    border-color: rgba(216, 90, 48, 0.35);
+    border-color: rgba(79, 91, 213, 0.35);
   }
 
   /* ═══════════════════════════════════════════════════
@@ -1792,12 +2018,12 @@
      🆘 비상 탭
      ═══════════════════════════════════════════════════ */
   .help-sos-card {
-    background: linear-gradient(135deg, #D85A30 0%, #B43C18 100%);
+    background: linear-gradient(135deg, #C83A39 0%, #8C1F1F 100%);
     color: #fff;
     border-radius: 18px;
     padding: 20px;
     margin-bottom: 18px;
-    box-shadow: 0 4px 14px rgba(216, 90, 48, 0.25);
+    box-shadow: 0 4px 14px rgba(200, 58, 57, 0.25);
   }
   .help-sos-top {
     display: flex;
@@ -1834,7 +2060,7 @@
     padding: 12px 8px;
     border-radius: 12px;
     border: none;
-    color: #D85A30;
+    color: #C83A39;
     background: #fff;
     font-family: inherit;
     font-size: 13px;
@@ -1851,7 +2077,7 @@
   .help-sos-btn:active { transform: scale(0.96); }
   .help-sos-btn.sos {
     background: #fff;
-    color: #B43C18;
+    color: #8C1F1F;
   }
   .help-sos-btn .hsb-label {
     font-size: 10.5px;
@@ -2490,9 +2716,10 @@
     <!-- 🏠 홈 탭 -->
     <section class="panel active" id="panel-home">
       <div class="home-head">
-        <div>
+        <div class="home-head-left">
           <div class="hello">TONGYEONG 2026</div>
           <div class="name" id="homeGreeting">안녕하세요</div>
+          <div class="sub-greeting" id="homeSubGreeting">좋은 하루 보내세요</div>
         </div>
         <div class="group-badge" id="homeGroupBadge">-조</div>
       </div>
@@ -2500,11 +2727,24 @@
       <!-- D-day -->
       <div class="section">
         <div class="dday-card" id="ddayCard">
-          <div>
-            <div class="dday-label">수학여행까지</div>
-            <div class="dday-num" id="ddayNum">D-16</div>
+          <div class="dday-label">수학여행까지</div>
+          <div class="dday-num" id="ddayNum">D-16</div>
+          <div class="dday-right" id="ddayRight">
+            <span class="dday-date">5월 6일 (수)</span>
+            <span class="dday-when">08:00 · 집결</span>
           </div>
-          <div class="dday-right" id="ddayRight">5월 6일<br>(수) 출발</div>
+        </div>
+      </div>
+
+      <!-- 짐 체크리스트 알림 배너 -->
+      <div class="section">
+        <div class="packing-alert" id="packingAlertBanner" onclick="openPackingChecklist()">
+          <div class="packing-alert-ico">!</div>
+          <div class="packing-alert-body">
+            <div class="packing-alert-title" id="packingAlertTitle">짐 챙기기 체크리스트</div>
+            <div class="packing-alert-sub" id="packingAlertSub">출발 전날 오후 6시까지 확인해주세요</div>
+          </div>
+          <div class="packing-alert-chevron">›</div>
         </div>
       </div>
 
@@ -2744,6 +2984,24 @@
       <span>비상</span>
     </button>
   </nav>
+</div>
+
+<!-- 짐 체크리스트 모달 -->
+<div class="rm-modal-bg" id="packingModal" onclick="closePackingChecklist(event)">
+  <div class="rm-modal" onclick="event.stopPropagation()">
+    <div class="rm-head">
+      <div class="rm-title">🎒 짐 챙기기 체크리스트</div>
+      <button class="rm-close" onclick="closePackingChecklist()" aria-label="닫기">✕</button>
+    </div>
+    <div class="rm-sub" id="packingHeaderSub">출발 전까지 하나씩 체크해보세요</div>
+    <div class="packing-progress">
+      <div class="packing-progress-bar">
+        <div class="packing-progress-fill" id="packingProgressFill" style="width:0%"></div>
+      </div>
+      <div class="packing-progress-label" id="packingProgressLabel">0 / 0</div>
+    </div>
+    <div class="packing-list" id="packingList"></div>
+  </div>
 </div>
 
 <!-- SOS 모달 -->
@@ -3401,34 +3659,36 @@ function getDdayInfo() {
   const now = new Date();
   const depart = TRIP_CONFIG.departDate;
   const ret = TRIP_CONFIG.returnDate;
-  const todayStr = todayISO();
 
   if (now < depart) {
-    // 자정 기준 일수 계산
     const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const depart0 = new Date(depart.getFullYear(), depart.getMonth(), depart.getDate());
     const days = Math.round((depart0 - today0) / (1000 * 60 * 60 * 24));
     return {
       label: '수학여행까지',
       num: days === 0 ? 'D-DAY' : 'D-' + days,
-      right: '5월 6일<br>(수) 출발',
-      theme: 'amber'
+      dateLine: '5월 6일 (수)',
+      timeLine: '08:00 · 집결',
+      theme: 'coral'
     };
   }
   if (now <= ret) {
     const day = getCurrentTripDay();
+    const dateText = SCHEDULE[day - 1] ? SCHEDULE[day - 1].date : '';
     return {
       label: '현재',
       num: `여행 ${day}일차`,
-      right: SCHEDULE[day - 1].date.replace(' ', '<br>'),
+      dateLine: dateText,
+      timeLine: '여행 중',
       theme: 'coral'
     };
   }
   return {
     label: '수학여행',
     num: '다녀왔어요',
-    right: '수고하셨습니다',
-    theme: 'amber'
+    dateLine: '수고하셨습니다',
+    timeLine: '',
+    theme: 'coral'
   };
 }
 
@@ -3784,6 +4044,147 @@ function login() {
 
   renderHome();
   restoreLocationSettings();
+  updatePackingAlertSummary();
+}
+
+// ═══════════════════════════════════════════════════
+// 🎒 짐 챙기기 체크리스트
+// ═══════════════════════════════════════════════════
+
+const PACKING_ITEMS = [
+  { group: '필수', items: [
+    '학생증 · 신분증',
+    '현금 · 교통카드',
+    '휴대폰 · 보조배터리 · 충전기',
+    '약 (평소 복용 중인 것 · 비상약)',
+    '마스크 · 손소독제',
+  ]},
+  { group: '옷 · 세면', items: [
+    '속옷 · 양말 (일수+1벌)',
+    '여벌 옷 (날씨 확인 후)',
+    '잠옷',
+    '세면도구 (칫솔 · 치약 · 샴푸)',
+    '수건',
+    '외투 (일교차 대비)',
+  ]},
+  { group: '활동', items: [
+    '편한 운동화',
+    '우산 · 우비',
+    '물통',
+    '작은 가방 (자유시간용)',
+    '선글라스 · 모자',
+  ]},
+  { group: '기타 (선택)', items: [
+    '간식 · 껌',
+    '멀미약',
+    '카메라',
+    '독서거리 · 이어폰',
+  ]},
+];
+
+const PACKING_STORAGE_KEY = 'tongyeong_packing_v1';
+
+function loadPackingState() {
+  try {
+    const raw = localStorage.getItem(PACKING_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function savePackingState(state) {
+  try { localStorage.setItem(PACKING_STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+
+function packingStats() {
+  const state = loadPackingState();
+  let total = 0, done = 0;
+  PACKING_ITEMS.forEach(g => {
+    g.items.forEach(it => {
+      total++;
+      if (state[it]) done++;
+    });
+  });
+  return { total, done };
+}
+
+function updatePackingAlertSummary() {
+  const titleEl = document.getElementById('packingAlertTitle');
+  const subEl = document.getElementById('packingAlertSub');
+  if (!titleEl || !subEl) return;
+  const { total, done } = packingStats();
+  if (done === 0) {
+    titleEl.textContent = '짐 챙기기 체크리스트';
+    subEl.textContent = '출발 전날 오후 6시까지 확인해주세요';
+  } else if (done >= total) {
+    titleEl.textContent = '짐 준비 완료!';
+    subEl.textContent = `${total}가지 모두 체크했어요 · 좋은 여행 되세요`;
+  } else {
+    titleEl.textContent = `짐 챙기기 ${done}/${total} 완료`;
+    subEl.textContent = `아직 ${total - done}가지 남았어요`;
+  }
+}
+
+function openPackingChecklist() {
+  renderPackingList();
+  document.getElementById('packingModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePackingChecklist(e) {
+  if (e && e.target && !e.target.classList.contains('rm-modal-bg')) return;
+  document.getElementById('packingModal').classList.remove('show');
+  document.body.style.overflow = '';
+  updatePackingAlertSummary();
+}
+
+function renderPackingList() {
+  const listEl = document.getElementById('packingList');
+  if (!listEl) return;
+  const state = loadPackingState();
+
+  listEl.innerHTML = PACKING_ITEMS.map(group => {
+    const items = group.items.map(label => {
+      const done = !!state[label];
+      const safeLabel = label.replace(/"/g, '&quot;');
+      return `<label class="packing-item ${done ? 'done' : ''}">
+        <input type="checkbox" ${done ? 'checked' : ''} onchange="togglePackingItem('${safeLabel}', this.checked)">
+        <span class="packing-item-label">${label}</span>
+      </label>`;
+    }).join('');
+    return `<div class="packing-group">
+      <div class="packing-group-title">${group.group}</div>
+      ${items}
+    </div>`;
+  }).join('');
+
+  updatePackingProgress();
+}
+
+function togglePackingItem(label, checked) {
+  const state = loadPackingState();
+  if (checked) state[label] = true;
+  else delete state[label];
+  savePackingState(state);
+
+  // 즉시 시각 피드백
+  const checkboxes = document.querySelectorAll('#packingList input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    const parent = cb.closest('.packing-item');
+    if (!parent) return;
+    if (cb.checked) parent.classList.add('done');
+    else parent.classList.remove('done');
+  });
+
+  updatePackingProgress();
+}
+
+function updatePackingProgress() {
+  const { total, done } = packingStats();
+  const fill = document.getElementById('packingProgressFill');
+  const label = document.getElementById('packingProgressLabel');
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = `${done} / ${total} · ${pct}%`;
 }
 
 function logout() {
@@ -3829,20 +4230,51 @@ function renderHome() {
   if (!currentStudent) return;
   const s = currentStudent;
 
-  // 인사 + 조 뱃지
-  document.getElementById('homeGreeting').textContent = `${s.name}님`;
-  document.getElementById('homeGroupBadge').textContent = s.group ? getGroupDisplayName(s.group) : '조 미정';
+  // 인사말 — 시안 스타일: "안녕, [이름강조]"
+  const greetEl = document.getElementById('homeGreeting');
+  if (greetEl) {
+    greetEl.innerHTML = `안녕, <span class="accent-name">${escapeHtml(s.name || '')}</span>`;
+  }
+
+  // 시간대별 서브 메시지
+  const subEl = document.getElementById('homeSubGreeting');
+  if (subEl) {
+    const h = new Date().getHours();
+    let subMsg = '좋은 하루 보내세요';
+    if (h >= 5 && h < 11) subMsg = '좋은 아침이에요';
+    else if (h >= 11 && h < 14) subMsg = '맛있는 점심 드세요';
+    else if (h >= 14 && h < 18) subMsg = '오후도 화이팅이에요';
+    else if (h >= 18 && h < 22) subMsg = '저녁 잘 보내세요';
+    else subMsg = '잘 자요, 좋은 꿈 꾸세요';
+    subEl.textContent = subMsg;
+  }
+
+  // 조 뱃지 — 시안처럼 "반 · 조" 한줄
+  const badgeEl = document.getElementById('homeGroupBadge');
+  if (badgeEl) {
+    const gText = s.group ? getGroupDisplayName(s.group) : '조 미정';
+    const classText = s.class || '';
+    badgeEl.textContent = classText ? `${classText} · ${gText}` : gText;
+  }
 
   // D-day
   const dd = getDdayInfo();
   document.getElementById('ddayNum').textContent = dd.num;
-  document.getElementById('ddayRight').innerHTML = dd.right;
+  const ddayLabelEl = document.querySelector('#ddayCard .dday-label');
+  if (ddayLabelEl) ddayLabelEl.textContent = dd.label;
+  const ddayRightEl = document.getElementById('ddayRight');
+  if (ddayRightEl) {
+    ddayRightEl.innerHTML = `
+      <span class="dday-date">${escapeHtml(dd.dateLine || '')}</span>
+      <span class="dday-when">${escapeHtml(dd.timeLine || '')}</span>
+    `;
+  }
+  // 테마 토글은 이제 CSS 그라데이션으로 통일 — 인라인 스타일 제거
   const ddayCard = document.getElementById('ddayCard');
-  if (dd.theme === 'coral') {
-    ddayCard.style.background = 'var(--coral-bg)';
-    ddayCard.querySelector('.dday-label').style.color = 'var(--coral-ink)';
-    ddayCard.querySelector('.dday-num').style.color = 'var(--coral-ink)';
-    ddayCard.querySelector('.dday-right').style.color = 'var(--coral-ink)';
+  if (ddayCard) {
+    ddayCard.style.background = '';
+    ddayCard.querySelectorAll('.dday-label, .dday-num, .dday-right')
+      .forEach(el => { el.style.color = ''; });
   }
 
   // 내 정보 그리드
@@ -4357,15 +4789,22 @@ function renderEverland() {
 
   return `
     <div class="meet-banner">
-      <div class="mb-left">
-        <div class="mb-label">집결 시간 · 장소</div>
-        <div class="mb-time">${EVERLAND_INFO.meetTime} · ${escapeHtml(EVERLAND_INFO.meetPoint)}</div>
-        <div class="mb-place">조장이 인원 확인 후 버스로 이동</div>
+      <div class="mb-top">
+        <div class="mb-label">저녁 집합</div>
+        <div class="mb-status">집결지</div>
       </div>
-      <a href="${kakaoMapLink(EVERLAND_INFO.mapQuery)}" target="_blank" class="map-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        지도
-      </a>
+      <div class="mb-name">${escapeHtml(EVERLAND_INFO.meetPoint)}</div>
+      <div class="mb-place">${escapeHtml(EVERLAND_INFO.address || '에버랜드 정문 옆')}</div>
+      <div class="mb-bottom">
+        <div class="mb-time-wrap">
+          <div class="mb-time-label">집결 시간</div>
+          <div class="mb-time">${escapeHtml(EVERLAND_INFO.meetTime)}</div>
+        </div>
+        <a href="${kakaoMapLink(EVERLAND_INFO.mapQuery)}" target="_blank" class="map-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          지도 보기
+        </a>
+      </div>
     </div>
 
     ${helpHTML}
@@ -4464,15 +4903,22 @@ function renderSeoul() {
     </div>
 
     <div class="meet-banner">
-      <div class="mb-left">
+      <div class="mb-top">
         <div class="mb-label">저녁 집결</div>
-        <div class="mb-time">${SEOUL_INFO.meetTime} · 경복궁 주차장</div>
-        <div class="mb-place">조장이 인원 확인 후 버스로 이동</div>
+        <div class="mb-status">집결지</div>
       </div>
-      <a href="${kakaoMapLink('경복궁 주차장')}" target="_blank" class="map-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        지도
-      </a>
+      <div class="mb-name">경복궁 주차장</div>
+      <div class="mb-place">조장이 인원 확인 후 버스로 이동</div>
+      <div class="mb-bottom">
+        <div class="mb-time-wrap">
+          <div class="mb-time-label">집결 시간</div>
+          <div class="mb-time">${escapeHtml(SEOUL_INFO.meetTime)}</div>
+        </div>
+        <a href="${kakaoMapLink('경복궁 주차장')}" target="_blank" class="map-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          지도 보기
+        </a>
+      </div>
     </div>
 
     <div class="section-label" style="padding:0;margin-bottom:10px">지역별 인솔 교사</div>
@@ -4509,15 +4955,22 @@ function renderJeonju() {
 
   return `
     <div class="meet-banner">
-      <div class="mb-left">
-        <div class="mb-label">집결 시간 · 장소</div>
-        <div class="mb-time">${JEONJU_INFO.meetTime}</div>
-        <div class="mb-place">${escapeHtml(JEONJU_INFO.meetPoint)}</div>
+      <div class="mb-top">
+        <div class="mb-label">귀가 집결</div>
+        <div class="mb-status">집결지</div>
       </div>
-      <a href="${kakaoMapLink(JEONJU_INFO.mapQuery)}" target="_blank" class="map-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        지도
-      </a>
+      <div class="mb-name">${escapeHtml(JEONJU_INFO.meetPoint)}</div>
+      <div class="mb-place">조장이 인원 확인 후 버스로 이동</div>
+      <div class="mb-bottom">
+        <div class="mb-time-wrap">
+          <div class="mb-time-label">집결 시간</div>
+          <div class="mb-time">${escapeHtml(JEONJU_INFO.meetTime)}</div>
+        </div>
+        <a href="${kakaoMapLink(JEONJU_INFO.mapQuery)}" target="_blank" class="map-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          지도 보기
+        </a>
+      </div>
     </div>
 
     ${contactsHTML}
