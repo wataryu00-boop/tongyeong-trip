@@ -3889,6 +3889,18 @@ body.is-admin .tab.admin-only { display: inline-flex; }
 </style>
 </head>
 <body>
+<script>
+  // 로그인 정보가 있으면 로그인 화면을 처음부터 숨김 (깜빡임 방지)
+  try {
+    var __tLogin = localStorage.getItem('tongyeong_teacher_login_v1');
+    if (__tLogin) {
+      var __t = JSON.parse(__tLogin);
+      if (__t && __t.id && __t.password) {
+        document.write('<style>#login{visibility:hidden}</style>');
+      }
+    }
+  } catch (e) {}
+</script>
 <div class="app">
 
   <!-- LOGIN -->
@@ -5709,6 +5721,7 @@ const BOOTSTRAP_ACCOUNT = {
 const LOGIN_STORAGE_KEY = 'tongyeong_teacher_login_v1';
 
 let TEACHER_ACCOUNTS_CACHE = {};  // {id: {password, name, role, isAdmin}}
+let pendingAutoLogin = null;       // 캐시 로드 실패 시 대기 중인 로그인 정보
 
 // 로그인 정보 복원 (앱 시작 시)
 async function initAuthListener() {
@@ -5726,6 +5739,28 @@ async function initAuthListener() {
       if (currentTeacher && document.getElementById('panel-notes')?.classList.contains('active')) {
         renderTeacherAccounts();
       }
+      // 뒤늦게 캐시가 도착한 경우 대기 중인 자동 로그인 시도
+      if (pendingAutoLogin && !currentTeacher) {
+        const info = pendingAutoLogin;
+        const acct = TEACHER_ACCOUNTS_CACHE[info.id];
+        const isBootstrap = info.id === BOOTSTRAP_ACCOUNT.id
+          && Object.keys(TEACHER_ACCOUNTS_CACHE).length === 0
+          && info.password === BOOTSTRAP_ACCOUNT.password;
+        if (acct && acct.password === info.password && !acct.disabled) {
+          console.log('[Auth] 지연 복원 성공:', info.id);
+          pendingAutoLogin = null;
+          completeLogin({ id: info.id, name: acct.name, role: acct.role, isAdmin: !!acct.isAdmin });
+        } else if (isBootstrap) {
+          console.log('[Auth] 지연 부트스트랩 복원');
+          pendingAutoLogin = null;
+          completeLogin({ id: BOOTSTRAP_ACCOUNT.id, name: BOOTSTRAP_ACCOUNT.name, role: BOOTSTRAP_ACCOUNT.role, isAdmin: true });
+        } else if (Object.keys(TEACHER_ACCOUNTS_CACHE).length > 0) {
+          // 캐시는 로드됐는데 계정이 없다 → 진짜 무효
+          console.warn('[Auth] 지연 검증 실패 — 세션 삭제');
+          localStorage.removeItem(LOGIN_STORAGE_KEY);
+          pendingAutoLogin = null;
+        }
+      }
     });
   }
 
@@ -5736,27 +5771,59 @@ async function initAuthListener() {
       const info = JSON.parse(saved);
       if (info && info.id && info.password) {
         console.log('[Auth] 저장된 로그인 복원 시도:', info.id);
-        // 저장된 비밀번호와 현재 DB를 재검증해서 무효화된 계정 방어
-        await new Promise(r => setTimeout(r, 300));  // teacher-accounts 첫 로드 대기
+
+        // TEACHER_ACCOUNTS_CACHE가 로드될 때까지 최대 8초 대기 (느린 네트워크 대응)
+        // bootstrap 계정이면 캐시가 비어있어도 OK — 별도 조건 처리
+        const isBootstrapCandidate = info.id === BOOTSTRAP_ACCOUNT.id
+          && info.password === BOOTSTRAP_ACCOUNT.password;
+
+        let cacheReady = false;
+        for (let i = 0; i < 80; i++) {  // 80 * 100ms = 8초
+          if (Object.keys(TEACHER_ACCOUNTS_CACHE).length > 0) {
+            cacheReady = true;
+            break;
+          }
+          // bootstrap 후보면 1.5초만 대기 후 진행 (캐시 비어있어도 로그인 가능)
+          if (isBootstrapCandidate && i >= 15) break;
+          await new Promise(r => setTimeout(r, 100));
+        }
+
         const acct = TEACHER_ACCOUNTS_CACHE[info.id];
-        const isBootstrap = info.id === BOOTSTRAP_ACCOUNT.id && Object.keys(TEACHER_ACCOUNTS_CACHE).length === 0;
+        const isBootstrap = info.id === BOOTSTRAP_ACCOUNT.id
+          && Object.keys(TEACHER_ACCOUNTS_CACHE).length === 0;
         if (acct && acct.password === info.password && !acct.disabled) {
           console.log('[Auth] 복원 성공:', info.id);
           completeLogin({ id: info.id, name: acct.name, role: acct.role, isAdmin: !!acct.isAdmin });
         } else if (isBootstrap && info.password === BOOTSTRAP_ACCOUNT.password) {
           console.log('[Auth] 부트스트랩 복원');
           completeLogin({ id: BOOTSTRAP_ACCOUNT.id, name: BOOTSTRAP_ACCOUNT.name, role: BOOTSTRAP_ACCOUNT.role, isAdmin: true });
+        } else if (!cacheReady && !isBootstrapCandidate) {
+          // 캐시 로드 실패 (네트워크 문제) — 세션 유지하고 로그인 화면도 숨김 유지
+          // 사용자가 수동으로 다시 로드하거나 Firebase가 뒤늦게 응답하면 구독 콜백에서 재시도
+          console.warn('[Auth] teacher-accounts 캐시 로드 실패 — 세션 보존 후 대기');
+          pendingAutoLogin = info;
+          // 로그인 화면이 보이도록 복원
+          const loginEl = document.getElementById('login');
+          if (loginEl) loginEl.style.visibility = '';
         } else {
           // 계정이 사라졌거나 비번이 바뀌거나 비활성화됨 — 세션 폐기
           console.warn('[Auth] 저장된 계정 무효, 로그아웃. acct 있음?', !!acct, 'disabled?', acct?.disabled);
           localStorage.removeItem(LOGIN_STORAGE_KEY);
+          // 로그인 화면 복원
+          const loginEl = document.getElementById('login');
+          if (loginEl) loginEl.style.visibility = '';
         }
       }
     } else {
       console.log('[Auth] 저장된 로그인 정보 없음 (첫 접속 또는 로그아웃 상태)');
+      // 로그인 화면 복원
+      const loginEl = document.getElementById('login');
+      if (loginEl) loginEl.style.visibility = '';
     }
   } catch (e) {
     console.warn('[Auth] 로그인 복원 실패:', e);
+    const loginEl = document.getElementById('login');
+    if (loginEl) loginEl.style.visibility = '';
   }
 }
 
