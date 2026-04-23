@@ -1386,96 +1386,78 @@ body.is-admin .home-card.admin-only { display: flex; }
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  padding: 14px;
   transition: border-color 0.15s;
 }
 .tsched-ta-row.me {
   border-color: var(--accent);
   background: var(--accent-soft);
 }
-.tsched-ta-teacher {
+.tsched-ta-zone {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  min-width: 90px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
-.tsched-ta-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background: var(--surface-3);
-  color: var(--ink);
-  display: inline-flex;
+.tsched-ta-zone-emoji {
+  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  background: var(--surface);
+  border-radius: 999px;
   flex-shrink: 0;
 }
-.tsched-ta-row.me .tsched-ta-avatar {
-  background: var(--accent);
-  color: #fff;
+.tsched-ta-row.me .tsched-ta-zone-emoji {
+  background: rgba(255, 255, 255, 0.7);
 }
-.tsched-ta-name {
-  font-size: 13.5px;
+.tsched-ta-zone-info {
+  flex: 1;
+  min-width: 0;
+}
+.tsched-ta-zone-name {
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.2;
+}
+.tsched-ta-note {
+  font-size: 11.5px;
+  color: var(--ink-mute);
+  margin-top: 3px;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+.tsched-ta-teachers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.tsched-ta-teacher-chip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
-}
-.tsched-ta-name .me-tag {
-  background: var(--accent);
-  color: #fff;
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 999px;
-  letter-spacing: 0;
-}
-.tsched-ta-areas {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 3px;
-}
-.tsched-ta-area {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  padding: 4px 11px;
   background: var(--surface);
-  border-radius: 8px;
-  font-size: 12.5px;
-}
-.tsched-ta-row.me .tsched-ta-area {
-  background: rgba(255, 255, 255, 0.6);
-}
-.tsched-ta-area-name {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--ink);
-  font-weight: 600;
   letter-spacing: -0.01em;
-  line-height: 1.3;
-  flex: 1;
-  min-width: 0;
+  line-height: 1.4;
 }
-.tsched-ta-groups {
-  color: var(--ink-soft);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  flex-shrink: 0;
+.tsched-ta-row.me .tsched-ta-teacher-chip {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+.tsched-ta-teacher-chip.me {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+  font-weight: 700;
 }
 
 /* Student list */
@@ -9534,84 +9516,53 @@ function renderTeacherSched() {
   `;
 }
 
-// 교사 배치 블록 — 1일차 에버랜드, 2일차 서울 자유투어에만 표시
+// 교사 배치 블록 — 1일차 에버랜드 5구역, 2일차 서울 3구역
+// 데이터는 학생 앱과 동일 (PDF 18쪽, 25쪽)
+const EVERLAND_ZONES_T = [
+  { name: '유로피안 어드벤처', emoji: '🏰', teachers: ['성화룡', '김연경', '김미경'] },
+  { name: '매직랜드', emoji: '🎢', teachers: ['최선아', '박수현', '강성두'] },
+  { name: '주토피아', emoji: '🦁', teachers: ['강수미', '김동희', '진현창'] },
+  { name: '아메리칸 어드벤처', emoji: '🤠', teachers: ['박보경', '송인식', '한호연'] },
+  { name: '글로벌 페어', emoji: '🌏', teachers: ['박효덕', '김혜영', '최명기'] }
+];
+
+const SEOUL_ZONES_T = [
+  { name: '마포구 · 영등포구 일대', emoji: '🌉', teachers: ['김연경', '김미경', '최선아', '박수현', '강성두'] },
+  { name: '종로구 · 중구 일대', emoji: '🏛️', teachers: ['성화룡', '강수미', '김동희', '진현창', '박보경'], note: '경복궁 주차장 포함' },
+  { name: '강남구 · 송파구 일대', emoji: '🌆', teachers: ['송인식', '한호연', '박효덕', '김혜영', '최명기'] }
+];
+
 function renderTeacherAssignments(day) {
   // 1일차 · 2일차에만 표시
   if (day !== 1 && day !== 2) return '';
 
+  const zones = day === 1 ? EVERLAND_ZONES_T : SEOUL_ZONES_T;
   const title = day === 1
     ? '🎢 에버랜드 교사 담당 구역'
-    : '🚇 서울 자유투어 교사 임장 장소';
+    : '🚇 서울 자유투어 교사 임장 지역';
   const subtitle = day === 1
     ? '자유 활동 중 담당 구역에서 학생 인솔·안전 관리'
-    : '조별 자유 투어 중 각 교사가 지정 장소에서 대기';
+    : '조별 자유 투어 중 각 지역에서 교사 대기';
 
-  // GROUPS에서 (반·조·담당교사·구역) 추출
-  // GROUPS 객체는 { '1': {name, area, teacher, ...}, '2': {...}, ... }
-  // 교사별로 묶어서 "교사 → [담당 구역/조]" 형태로 표시
+  const myName = currentTeacher?.name || '';
 
-  const byTeacher = new Map();  // teacher name -> [{gno, area, classInfo}]
-  Object.entries(GROUPS).forEach(([gno, g]) => {
-    const teacher = (g.teacher || '').trim();
-    const area = (g.area || '').trim();
-    if (!teacher && !area) return;  // 교사·구역 둘 다 없으면 스킵
-
-    const key = teacher || '(미배정)';
-    if (!byTeacher.has(key)) byTeacher.set(key, []);
-    byTeacher.get(key).push({
-      gno: String(gno),
-      area,
-      groupName: g.name || `${gno}조`
-    });
-  });
-
-  if (byTeacher.size === 0) {
-    return `
-      <div class="tsched-section-label" style="margin-top:24px;">${title}</div>
-      <div class="tsched-teacher-empty">
-        교사 배치 데이터가 아직 등록되지 않았어요. (조 정보에 <b>담당 교사</b> · <b>구역</b>을 입력하면 자동으로 표시됩니다)
-      </div>
-    `;
-  }
-
-  // 교사명 가나다순
-  const sortedTeachers = [...byTeacher.keys()].sort((a, b) => a.localeCompare(b, 'ko'));
-
-  // 같은 구역에 여러 조가 있을 수도 — 구역별로 묶어서 보기 좋게
-  const rows = sortedTeachers.map(tname => {
-    const items = byTeacher.get(tname);
-    // 구역별 그룹핑
-    const byArea = new Map();
-    items.forEach(it => {
-      const key = it.area || '(미지정)';
-      if (!byArea.has(key)) byArea.set(key, []);
-      byArea.get(key).push(it);
-    });
-
-    // 현재 로그인한 교사인지 표시용
-    const myName = currentTeacher?.name || '';
-    const isMe = myName && tname === myName;
-
-    const areaBlocks = [...byArea.entries()].map(([area, arr]) => {
-      const groupLabels = arr
-        .sort((a, b) => Number(a.gno) - Number(b.gno))
-        .map(x => `${x.gno}조`)
-        .join(', ');
-      return `
-        <div class="tsched-ta-area">
-          <div class="tsched-ta-area-name">${area ? escapeHtml(area) : '<span style="color:var(--ink-mute);">구역 미지정</span>'}</div>
-          <div class="tsched-ta-groups">${escapeHtml(groupLabels)}</div>
-        </div>
-      `;
+  const rows = zones.map(z => {
+    const isMyZone = myName && z.teachers.includes(myName);
+    const teacherChips = z.teachers.map(t => {
+      const isMe = t === myName;
+      return `<span class="tsched-ta-teacher-chip${isMe ? ' me' : ''}">${escapeHtml(t)}</span>`;
     }).join('');
-
+    const noteHTML = z.note ? `<div class="tsched-ta-note">${escapeHtml(z.note)}</div>` : '';
     return `
-      <div class="tsched-ta-row${isMe ? ' me' : ''}">
-        <div class="tsched-ta-teacher">
-          <span class="tsched-ta-avatar">${escapeHtml(tname.charAt(0))}</span>
-          <span class="tsched-ta-name">${escapeHtml(tname)}${isMe ? ' <span class="me-tag">나</span>' : ''}</span>
+      <div class="tsched-ta-row${isMyZone ? ' me' : ''}">
+        <div class="tsched-ta-zone">
+          <div class="tsched-ta-zone-emoji">${z.emoji}</div>
+          <div class="tsched-ta-zone-info">
+            <div class="tsched-ta-zone-name">${escapeHtml(z.name)}</div>
+            ${noteHTML}
+          </div>
         </div>
-        <div class="tsched-ta-areas">${areaBlocks}</div>
+        <div class="tsched-ta-teachers">${teacherChips}</div>
       </div>
     `;
   }).join('');
