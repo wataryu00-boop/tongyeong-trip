@@ -1357,6 +1357,127 @@ body.is-admin .home-card.admin-only { display: flex; }
   margin-top: 12px;
 }
 
+/* ═══════════════════════════════════════════════════
+   🧑‍🏫 교사 배치 블록 (일정 탭 하단)
+   ═══════════════════════════════════════════════════ */
+.tsched-teacher-sub {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+.tsched-teacher-empty {
+  background: var(--surface-2);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.tsched-teacher-empty b { color: var(--ink); }
+.tsched-teacher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tsched-ta-row {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: border-color 0.15s;
+}
+.tsched-ta-row.me {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.tsched-ta-teacher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 90px;
+}
+.tsched-ta-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+.tsched-ta-row.me .tsched-ta-avatar {
+  background: var(--accent);
+  color: #fff;
+}
+.tsched-ta-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.tsched-ta-name .me-tag {
+  background: var(--accent);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  letter-spacing: 0;
+}
+.tsched-ta-areas {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 3px;
+}
+.tsched-ta-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+.tsched-ta-row.me .tsched-ta-area {
+  background: rgba(255, 255, 255, 0.6);
+}
+.tsched-ta-area-name {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
+}
+.tsched-ta-groups {
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+
 /* Student list */
 .filter-bar {
   display: flex;
@@ -4982,6 +5103,10 @@ function initFirebase() {
         // 공지 범위 드롭다운도 학생 로드 시 갱신
         if (typeof populateAnnounceScopeSelect === 'function') {
           populateAnnounceScopeSelect();
+        }
+        // 일정 탭이 열려 있으면 교사 배치도 갱신
+        if (document.getElementById('panel-sched')?.classList.contains('active')) {
+          renderTeacherSched();
         }
       }
     }
@@ -9393,15 +9518,108 @@ function renderTeacherSched() {
     </div>
   ` : '';
 
+  // 교사 배치 섹션 — 1일차 에버랜드, 2일차 서울 자유투어
+  const teacherAssignHTML = renderTeacherAssignments(day);
+
   document.getElementById('tSchedContent').innerHTML = `
     ${dayHeader}
     ${highlightBox}
     <div class="tsched-section-label" style="margin-top:18px;">전체 타임라인</div>
     <div class="tsched-timeline">${timelineHTML}</div>
+    ${teacherAssignHTML}
 
     <div class="tsched-hint">
       💡 이 일정은 학생 앱에도 동일하게 표시돼요. 현재 시간(${nowHHMM}) 기준 진행 중인 일정이 강조됩니다.
     </div>
+  `;
+}
+
+// 교사 배치 블록 — 1일차 에버랜드, 2일차 서울 자유투어에만 표시
+function renderTeacherAssignments(day) {
+  // 1일차 · 2일차에만 표시
+  if (day !== 1 && day !== 2) return '';
+
+  const title = day === 1
+    ? '🎢 에버랜드 교사 담당 구역'
+    : '🚇 서울 자유투어 교사 임장 장소';
+  const subtitle = day === 1
+    ? '자유 활동 중 담당 구역에서 학생 인솔·안전 관리'
+    : '조별 자유 투어 중 각 교사가 지정 장소에서 대기';
+
+  // GROUPS에서 (반·조·담당교사·구역) 추출
+  // GROUPS 객체는 { '1': {name, area, teacher, ...}, '2': {...}, ... }
+  // 교사별로 묶어서 "교사 → [담당 구역/조]" 형태로 표시
+
+  const byTeacher = new Map();  // teacher name -> [{gno, area, classInfo}]
+  Object.entries(GROUPS).forEach(([gno, g]) => {
+    const teacher = (g.teacher || '').trim();
+    const area = (g.area || '').trim();
+    if (!teacher && !area) return;  // 교사·구역 둘 다 없으면 스킵
+
+    const key = teacher || '(미배정)';
+    if (!byTeacher.has(key)) byTeacher.set(key, []);
+    byTeacher.get(key).push({
+      gno: String(gno),
+      area,
+      groupName: g.name || `${gno}조`
+    });
+  });
+
+  if (byTeacher.size === 0) {
+    return `
+      <div class="tsched-section-label" style="margin-top:24px;">${title}</div>
+      <div class="tsched-teacher-empty">
+        교사 배치 데이터가 아직 등록되지 않았어요. (조 정보에 <b>담당 교사</b> · <b>구역</b>을 입력하면 자동으로 표시됩니다)
+      </div>
+    `;
+  }
+
+  // 교사명 가나다순
+  const sortedTeachers = [...byTeacher.keys()].sort((a, b) => a.localeCompare(b, 'ko'));
+
+  // 같은 구역에 여러 조가 있을 수도 — 구역별로 묶어서 보기 좋게
+  const rows = sortedTeachers.map(tname => {
+    const items = byTeacher.get(tname);
+    // 구역별 그룹핑
+    const byArea = new Map();
+    items.forEach(it => {
+      const key = it.area || '(미지정)';
+      if (!byArea.has(key)) byArea.set(key, []);
+      byArea.get(key).push(it);
+    });
+
+    // 현재 로그인한 교사인지 표시용
+    const myName = currentTeacher?.name || '';
+    const isMe = myName && tname === myName;
+
+    const areaBlocks = [...byArea.entries()].map(([area, arr]) => {
+      const groupLabels = arr
+        .sort((a, b) => Number(a.gno) - Number(b.gno))
+        .map(x => `${x.gno}조`)
+        .join(', ');
+      return `
+        <div class="tsched-ta-area">
+          <div class="tsched-ta-area-name">${area ? escapeHtml(area) : '<span style="color:var(--ink-mute);">구역 미지정</span>'}</div>
+          <div class="tsched-ta-groups">${escapeHtml(groupLabels)}</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="tsched-ta-row${isMe ? ' me' : ''}">
+        <div class="tsched-ta-teacher">
+          <span class="tsched-ta-avatar">${escapeHtml(tname.charAt(0))}</span>
+          <span class="tsched-ta-name">${escapeHtml(tname)}${isMe ? ' <span class="me-tag">나</span>' : ''}</span>
+        </div>
+        <div class="tsched-ta-areas">${areaBlocks}</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="tsched-section-label" style="margin-top:24px;">${title}</div>
+    <div class="tsched-teacher-sub">${subtitle}</div>
+    <div class="tsched-teacher-list">${rows}</div>
   `;
 }
 
