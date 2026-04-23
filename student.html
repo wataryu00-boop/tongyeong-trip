@@ -207,22 +207,26 @@
      상단 헤더 (모든 탭 공통)
      ═══════════════════════════════════════════════════ */
   .page-head {
-    padding: 18px 20px 14px;
+    padding: 22px 20px 14px;
     background: var(--bg);
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
   }
   .page-head .h-title {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--ink);
   }
   .page-head .h-sub {
     font-size: 11px;
     color: var(--ink-3);
-    letter-spacing: 0.1em;
-    margin-bottom: 2px;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-transform: uppercase;
   }
 
   /* 홈 전용 헤더 */
@@ -1115,26 +1119,30 @@
   }
   .place-day-tab {
     flex: 1;
-    padding: 9px 4px;
-    background: var(--surface-2);
+    padding: 10px 4px;
+    background: transparent;
     border: none;
-    border-radius: 10px;
-    color: var(--ink-2);
-    font-size: 12px;
-    font-weight: 500;
+    border-radius: 12px;
+    color: var(--ink-3);
+    font-size: 13px;
+    font-weight: 700;
     transition: all 0.15s;
     letter-spacing: -0.01em;
   }
   .place-day-tab.active {
-    background: var(--ink);
-    color: #fff;
+    background: var(--surface-2);
+    color: var(--ink);
   }
   .place-day-tab .tab-sub {
     display: block;
-    font-size: 10px;
-    font-weight: 400;
+    font-size: 10.5px;
+    font-weight: 500;
+    opacity: 0.6;
+    margin-top: 3px;
+    letter-spacing: -0.01em;
+  }
+  .place-day-tab.active .tab-sub {
     opacity: 0.7;
-    margin-top: 2px;
   }
 
   /* 집결 정보 배너 — 시안 스타일 다크 카드 */
@@ -1226,40 +1234,97 @@
   .meet-banner .map-btn:active { opacity: 0.85; transform: scale(0.97); }
   .meet-banner .map-btn svg { width: 12px; height: 12px; stroke: #fff; stroke-width: 2; }
 
-  /* 구역 카드 */
+  /* 구역 카드 — 시안 스타일: 원형 파스텔 이모지 + 한 줄 교사 + 우측 화살표 */
   .zone-card {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 14px 16px;
+    padding: 14px 14px 14px 12px;
     margin-bottom: 8px;
-  }
-  .zone-card-head {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 12px;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .zone-card.has-tag { padding-right: 16px; }
+  .zone-card::after {
+    content: '›';
+    color: var(--ink-4);
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 8px;
+  }
+  .zone-card.my-zone {
+    background: var(--green-bg);
+    border-color: rgba(78, 133, 24, 0.25);
   }
   .zone-emoji {
-    font-size: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--coral-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
     flex-shrink: 0;
+  }
+  .zone-card:nth-child(6n+1) .zone-emoji { background: #FDE8E8; }
+  .zone-card:nth-child(6n+2) .zone-emoji { background: #FEF3DA; }
+  .zone-card:nth-child(6n+3) .zone-emoji { background: #E4F2DE; }
+  .zone-card:nth-child(6n+4) .zone-emoji { background: #FEE8D4; }
+  .zone-card:nth-child(6n+5) .zone-emoji { background: #E4ECFA; }
+  .zone-card:nth-child(6n)   .zone-emoji { background: #F0E6F9; }
+  .zone-card.my-zone .zone-emoji { background: #DDEBCC; }
+
+  .zone-body {
+    flex: 1;
+    min-width: 0;
   }
   .zone-name {
     font-size: 14px;
-    font-weight: 600;
-    flex: 1;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .zone-name-tag {
+    background: var(--green);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
     letter-spacing: -0.01em;
   }
   .zone-note {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--ink-3);
-    margin-top: 1px;
+    margin-top: 3px;
     font-weight: 400;
+    line-height: 1.4;
   }
+  .zone-teachers-inline {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 2px;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  /* 교사 전화 chip — 도움 필요 카드용 (기존 구조 유지) */
   .zone-teachers {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    margin-top: 10px;
   }
   .teacher-chip {
     background: var(--surface-2);
@@ -1274,11 +1339,24 @@
     text-decoration: none;
     transition: background 0.15s;
   }
-  .teacher-chip:active { background: var(--line); }
+  .teacher-chip:active { background: var(--line-2); }
   .teacher-chip .phone-ico {
     width: 12px;
     height: 12px;
     color: var(--ink-3);
+  }
+
+  /* "담임·학년부장" 같은 도움 카드 — head + teachers 아래 */
+  .zone-card-help {
+    display: block;
+    padding: 14px 16px;
+  }
+  .zone-card-help::after { display: none; }
+  .zone-card-help .zone-card-head-help {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
   }
 
   /* 내 조 카드 (서울 탭에서 제일 위에 크게) */
@@ -1999,6 +2077,117 @@
     border-radius: 12px;
   }
 
+  /* ═══════════════════════════════════════════════════
+     내 조 — 시안 스타일 히어로 카드 + pills
+     ═══════════════════════════════════════════════════ */
+  .grp-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .grp-section-more {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--coral);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: -0.01em;
+    text-transform: none;
+  }
+  .grp-section-more:active { opacity: 0.7; }
+  .grp-hero-card {
+    padding: 16px 16px 14px;
+  }
+  .grp-hero-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .grp-hero-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--coral-bg);
+    color: var(--coral-ink);
+    font-size: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+  .grp-hero-info { flex: 1; min-width: 0; }
+  .grp-hero-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .grp-hero-meta {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .grp-leader-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--coral);
+    color: #fff;
+    border-radius: 999px;
+    padding: 7px 12px 7px 11px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, background 0.12s ease;
+    letter-spacing: -0.01em;
+  }
+  .grp-leader-pill:active { transform: scale(0.96); background: var(--coral-deep); }
+  .grp-leader-pill svg {
+    width: 12px;
+    height: 12px;
+    stroke: #fff;
+  }
+  .grp-leader-pill.disabled {
+    background: var(--surface-2);
+    color: var(--ink-3);
+    pointer-events: none;
+  }
+  .grp-leader-pill.disabled svg { stroke: var(--ink-3); }
+
+  /* 조원 pills */
+  .grp-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .grp-pill {
+    display: inline-block;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    transition: background 0.12s;
+  }
+  .grp-pill:active { background: var(--surface-3); }
+  .grp-pill.me {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+  }
+
   /* 홈 조 카드 푸터(담당 교사 등) */
   .grp-foot {
     margin-top: 12px;
@@ -2264,6 +2453,223 @@
     opacity: 0.7;
   }
 
+  /* ═══════════════════════════════════════════════════
+     🆘 비상 탭 — 시안 매칭
+     ═══════════════════════════════════════════════════ */
+
+  /* 긴급 도움 요청 히어로 카드 */
+  .help-sos-hero {
+    background: linear-gradient(135deg, #C83A39 0%, #8C1F1F 100%);
+    border-radius: 20px;
+    padding: 18px 18px 14px;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(200, 58, 57, 0.25);
+    cursor: pointer;
+    transition: transform 0.12s ease;
+  }
+  .help-sos-hero:active { transform: scale(0.99); }
+  .help-sos-hero-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .help-sos-hero-ico {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .help-sos-hero-info { flex: 1; min-width: 0; }
+  .help-sos-hero-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .help-sos-hero-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 3px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  .help-sos-hero-btn {
+    width: 100%;
+    padding: 11px;
+    background: rgba(255,255,255,0.18);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: background 0.15s;
+  }
+  .help-sos-hero-btn:hover { background: rgba(255,255,255,0.25); }
+  .help-sos-hero-btn:active { background: rgba(255,255,255,0.32); }
+
+  /* 연락처 카드 스택 (담임/119/112) */
+  .help-contacts-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .help-contact-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .help-contact-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--coral-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .help-contact-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .help-contact-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .help-contact-sub {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 3px;
+    letter-spacing: -0.01em;
+  }
+  .help-contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform 0.12s ease;
+    letter-spacing: -0.01em;
+  }
+  .help-contact-btn:active { transform: scale(0.96); }
+  .help-contact-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+  .help-contact-btn.primary {
+    background: var(--coral);
+    color: #fff;
+  }
+  .help-contact-btn.primary svg { stroke: #fff; }
+  .help-contact-btn.danger {
+    background: #C83A39;
+    color: #fff;
+  }
+  .help-contact-btn.danger svg { stroke: #fff; }
+  .help-contact-btn.disabled {
+    background: var(--surface-2);
+    color: var(--ink-3);
+    pointer-events: none;
+    font-weight: 500;
+  }
+
+  /* 컴팩트 연락처 (그 외 선생님) */
+  .help-contacts-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .help-contact-row-compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.12s;
+  }
+  .help-contact-row-compact:active { background: var(--surface-2); }
+  .help-contact-avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .help-contact-tel-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--coral-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .help-contact-tel-chip svg {
+    width: 13px;
+    height: 13px;
+    stroke: var(--coral);
+  }
+
+  /* 보고 체계 pills */
+  .help-chain-box {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .help-chain-pill {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    padding: 6px 12px;
+    border-radius: 999px;
+    letter-spacing: -0.01em;
+  }
+  .help-chain-pill.me {
+    background: var(--coral);
+    color: #fff;
+    font-weight: 700;
+  }
+
   /* 보고 체계 */
   .help-chain {
     display: flex;
@@ -2294,65 +2700,73 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     📷 내 사진 탭
+     📷 내 사진 탭 — 시안 매칭
      ═══════════════════════════════════════════════════ */
+  .photo-count-badge {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
   .photo-info-box {
     display: flex;
     gap: 10px;
-    background: var(--surface-2);
-    border-radius: 12px;
+    background: var(--coral-bg);
+    border-radius: 14px;
     padding: 12px 14px;
-    font-size: 12px;
-    color: var(--ink-2);
+    font-size: 12.5px;
+    color: var(--coral-ink);
     line-height: 1.55;
   }
   .photo-info-box .pib-ico {
-    font-size: 18px;
+    font-size: 16px;
     flex-shrink: 0;
     line-height: 1;
     margin-top: 1px;
   }
-  .photo-info-box b { color: var(--ink); }
+  .photo-info-box b { color: var(--coral-ink); font-weight: 700; }
 
   .upload-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
   }
   .upload-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 16px 10px;
-    border-radius: 14px;
+    gap: 8px;
+    padding: 18px 10px;
+    border-radius: 16px;
     cursor: pointer;
     transition: transform 0.12s ease, opacity 0.12s ease;
     text-align: center;
+    border: 1px solid transparent;
   }
   .upload-btn:active { transform: scale(0.97); opacity: 0.9; }
   .upload-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
   }
   .upload-btn span {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
   .upload-btn.qr {
-    background: #FFF6E4;
+    background: #FDF5E3;
     color: #8a6d10;
-    border: 0.5px solid rgba(217, 169, 33, 0.35);
+    border-color: rgba(186, 117, 23, 0.18);
   }
-  .upload-btn.qr svg { stroke: #d9a921; }
+  .upload-btn.qr svg { stroke: var(--amber); stroke-width: 2; }
   .upload-btn.memo {
     background: var(--coral-bg);
     color: var(--coral-ink);
-    border: 0.5px solid rgba(216, 90, 48, 0.25);
+    border-color: rgba(79, 91, 213, 0.18);
   }
-  .upload-btn.memo svg { stroke: var(--coral); }
+  .upload-btn.memo svg { stroke: var(--coral); stroke-width: 2; }
   .upload-btn.disabled {
     opacity: 0.4;
     pointer-events: none;
@@ -2362,8 +2776,8 @@
     margin-top: 10px;
     padding: 10px 14px;
     background: var(--surface);
-    border: 0.5px solid var(--line);
-    border-radius: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
   }
   .upload-progress .up-label {
     font-size: 11px;
@@ -2394,16 +2808,18 @@
   .pf-btn {
     flex-shrink: 0;
     background: var(--surface);
-    border: 0.5px solid var(--line);
-    padding: 7px 13px;
+    border: 1px solid var(--line);
+    padding: 7px 14px;
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 12.5px;
+    font-weight: 600;
     color: var(--ink-2);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    letter-spacing: -0.01em;
+    transition: all 0.15s;
   }
   .pf-btn.active {
     background: var(--ink);
@@ -2411,11 +2827,18 @@
     border-color: var(--ink);
   }
   .pf-btn .pf-count {
-    font-size: 10px;
+    font-size: 11px;
     opacity: 0.75;
     font-weight: 600;
     min-width: 14px;
     text-align: center;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 6px;
+    border-radius: 999px;
+  }
+  .pf-btn.active .pf-count {
+    background: rgba(255,255,255,0.2);
+    opacity: 0.9;
   }
 
   .photo-grid {
@@ -2892,6 +3315,7 @@
           <div class="h-sub">MY PHOTOS</div>
           <div class="h-title">내 사진</div>
         </div>
+        <div class="photo-count-badge" id="photoCountBadge">0 / 15</div>
       </div>
 
       <div class="section">
@@ -4072,32 +4496,24 @@ function login() {
 
 const PACKING_ITEMS = [
   { group: '필수', items: [
-    '학생증 · 신분증',
     '현금 · 교통카드',
     '휴대폰 · 보조배터리 · 충전기',
     '약 (평소 복용 중인 것 · 비상약)',
-    '마스크 · 손소독제',
   ]},
   { group: '옷 · 세면', items: [
     '속옷 · 양말 (일수+1벌)',
     '여벌 옷 (날씨 확인 후)',
     '잠옷',
     '세면도구 (칫솔 · 치약 · 샴푸)',
-    '수건',
     '외투 (일교차 대비)',
   ]},
   { group: '활동', items: [
     '편한 운동화',
     '우산 · 우비',
-    '물통',
     '작은 가방 (자유시간용)',
-    '선글라스 · 모자',
   ]},
   { group: '기타 (선택)', items: [
-    '간식 · 껌',
     '멀미약',
-    '카메라',
-    '독서거리 · 이어폰',
   ]},
 ];
 
@@ -4335,69 +4751,78 @@ function renderHomeGroup() {
   const s = currentStudent;
 
   if (!s.group) {
-    labelEl.textContent = '내 조';
+    labelEl.innerHTML = '내 조';
     box.innerHTML = `<div class="grp-empty">조 편성이 아직 공유되지 않았어요</div>`;
     return;
   }
 
   const g = GROUPS[s.group];
   if (!g || !g.members || g.members.length === 0) {
-    labelEl.textContent = getGroupDisplayName(s.group);
-    box.innerHTML = `<div class="grp-empty">${escapeHtml(getGroupDisplayName(s.group))} 명단을 불러오는 중...</div>`;
+    labelEl.innerHTML = '내 조';
+    box.innerHTML = `<div class="grp-empty">명단을 불러오는 중...</div>`;
     return;
   }
 
-  labelEl.textContent = `내 조 · ${getGroupDisplayName(s.group)}`;
+  // 섹션 라벨 — "내 조" + 우측 "전체 보기 →"
+  labelEl.innerHTML = `
+    <div class="grp-section-head">
+      <span>내 조</span>
+      <button class="grp-section-more" onclick="switchTab('sched')">전체 보기 →</button>
+    </div>
+  `;
 
   const leaderName = g.leader?.name || '';
+  const leaderTel = g.leader?.tel ? normalizeTel(g.leader.tel) : '';
+  const groupNo = s.group;
+  const groupName = getGroupDisplayName(s.group).replace(/^\d+조\s*/, '') || `${groupNo}조`;
+  const memberCount = g.members.length;
 
-  const cardsHTML = g.members.map(m => {
-    const isLeader = leaderName && m.name === leaderName;
+  // 조장 전화 pill (시안 우상단)
+  let leaderCallHTML = '';
+  if (leaderName && leaderTel) {
+    leaderCallHTML = `<a class="grp-leader-pill" href="tel:${leaderTel}" aria-label="${escapeHtml(leaderName)} 조장에게 전화">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      조장
+    </a>`;
+  } else if (leaderName) {
+    leaderCallHTML = `<span class="grp-leader-pill disabled" title="전화번호 없음">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      조장
+    </span>`;
+  }
+
+  // 조원 pills — 나는 강조
+  const pillsHTML = g.members.map(m => {
     const isMe = m.id === s.id;
-    const tel = normalizeTel(m.tel);
+    const isLeader = leaderName && m.name === leaderName;
     const cls = [
-      'grp-card',
-      isLeader ? 'leader' : '',
-      isMe ? 'me' : ''
+      'grp-pill',
+      isMe ? 'me' : '',
+      isLeader ? 'leader' : ''
     ].filter(Boolean).join(' ');
-
-    const nameHTML = `
-      <div class="grp-name-wrap">
-        ${isLeader ? '<span class="grp-star">★</span>' : ''}
-        <span class="grp-name">${escapeHtml(m.name)}</span>
-        ${isMe ? '<span class="grp-me-mark">ME</span>' : ''}
-      </div>
-    `;
-
-    // 본인 카드는 전화 버튼 대신 "나" 라벨 느낌으로 비활성
-    let callHTML = '';
-    if (isMe) {
-      callHTML = `<span class="grp-call disabled" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </span>`;
-    } else if (tel) {
-      callHTML = `<a class="grp-call" href="tel:${tel}" aria-label="${escapeHtml(m.name)}에게 전화">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      </a>`;
-    } else {
-      callHTML = `<span class="grp-call disabled" title="전화번호 없음">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      </span>`;
+    const tel = normalizeTel(m.tel);
+    const label = isMe ? `${escapeHtml(m.name)} (나)` : escapeHtml(m.name);
+    if (!isMe && tel) {
+      return `<a class="${cls}" href="tel:${tel}" aria-label="${escapeHtml(m.name)}에게 전화">${label}</a>`;
     }
-
-    return `<div class="${cls}">${nameHTML}${callHTML}</div>`;
+    return `<span class="${cls}">${label}</span>`;
   }).join('');
 
+  const membersNote = leaderName
+    ? `조장 ${escapeHtml(leaderName)} · 조원 ${memberCount - 1}명`
+    : `조원 ${memberCount}명`;
+
   box.innerHTML = `
-    <div class="card">
-      <div class="grp-head">
-        <div class="grp-head-left">
-          <div class="grp-head-title">조원 ${g.members.length}명</div>
-          <div class="grp-head-count">★ 조장 · ME 나</div>
+    <div class="card grp-hero-card">
+      <div class="grp-hero-head">
+        <div class="grp-hero-badge">${escapeHtml(String(groupNo))}</div>
+        <div class="grp-hero-info">
+          <div class="grp-hero-name">${escapeHtml(groupName)}</div>
+          <div class="grp-hero-meta">${membersNote}</div>
         </div>
+        ${leaderCallHTML}
       </div>
-      ${g.theme ? `<div class="grp-head-theme" style="margin-bottom:14px">${escapeHtml(g.theme)}</div>` : ''}
-      <div class="grp-grid">${cardsHTML}</div>
+      <div class="grp-pills">${pillsHTML}</div>
     </div>
   `;
 }
@@ -4783,11 +5208,11 @@ function renderEverland() {
 
   const helpHTML = helpChips.length > 0 ? `
     <div class="section-label" style="padding:0;margin-bottom:10px">도움이 필요할 때</div>
-    <div class="zone-card">
-      <div class="zone-card-head">
+    <div class="zone-card zone-card-help">
+      <div class="zone-card-head-help">
         <div class="zone-emoji">📞</div>
-        <div class="zone-name">
-          담임 · 학년부장
+        <div class="zone-body">
+          <div class="zone-name">담임 · 학년부장</div>
           <div class="zone-note">에버랜드에서 문제가 생기면 담임 혹은 학년부장(성화룡 선생님)께 연락하세요</div>
         </div>
       </div>
@@ -4795,16 +5220,22 @@ function renderEverland() {
     </div>
   ` : '';
 
-  // 구역별 담당 교사: 이름만 표시 (전화 연결 없음)
-  const zones = EVERLAND_ZONES.map(z => `
-    <div class="zone-card">
-      <div class="zone-card-head">
-        <div class="zone-emoji">${z.emoji}</div>
-        <div class="zone-name">${escapeHtml(z.name)}</div>
+  // 구역별 담당 교사 — 시안 스타일: 원형 이모지 + 한 줄 교사 리스트
+  const myHomeroom = getMyHomeroom();
+  const zones = EVERLAND_ZONES.map(z => {
+    const isMyTeacher = myHomeroom && z.teachers.includes(myHomeroom);
+    const tag = isMyTeacher ? '<span class="zone-name-tag">담임</span>' : '';
+    const cardCls = 'zone-card' + (isMyTeacher ? ' my-zone has-tag' : '');
+    return `
+    <div class="${cardCls}">
+      <div class="zone-emoji">${z.emoji}</div>
+      <div class="zone-body">
+        <div class="zone-name">${escapeHtml(z.name)}${tag}</div>
+        <div class="zone-teachers-inline">${z.teachers.map(escapeHtml).join(' · ')}</div>
       </div>
-      <div class="zone-teachers">${teacherChipsHTML(z.teachers, new Set())}</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   return `
     <div class="meet-banner">
@@ -4891,20 +5322,23 @@ function renderSeoul() {
   }
 
   // 5/7 서울 구역 담당 교사 15명: 성화룡(학년부장)만 전화 연결
-  // 내 조 담당 교사는 위 "내 조 일정" 카드에서 별도로 연결 유지
-  const zoneCallable = new Set(['성화룡']);
-  const zones = SEOUL_ZONES.map(z => `
-    <div class="zone-card">
-      <div class="zone-card-head">
-        <div class="zone-emoji">${z.emoji}</div>
-        <div class="zone-name">
-          ${escapeHtml(z.name)}
-          ${z.note ? `<div class="zone-note">${escapeHtml(z.note)}</div>` : ''}
-        </div>
+  // 서울 구역별 담당 — 시안 스타일
+  const myHomeroom = getMyHomeroom();
+  const zones = SEOUL_ZONES.map(z => {
+    const isMyTeacher = myHomeroom && z.teachers.includes(myHomeroom);
+    const tag = isMyTeacher ? '<span class="zone-name-tag">담임</span>' : '';
+    const cardCls = 'zone-card' + (isMyTeacher ? ' my-zone has-tag' : '');
+    return `
+    <div class="${cardCls}">
+      <div class="zone-emoji">${z.emoji}</div>
+      <div class="zone-body">
+        <div class="zone-name">${escapeHtml(z.name)}${tag}</div>
+        ${z.note ? `<div class="zone-note">${escapeHtml(z.note)}</div>` : ''}
+        <div class="zone-teachers-inline">${z.teachers.map(escapeHtml).join(' · ')}</div>
       </div>
-      <div class="zone-teachers">${teacherChipsHTML(z.teachers, zoneCallable)}</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   return `
     ${myGroupHTML}
@@ -4960,11 +5394,11 @@ function renderJeonju() {
 
   const contactsHTML = contactsChips.length > 0 ? `
     <div class="section-label" style="padding:0;margin-bottom:10px">도움이 필요할 때</div>
-    <div class="zone-card">
-      <div class="zone-card-head">
+    <div class="zone-card zone-card-help">
+      <div class="zone-card-head-help">
         <div class="zone-emoji">📞</div>
-        <div class="zone-name">
-          담임 · 학년부장
+        <div class="zone-body">
+          <div class="zone-name">담임 · 학년부장</div>
           <div class="zone-note">전주는 자유 탐방이라 문제가 생기면 담임 혹은 학년부장(성화룡 선생님)께 연락하세요</div>
         </div>
       </div>
@@ -5024,68 +5458,100 @@ function renderHelp() {
   const box = document.getElementById('helpContent');
   if (!box) return;
 
-  // 1. SOS 카드 (최상단, 3버튼)
+  // 1. 시안 스타일 긴급 카드 — 빨간 그라데이션 + SOS 아이콘 + "길게 눌러 전송" CTA
   const sosCard = `
-    <div class="help-sos-card">
-      <div class="help-sos-top">
-        <div class="help-sos-ico">🆘</div>
-        <div>
-          <div class="help-sos-title">긴급 상황</div>
-          <div class="help-sos-sub">위급 시 아래 버튼으로 바로 연락하세요</div>
+    <div class="help-sos-hero" onclick="openSOS()">
+      <div class="help-sos-hero-head">
+        <div class="help-sos-hero-ico">SOS</div>
+        <div class="help-sos-hero-info">
+          <div class="help-sos-hero-title">긴급 도움 요청</div>
+          <div class="help-sos-hero-sub">담임선생님께 현재 위치와 함께 즉시 전송돼요</div>
         </div>
       </div>
-      <div class="help-sos-grid">
-        <button class="help-sos-btn sos" onclick="openSOS()">
-          🆘
-          <span>담임에게</span>
-          <span class="hsb-label">위치 함께 전송</span>
-        </button>
-        <a class="help-sos-btn" href="tel:112">
-          🚔
-          <span>112</span>
-          <span class="hsb-label">경찰</span>
-        </a>
-        <a class="help-sos-btn" href="tel:119">
-          🚑
-          <span>119</span>
-          <span class="hsb-label">응급 · 소방</span>
-        </a>
-      </div>
+      <button class="help-sos-hero-btn" onclick="openSOS()">길게 눌러 전송 →</button>
     </div>
   `;
 
-  // 2. 담당 교사 연락처
+  // 2. "바로 전화" — 담임 / 119 / 112 3장 연락처 카드
   const myHR = getMyHomeroom();
-  const contacts = [
-    { role: '담임', name: myHR, icon: '👨‍🏫', always: false },
-    { role: '학년부장', name: '성화룡', icon: '📋', always: true },
-    { role: '학생안전부장', name: '강성두', icon: '🛡️', always: true },
-    { role: '보건교사', name: '박보경', icon: '🏥', always: true },
-    { role: '특수교사', name: '최명기', icon: '🤝', always: true }
-  ].filter(c => c.name && (c.always || c.name));
+  const myHRTel = myHR ? TEACHER_TEL[myHR] : '';
+  const myHRClass = currentStudent?.class || '';
+  const contactCards = [];
 
-  const contactsHTML = contacts.map(c => {
-    const tel = TEACHER_TEL[c.name];
-    const telBtn = tel ? `
-      <a href="tel:${normalizeTel(tel)}" class="help-tel-btn">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        ${formatTel(tel)}
-      </a>
-    ` : `<span style="font-size:11px;color:var(--ink-3);margin-left:auto;">연락처 미등록</span>`;
+  // 담임
+  if (myHR) {
+    contactCards.push({
+      ico: '👨‍🏫',
+      iconBg: 'var(--coral-bg)',
+      name: `${escapeHtml(myHR)} 선생님`,
+      sub: `담임 · ${escapeHtml(myHRClass)}`,
+      tel: myHRTel ? normalizeTel(myHRTel) : '',
+      btnColor: 'primary'
+    });
+  }
+  // 119 구급
+  contactCards.push({
+    ico: '🚑',
+    iconBg: '#FDEAE8',
+    name: '119 응급',
+    sub: '소방 · 구급',
+    tel: '119',
+    btnColor: 'danger'
+  });
+  // 112 경찰
+  contactCards.push({
+    ico: '🚔',
+    iconBg: '#E4ECFA',
+    name: '112 경찰',
+    sub: '안전 · 신고',
+    tel: '112',
+    btnColor: 'primary'
+  });
 
+  const contactsHTML = contactCards.map(c => {
+    const telBtn = c.tel
+      ? `<a href="tel:${c.tel}" class="help-contact-btn ${c.btnColor}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          전화
+        </a>`
+      : '<span class="help-contact-btn disabled">연락처 없음</span>';
     return `
-      <div class="help-contact-head" style="margin-bottom:0;padding:10px 14px;background:var(--surface-2);border-radius:12px;margin-bottom:8px;">
-        <div class="help-contact-ico">${c.icon}</div>
-        <div>
-          <div class="help-contact-name">${escapeHtml(c.name)} 선생님</div>
-          <div class="help-contact-role">${escapeHtml(c.role)}</div>
+      <div class="help-contact-row">
+        <div class="help-contact-avatar" style="background:${c.iconBg}">${c.ico}</div>
+        <div class="help-contact-info">
+          <div class="help-contact-name">${c.name}</div>
+          <div class="help-contact-sub">${c.sub}</div>
         </div>
         ${telBtn}
       </div>
     `;
   }).join('');
 
-  // 3. 병원 목록
+  // 3. 교사 연락처 확장 (기존 유지 — 작은 리스트로)
+  const extraContacts = [
+    { role: '학년부장', name: '성화룡', icon: '📋' },
+    { role: '학생안전부장', name: '강성두', icon: '🛡️' },
+    { role: '보건교사', name: '박보경', icon: '🏥' },
+  ].filter(c => c.name);
+
+  const extraContactsHTML = extraContacts.map(c => {
+    const tel = TEACHER_TEL[c.name];
+    if (!tel) return '';
+    return `
+      <a href="tel:${normalizeTel(tel)}" class="help-contact-row-compact">
+        <div class="help-contact-avatar-small">${c.icon}</div>
+        <div class="help-contact-info">
+          <div class="help-contact-name">${escapeHtml(c.name)} 선생님</div>
+          <div class="help-contact-sub">${escapeHtml(c.role)}</div>
+        </div>
+        <span class="help-contact-tel-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </span>
+      </a>
+    `;
+  }).filter(Boolean).join('');
+
+  // 4. 병원 목록 (기존)
   const hospitalsHTML = HOSPITALS.map(h => `
     <div class="help-hospital">
       <div class="help-hosp-top">
@@ -5107,7 +5573,15 @@ function renderHelp() {
     </div>
   `).join('');
 
-  // 4. 안전 수칙
+  // 5. 비상 보고 체계 — pills 연결 (시안 스타일)
+  const chainHTML = REPORT_CHAIN.map((step, i) => {
+    const isMe = step === '학생';
+    const cls = isMe ? 'help-chain-pill me' : 'help-chain-pill';
+    const label = isMe ? '학생 (나)' : step;
+    return `<span class="${cls}">${escapeHtml(label)}</span>`;
+  }).join('');
+
+  // 6. 안전 수칙 (기존)
   const safetyHTML = SAFETY_RULES.map(cat => {
     const items = cat.items.map(it => `<li>${escapeHtml(it)}</li>`).join('');
     return `
@@ -5121,31 +5595,43 @@ function renderHelp() {
     `;
   }).join('');
 
-  // 5. 비상 보고 체계
-  const chainHTML = REPORT_CHAIN.map((step, i) => {
-    const cls = step === '학생' ? 'help-chain-step me' : 'help-chain-step';
-    const arrow = i < REPORT_CHAIN.length - 1 ? '<span class="help-chain-arrow">›</span>' : '';
-    return `<span class="${cls}">${escapeHtml(step)}</span>${arrow}`;
-  }).join('');
-
   box.innerHTML = `
-    ${sosCard}
+    <div class="section">
+      ${sosCard}
+    </div>
 
-    <div class="section-label" style="padding:0;margin-bottom:10px">담당 교사 연락처</div>
-    ${contactsHTML}
+    <div class="section">
+      <div class="section-label">바로 전화</div>
+      <div class="help-contacts-stack">${contactsHTML}</div>
+    </div>
 
-    <div class="section-label" style="padding:0;margin:18px 0 10px">여행지 인근 병원</div>
-    ${hospitalsHTML}
+    <div class="section">
+      <div class="section-label">보고 체계</div>
+      <div class="help-chain-box">${chainHTML}</div>
+    </div>
 
-    <div class="section-label" style="padding:0;margin:18px 0 10px">안전 수칙</div>
-    ${safetyHTML}
+    ${extraContactsHTML ? `
+      <div class="section">
+        <div class="section-label">그 외 담당 선생님</div>
+        <div class="help-contacts-compact">${extraContactsHTML}</div>
+      </div>
+    ` : ''}
 
-    <div class="section-label" style="padding:0;margin:18px 0 10px">비상 보고 체계</div>
-    <div class="help-chain">${chainHTML}</div>
+    <div class="section">
+      <div class="section-label">여행지 인근 병원</div>
+      ${hospitalsHTML}
+    </div>
 
-    <div class="tip-box" style="margin-top:14px">
-      <div class="tip-ico">💙</div>
-      <div>몸이 아프거나 마음이 힘들 때 혼자 참지 말고 담임선생님 또는 보건선생님(박보경)에게 꼭 알려주세요. 친구의 이상 징후를 발견했을 때도 마찬가지예요.</div>
+    <div class="section">
+      <div class="section-label">안전 수칙</div>
+      ${safetyHTML}
+    </div>
+
+    <div class="section">
+      <div class="tip-box">
+        <div class="tip-ico">💙</div>
+        <div>몸이 아프거나 마음이 힘들 때 혼자 참지 말고 담임선생님 또는 보건선생님(박보경)에게 꼭 알려주세요. 친구의 이상 징후를 발견했을 때도 마찬가지예요.</div>
+      </div>
     </div>
   `;
 }
@@ -5920,6 +6406,10 @@ function renderPhotoGrid() {
   setCount('pfCountAll', totalCount);
   setCount('pfCountQr', qrCount);
   setCount('pfCountMemo', memoCount);
+
+  // 상단 "N / 15" 뱃지
+  const countBadge = document.getElementById('photoCountBadge');
+  if (countBadge) countBadge.textContent = `${totalCount} / ${MAX_PHOTOS}`;
 
   // 업로드 버튼 비활성화 (한도 초과 시)
   document.querySelectorAll('.upload-btn').forEach(b => {
