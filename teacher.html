@@ -6,26 +6,36 @@
 <title>2026 수학여행 교사용 · 통영고등학교</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <style>
 :root {
-  --bg: #0f0f0f;
-  --surface: #1a1a1a;
-  --surface-2: #242424;
-  --ink: #ffffff;
-  --ink-soft: #b0b0b0;
-  --ink-mute: #777;
-  --line: #333;
-  --line-soft: #2a2a2a;
-  --accent: #ff5a3c;
-  --accent-soft: #3a1e18;
-  --success: #4ade80;
-  --warn: #fbbf24;
-  --blue: #60a5fa;
+  /* 시안 T 팔레트 — 다크 오퍼레이터 콘솔 */
+  --bg: #0B0B0D;
+  --surface: #161618;
+  --surface-2: #1F1F22;
+  --surface-3: #2A2A2E;
+  --ink: #F5F5F3;
+  --ink-soft: #C5C3BD;
+  --ink-mute: #8A8781;
+  --ink-mute-2: #5C5A54;
+  --line: rgba(255,255,255,0.08);
+  --line-soft: rgba(255,255,255,0.14);
+  --accent: #FF6B4A;
+  --accent-deep: #D84A28;
+  --accent-soft: rgba(255,107,74,0.12);
+  --success: #5BD27F;
+  --success-soft: rgba(91,210,127,0.12);
+  --warn: #F5B84A;
+  --warn-soft: rgba(245,184,74,0.12);
+  --blue: #6AA7F0;
+  --blue-soft: rgba(106,167,240,0.12);
+  --violet: #B88AF0;
+  /* 조별 마커 색 — 기존 유지 (대비·가독성 검증된 톤) */
   --group1: #ef4444;
   --group2: #f59e0b;
   --group3: #10b981;
@@ -37,7 +47,7 @@
 html, body {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Pretendard', -apple-system, sans-serif;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: -0.01em;
@@ -132,7 +142,7 @@ html, body {
   margin-top: 6px;
   transition: background 0.2s;
 }
-.login-form button:hover { background: #ff7355; }
+.login-form button:hover { background: var(--accent-deep); }
 
 /* Google 로그인 버튼 */
 .google-btn {
@@ -202,7 +212,7 @@ html, body {
   margin-top: 6px !important;
   transition: background 0.2s;
 }
-.id-login-btn:hover { background: #ff7355 !important; }
+.id-login-btn:hover { background: var(--accent-deep) !important; }
 .id-login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .login-meta {
   text-align: center;
@@ -327,21 +337,11 @@ header button:hover {
 
 /* Tabs */
 .tabs {
-  display: flex;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-  position: sticky;
-  top: 62px;
-  z-index: 9;
-  /* 탭이 많아지면 가로 스크롤로 처리 (두 줄 꺾임 방지) */
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  /* 홈 기반 네비게이션으로 전환하면서 탭 바는 숨김 — 기존 CSS 잔재는 보존 */
+  display: none;
 }
-.tabs::-webkit-scrollbar { display: none; }
 .tab {
-  flex: 1 0 auto;         /* 공간이 모자라면 내용 크기 유지, 남으면 균등 분배 */
+  flex: 1 0 auto;
   min-width: 64px;
   padding: 14px 8px;
   font-size: 12px;
@@ -351,7 +351,7 @@ header button:hover {
   border-bottom: 2px solid transparent;
   font-weight: 500;
   transition: all 0.2s;
-  white-space: nowrap;    /* 두 줄로 꺾이지 않게 */
+  white-space: nowrap;
 }
 .tab.active {
   color: var(--ink);
@@ -369,6 +369,133 @@ header button:hover {
   border-radius: 3px;
 }
 
+/* 헤더 뒤로가기 버튼 */
+.header-back-btn {
+  background: transparent !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  font-size: 18px !important;
+  padding: 6px 12px !important;
+  cursor: pointer;
+  font-family: inherit;
+  margin-right: 10px;
+  line-height: 1;
+  transition: border-color 0.15s, background 0.15s;
+}
+.header-back-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* 현재 화면 타이틀 바 */
+.screen-title-bar {
+  position: sticky;
+  top: 62px;
+  z-index: 9;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+}
+.screen-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.screen-title .screen-title-ico {
+  margin-right: 6px;
+}
+
+/* ─── HOME (기능 허브) ─── */
+#panel-home { padding: 0; }
+.home-inner {
+  padding: 24px 20px 60px;
+}
+.home-label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.home-title {
+  font-family: 'Gowun Batang', serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+.home-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 28px;
+}
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.home-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s, background 0.15s;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.home-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.home-card:active {
+  transform: scale(0.98);
+}
+.home-card-ico {
+  font-size: 28px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+.home-card-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.home-card-sub {
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.home-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.4;
+}
+.home-card-sos {
+  /* SOS 카드만 특별 강조 */
+}
+.home-card-sos:hover {
+  border-color: var(--accent);
+}
+/* 관리자 아니면 관리자 전용 카드 숨김 */
+.home-card.admin-only { display: none; }
+body.is-admin .home-card.admin-only { display: flex; }
+
 /* Panels */
 .panel { display: none; animation: fadeIn 0.25s ease; }
 .panel.active { display: block; }
@@ -379,26 +506,22 @@ header button:hover {
 #panel-classmap { padding: 0; }
 #map {
   width: 100%;
-  height: calc(100vh - 114px);
+  /* 헤더(62px) + 타이틀바(약 45px) ≈ 107px */
+  height: calc(100vh - 107px);
   background: var(--bg);
 }
 .map-controls {
   position: absolute;
-  top: 130px;
+  top: 120px;
   right: 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   z-index: 5;
 }
-/* SOS 배너가 떠 있을 때는 배너 높이만큼(약 60px) 추가로 내려서 탭과 겹치지 않게 */
-.sos-banner.active ~ nav.tabs ~ section #map,
-.sos-banner.active ~ nav.tabs ~ section .map-controls,
-.sos-banner.active ~ nav.tabs ~ section .map-stats {
-  /* 선택자만 남기는 용도 — 실제 규칙은 JS로 토글하는 편이 확실 */
-}
-.main.sos-visible .map-controls { top: 190px; }
-.main.sos-visible .map-stats { top: 190px; }
+/* SOS 배너(약 60px)가 떠 있을 때 추가로 내려줌 */
+.main.sos-visible .map-controls { top: 180px; }
+.main.sos-visible .map-stats { top: 180px; }
 .map-ctrl-btn {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -414,6 +537,167 @@ header button:hover {
 }
 .map-ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
 .map-ctrl-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* 지도에서 학생 위치로 이동했을 때 마커 펄스 강조 */
+@keyframes finderPulse {
+  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(255, 107, 74, 0.7); }
+  50%  { transform: scale(1.2); box-shadow: 0 0 0 14px rgba(255, 107, 74, 0); }
+  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(255, 107, 74, 0); }
+}
+.finder-highlight {
+  animation: finderPulse 1.2s ease-out 3;
+  z-index: 1000 !important;
+}
+
+/* ── 학생 선택 모달 ── */
+.finder-search {
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.finder-search input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  border-radius: 4px;
+}
+.finder-search input:focus {
+  border-color: var(--accent);
+}
+/* 현재 적용된 범위(반/조) 표시 */
+.finder-scope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.finder-scope-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ink-mute);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.finder-scope-tags {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.finder-scope-tag {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  letter-spacing: -0.01em;
+}
+.finder-scope-tag.all {
+  background: var(--surface);
+  color: var(--ink-soft);
+  border-color: var(--line);
+  font-weight: 500;
+}
+.finder-scope-clear {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.finder-scope-clear:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.finder-hint {
+  padding: 8px 16px;
+  font-size: 11px;
+  color: var(--ink-mute);
+  border-bottom: 1px solid var(--line);
+}
+.finder-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.finder-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.finder-item:hover {
+  background: var(--surface-2);
+}
+.finder-item:active {
+  background: var(--surface-3);
+}
+.finder-item-main {
+  flex: 1;
+  min-width: 0;
+}
+.finder-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.finder-item-sid {
+  color: var(--accent);
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  font-weight: 500;
+}
+.finder-item-sub {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 3px;
+}
+.finder-item-status {
+  flex-shrink: 0;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.finder-item-status.active {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.finder-item-status.stale {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.finder-item-status.offline {
+  background: var(--surface-3);
+  color: var(--ink-mute);
+}
+.finder-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--ink-mute);
+  font-size: 13px;
+}
 
 .map-ctrl-select {
   background: var(--surface);
@@ -506,14 +790,15 @@ header button:hover {
 
 .map-stats {
   position: absolute;
-  top: 130px;
+  top: 120px;
   left: 12px;
-  background: rgba(26, 26, 26, 0.92);
+  background: rgba(22, 22, 24, 0.92);
   border: 1px solid var(--line);
   padding: 8px 12px;
   font-size: 11px;
   z-index: 5;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .map-stats .k { color: var(--ink-mute); }
 .map-stats .v { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -2236,6 +2521,7 @@ body.is-admin .tab.admin-only { display: inline-flex; }
   <!-- MAIN -->
   <div id="main" class="main">
     <header>
+      <button id="backToHomeBtn" class="header-back-btn" onclick="goTab('home')" style="display:none;" title="홈으로 돌아가기">←</button>
       <div class="me">
         <div class="tag">👨‍🏫 <span id="hdrTag">교사</span></div>
         <div class="name" id="hdrName">—</div>
@@ -2261,21 +2547,78 @@ body.is-admin .tab.admin-only { display: inline-flex; }
       </div>
     </div>
 
-    <nav class="tabs">
-      <div class="tab active" data-panel="map">🗺️ 조별</div>
-      <div class="tab" data-panel="classmap">🏫 반별</div>
-      <div class="tab" data-panel="students">👥 학생</div>
-      <div class="tab" data-panel="groups">🧭 조정보</div>
-      <div class="tab" data-panel="rooms">🏨 숙소<span class="badge" id="rollCallBadge" style="display:none;">0</span></div>
-      <div class="tab" data-panel="sos">🆘 SOS<span class="badge" id="sosBadge" style="display:none;">0</span></div>
-      <div class="tab" data-panel="announce">📢 공지</div>
-      <div class="tab" data-panel="memos">💬 교사쪽지<span class="badge" id="memoBadge" style="display:none;">0</span></div>
-      <div class="tab" data-panel="records">📝 기록</div>
-      <div class="tab admin-only" data-panel="notes">🛡️ 유의사항</div>
-    </nav>
+    <!-- 현재 화면 타이틀 (홈이 아닐 때 표시) -->
+    <div id="screenTitleBar" class="screen-title-bar" style="display:none;">
+      <div class="screen-title" id="screenTitle">—</div>
+    </div>
+
+    <!-- HOME PANEL — 기능 허브 -->
+    <section id="panel-home" class="panel active">
+      <div class="home-inner">
+        <div class="home-label">TEACHER CONSOLE</div>
+        <h1 class="home-title">수학여행<br>관제 화면</h1>
+        <div class="home-sub" id="homeSub">2학년 2026 · 통영고등학교</div>
+
+        <div class="home-grid">
+          <div class="home-card" onclick="goTab('map')">
+            <div class="home-card-ico">🗺️</div>
+            <div class="home-card-label">조별 지도</div>
+            <div class="home-card-sub">실시간 위치</div>
+          </div>
+          <div class="home-card" onclick="goTab('classmap')">
+            <div class="home-card-ico">🏫</div>
+            <div class="home-card-label">반별 지도</div>
+            <div class="home-card-sub">우리반 보기</div>
+          </div>
+          <div class="home-card" onclick="goTab('students')">
+            <div class="home-card-ico">👥</div>
+            <div class="home-card-label">학생</div>
+            <div class="home-card-sub" id="homeStudentCount">—</div>
+          </div>
+          <div class="home-card" onclick="goTab('groups')">
+            <div class="home-card-ico">🧭</div>
+            <div class="home-card-label">조 정보</div>
+            <div class="home-card-sub">편성·명단</div>
+          </div>
+          <div class="home-card" onclick="goTab('rooms')">
+            <div class="home-card-ico">🏨</div>
+            <div class="home-card-label">숙소·점호</div>
+            <div class="home-card-sub" id="homeRoomsSub">—</div>
+            <span class="home-card-badge" id="homeRoomsBadge" style="display:none;">0</span>
+          </div>
+          <div class="home-card home-card-sos" onclick="goTab('sos')">
+            <div class="home-card-ico">🆘</div>
+            <div class="home-card-label">SOS</div>
+            <div class="home-card-sub" id="homeSosSub">확인</div>
+            <span class="home-card-badge" id="homeSosBadge" style="display:none;">0</span>
+          </div>
+          <div class="home-card" onclick="goTab('announce')">
+            <div class="home-card-ico">📢</div>
+            <div class="home-card-label">공지</div>
+            <div class="home-card-sub">전 학생에게</div>
+          </div>
+          <div class="home-card" onclick="goTab('memos')">
+            <div class="home-card-ico">💬</div>
+            <div class="home-card-label">교사 쪽지</div>
+            <div class="home-card-sub">교사 간 소통</div>
+            <span class="home-card-badge" id="homeMemoBadge" style="display:none;">0</span>
+          </div>
+          <div class="home-card" onclick="goTab('records')">
+            <div class="home-card-ico">📝</div>
+            <div class="home-card-label">교사 기록</div>
+            <div class="home-card-sub">관찰·특이사항</div>
+          </div>
+          <div class="home-card admin-only" onclick="goTab('notes')">
+            <div class="home-card-ico">🛡️</div>
+            <div class="home-card-label">관리자</div>
+            <div class="home-card-sub">계정·유의사항·내보내기</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- MAP PANEL (조별) -->
-    <section id="panel-map" class="panel active">
+    <section id="panel-map" class="panel">
       <div id="map"></div>
 
       <div class="map-stats">
@@ -2291,6 +2634,7 @@ body.is-admin .tab.admin-only { display: inline-flex; }
         <select class="map-ctrl-select" id="mapGroupSelect" onchange="setMapFilter(this.value)" title="특정 조로 필터">
           <option value="all">조 전체</option>
         </select>
+        <button class="map-ctrl-btn" onclick="openStudentFinder()" title="현재 범위의 학생 중 선택해서 위치로 이동">👤 학생 선택</button>
         <button class="map-ctrl-btn" onclick="recenterMap()">⟲ 초기화</button>
       </div>
     </section>
@@ -2309,6 +2653,7 @@ body.is-admin .tab.admin-only { display: inline-flex; }
         <select class="map-ctrl-select" id="cmClassSelect" onchange="setClassMapFilter(this.value)" title="반 필터">
           <option value="all">반 전체</option>
         </select>
+        <button class="map-ctrl-btn" onclick="openStudentFinder()" title="현재 범위의 학생 중 선택해서 위치로 이동">👤 학생 선택</button>
         <button class="map-ctrl-btn" onclick="recenterMap()">⟲ 초기화</button>
       </div>
     </section>
@@ -2604,6 +2949,26 @@ body.is-admin .tab.admin-only { display: inline-flex; }
         <button class="modal-close" onclick="closeStudentModal()">✕</button>
       </div>
       <div class="modal-body" id="smBody"></div>
+    </div>
+  </div>
+
+  <!-- 학생 선택 모달 (지도에서 빠르게 위치 확인용) -->
+  <div id="studentFinderModal" class="modal" onclick="closeStudentFinder(event)">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h3>👤 학생 선택</h3>
+        <button class="modal-close" onclick="closeStudentFinder()">✕</button>
+      </div>
+      <div class="finder-scope" id="finderScope">
+        <span class="finder-scope-label">표시 범위</span>
+        <span class="finder-scope-tags" id="finderScopeTags"></span>
+        <button class="finder-scope-clear" id="finderScopeClear" onclick="finderClearScope()" style="display:none;">전체 보기</button>
+      </div>
+      <div class="finder-search">
+        <input type="text" id="finderQuery" placeholder="이름 또는 학번 검색" oninput="renderFinderList()" autocomplete="off">
+      </div>
+      <div class="finder-hint" id="finderHint">—</div>
+      <div class="finder-list" id="finderList"></div>
     </div>
   </div>
 
@@ -3777,6 +4142,9 @@ function completeLogin(info) {
   try { loadKakaoMap(); } catch (e) { console.error('Kakao Map 로드 실패:', e); }
   try { startTeacherLocation(); } catch (e) { console.warn('교사 위치 전송 시작 실패:', e); }
 
+  // 초기 화면은 홈 (탭 구조 제거 후 첫 진입은 기능 허브)
+  try { goTab('home'); } catch (e) { console.warn('홈 진입 실패:', e); }
+
   console.log('[completeLogin] 완료');
 }
 
@@ -4498,6 +4866,10 @@ function updateRollCallBadge() {
     badge.textContent = remaining;
     badge.style.display = 'inline-block';
   }
+  // 홈 화면 갱신
+  if (document.getElementById('panel-home')?.classList.contains('active')) {
+    updateHomeCounts();
+  }
 }
 
 function rcPathForClass(klass, day) {
@@ -4701,19 +5073,21 @@ async function resetRollCall() {
 function renderSOSList() {
   const el = document.getElementById('sosList');
   if (!el) return;
+  const badge = document.getElementById('sosBadge');
   if (SOS.length === 0) {
     el.innerHTML = '<div class="empty">SOS 호출이 없습니다</div>';
-    document.getElementById('sosBadge').style.display = 'none';
+    if (badge) badge.style.display = 'none';
     return;
   }
 
   const unresolved = SOS.filter(s => !s.resolved).length;
-  const badge = document.getElementById('sosBadge');
-  if (unresolved > 0) {
-    badge.textContent = unresolved;
-    badge.style.display = 'inline-block';
-  } else {
-    badge.style.display = 'none';
+  if (badge) {
+    if (unresolved > 0) {
+      badge.textContent = unresolved;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
   }
 
   el.innerHTML = SOS.map(s => {
@@ -4766,6 +5140,10 @@ function updateSOSBanner() {
   } else {
     banner.classList.remove('active');
     if (main) main.classList.remove('sos-visible');
+  }
+  // 홈 화면이 열려있으면 카드 카운트도 같이 갱신
+  if (document.getElementById('panel-home')?.classList.contains('active')) {
+    updateHomeCounts();
   }
 }
 
@@ -5102,22 +5480,23 @@ function renderMemoList() {
 // 교사쪽지 탭 배지 — 마지막으로 본 시각 이후의 쪽지 수
 function updateMemoBadge() {
   const badge = document.getElementById('memoBadge');
-  if (!badge) return;
-  // 현재 쪽지 탭을 보고 있으면 배지 표시 안 함
-  const onMemoTab = document.querySelector('.tab[data-panel="memos"]')?.classList.contains('active');
-  if (onMemoTab) {
-    badge.style.display = 'none';
-    return;
-  }
+  // 현재 memos 화면을 보고 있으면 배지는 의미 없음
+  const onMemoPanel = document.getElementById('panel-memos')?.classList.contains('active');
   const unseen = TEACHER_MEMOS.filter(m =>
     (m.ts || 0) > memoSeenTs &&
     m.authorEmail !== currentTeacher?.email  // 내가 쓴 건 제외
   ).length;
-  if (unseen > 0) {
-    badge.textContent = unseen;
-    badge.style.display = 'inline-block';
-  } else {
-    badge.style.display = 'none';
+  if (badge) {
+    if (onMemoPanel || unseen === 0) {
+      badge.style.display = 'none';
+    } else {
+      badge.textContent = unseen;
+      badge.style.display = 'inline-block';
+    }
+  }
+  // 홈 화면이 열려있으면 카드도 갱신
+  if (document.getElementById('panel-home')?.classList.contains('active')) {
+    updateHomeCounts();
   }
 }
 
@@ -5803,6 +6182,232 @@ function closeStudentModal() {
   tCurrentPhotos = [];
 }
 
+// ═══════════════════════════════════════════════════
+// 👤 학생 선택 (지도 화면용 — 현재 범위에서 골라 위치로 이동)
+// ─ 현재 지도에 걸린 반/조 필터를 자동 상속 ─
+// ═══════════════════════════════════════════════════
+
+// 모달 내부에서 사용하는 현재 범위 스냅샷 (모달 열 때 지도 필터를 복사)
+let finderScope = { classFilter: 'all', groupFilter: 'all', view: 'group' };
+
+function openStudentFinder() {
+  const modal = document.getElementById('studentFinderModal');
+  if (!modal) return;
+
+  // 현재 지도의 필터·뷰를 상속
+  const onClassMap = document.getElementById('panel-classmap')?.classList.contains('active');
+  const view = onClassMap ? 'class' : 'group';
+
+  if (view === 'class') {
+    // 반별 지도 — 반 필터(currentClassMapFilter) 사용
+    finderScope = {
+      classFilter: String(currentClassMapFilter || 'all'),
+      groupFilter: 'all',
+      view,
+    };
+  } else {
+    // 조별 지도 — 반 필터 + 조 필터 모두 상속
+    const gf = currentMapFilter || 'all';
+    const gNum = (typeof gf === 'string' && gf.startsWith('g')) ? gf.slice(1) : 'all';
+    finderScope = {
+      classFilter: String(currentClassFilter || 'all'),
+      groupFilter: gNum,
+      view,
+    };
+  }
+
+  renderFinderScopeTags();
+
+  // 검색창 초기화
+  const q = document.getElementById('finderQuery');
+  if (q) q.value = '';
+
+  renderFinderList();
+  modal.classList.add('active');
+
+  // 자동 포커스
+  setTimeout(() => { if (q) q.focus(); }, 100);
+}
+
+function closeStudentFinder(e) {
+  if (e && e.target && e.target.id !== 'studentFinderModal' && e.type) return;
+  document.getElementById('studentFinderModal')?.classList.remove('active');
+}
+
+// 범위 뱃지 표시 — "2-10 · 1조" 또는 "전체"
+function renderFinderScopeTags() {
+  const tagsEl = document.getElementById('finderScopeTags');
+  const clearBtn = document.getElementById('finderScopeClear');
+  if (!tagsEl) return;
+
+  const tags = [];
+  if (finderScope.classFilter !== 'all') {
+    // 숫자만 들어올 수도 있어 2-N 형태로 정리
+    const cf = finderScope.classFilter;
+    const label = cf.includes('-') ? cf : `2-${cf}`;
+    tags.push(`<span class="finder-scope-tag">🏫 ${escapeHtml(label)}</span>`);
+  }
+  if (finderScope.groupFilter !== 'all') {
+    const gName = getGroupName(finderScope.groupFilter) || `${finderScope.groupFilter}조`;
+    tags.push(`<span class="finder-scope-tag">🧩 ${escapeHtml(gName)}</span>`);
+  }
+
+  if (tags.length === 0) {
+    tagsEl.innerHTML = '<span class="finder-scope-tag all">전체 학생</span>';
+    if (clearBtn) clearBtn.style.display = 'none';
+  } else {
+    tagsEl.innerHTML = tags.join('');
+    if (clearBtn) clearBtn.style.display = '';
+  }
+}
+
+// "전체 보기" 버튼 — 현재 범위 해제 (모달 안에서만 해제, 지도 필터는 그대로 유지)
+function finderClearScope() {
+  finderScope = { classFilter: 'all', groupFilter: 'all', view: finderScope.view };
+  renderFinderScopeTags();
+  renderFinderList();
+}
+
+function renderFinderList() {
+  const listEl = document.getElementById('finderList');
+  const hintEl = document.getElementById('finderHint');
+  if (!listEl) return;
+
+  const q = (document.getElementById('finderQuery')?.value || '').trim().toLowerCase();
+
+  // 학생 목록 만들기 — 범위 필터 + 검색어
+  let items = Object.entries(STUDENTS).map(([id, s]) => ({ id, ...s, loc: LOCATIONS[id] }));
+
+  // 반 필터 — students.class가 "2-10" 같은 문자열일 수도, "10" 같은 숫자일 수도 있어 호환 처리
+  if (finderScope.classFilter !== 'all') {
+    const cf = finderScope.classFilter;
+    items = items.filter(s => {
+      if (s.class === cf) return true;
+      // 숫자만 비교 (예: cf='10', s.class='2-10')
+      const scNum = classNoFromStudentId(s.id);
+      return String(scNum) === String(cf).replace(/^2-?/, '');
+    });
+  }
+  if (finderScope.groupFilter !== 'all') {
+    items = items.filter(s => String(s.group) === String(finderScope.groupFilter));
+  }
+  if (q) {
+    items = items.filter(s =>
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.id || '').toLowerCase().includes(q)
+    );
+  }
+
+  // 정렬: 위치 있음 > 없음 → 같으면 학번순
+  items.sort((a, b) => {
+    const aHas = a.loc?.lat ? 1 : 0;
+    const bHas = b.loc?.lat ? 1 : 0;
+    if (aHas !== bHas) return bHas - aHas;
+    return a.id.localeCompare(b.id);
+  });
+
+  if (items.length === 0) {
+    listEl.innerHTML = '<div class="finder-empty">조건에 맞는 학생이 없습니다</div>';
+    if (hintEl) hintEl.textContent = '—';
+    return;
+  }
+
+  if (hintEl) {
+    const withLoc = items.filter(s => s.loc?.lat).length;
+    hintEl.textContent = `${items.length}명 · 위치 전송 ${withLoc}명 · 탭하면 지도가 이동합니다`;
+  }
+
+  const now = Date.now();
+  listEl.innerHTML = items.slice(0, 100).map(s => {
+    const has = s.loc?.lat;
+    let statusCls = 'offline', statusLabel = '위치 없음';
+    if (has) {
+      const ageMin = (now - (s.loc.ts || 0)) / 60000;
+      if (ageMin < 15) { statusCls = 'active'; statusLabel = '실시간'; }
+      else if (ageMin < 60) { statusCls = 'stale'; statusLabel = `${Math.round(ageMin)}분 전`; }
+      else { statusCls = 'stale'; statusLabel = `${Math.round(ageMin/60)}시간 전`; }
+    }
+    const groupTxt = s.group ? getGroupName(s.group) : '';
+    return `<div class="finder-item" onclick="finderGoToStudent('${escapeHtml(s.id)}')">
+      <div class="finder-item-main">
+        <div class="finder-item-name">
+          ${escapeHtml(s.name || '—')}
+          <span class="finder-item-sid">${escapeHtml(s.id)}</span>
+        </div>
+        <div class="finder-item-sub">
+          ${escapeHtml(s.class || '')}${groupTxt ? ' · ' + escapeHtml(groupTxt) : ''}${s.room ? ' · ' + escapeHtml(s.room) + '호' : ''}
+        </div>
+      </div>
+      <div class="finder-item-status ${statusCls}">${statusLabel}</div>
+    </div>`;
+  }).join('');
+}
+
+function finderGoToStudent(studentId) {
+  const s = STUDENTS[studentId];
+  if (!s) return;
+  const loc = LOCATIONS[studentId];
+
+  closeStudentFinder();
+
+  if (!loc || !loc.lat) {
+    alert(`${s.name} 학생은 아직 위치를 전송하지 않았습니다.\n학생 상세 화면으로 이동합니다.`);
+    setTimeout(() => showStudentDetail(studentId), 300);
+    return;
+  }
+
+  const onMap = document.getElementById('panel-map')?.classList.contains('active')
+             || document.getElementById('panel-classmap')?.classList.contains('active');
+  if (!onMap) {
+    goTab('map');
+    setTimeout(() => focusMapOnStudent(studentId), 350);
+  } else {
+    focusMapOnStudent(studentId);
+  }
+}
+
+function focusMapOnStudent(studentId) {
+  if (!kakaoMap) return;
+  const loc = LOCATIONS[studentId];
+  if (!loc || !loc.lat) return;
+
+  const pos = new kakao.maps.LatLng(loc.lat, loc.lng);
+  kakaoMap.setLevel(3);
+  kakaoMap.setCenter(pos);
+
+  // 마커 하이라이트
+  try {
+    const overlay = markers[studentId];
+    if (overlay && typeof overlay.getContent === 'function') {
+      const el = overlay.getContent();
+      if (el && el.classList) {
+        const dot = el.querySelector('.sp-dot') || el;
+        dot.classList.add('finder-highlight');
+        setTimeout(() => dot.classList.remove('finder-highlight'), 4200);
+      }
+    }
+  } catch (e) {}
+
+  // 화면 타이틀에 잠깐 표시
+  const s = STUDENTS[studentId];
+  if (s) {
+    const titleEl = document.getElementById('screenTitle');
+    if (titleEl) {
+      const orig = titleEl.innerHTML;
+      titleEl.innerHTML = `<span class="screen-title-ico">📍</span>${escapeHtml(s.name)} 위치로 이동`;
+      setTimeout(() => { titleEl.innerHTML = orig; }, 2500);
+    }
+  }
+}
+
+// ESC로 학생 선택 모달 닫기
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('studentFinderModal');
+    if (modal && modal.classList.contains('active')) closeStudentFinder();
+  }
+});
+
 // 학생 모달 내부 특정 섹션으로 스크롤 + 하이라이트
 function smScrollTo(sectionId) {
   const target = document.getElementById(sectionId);
@@ -6097,25 +6702,66 @@ function getVisibleGroupKeys() {
   return all.filter(k => classNoOfGroup(k) === target);
 }
 
+// 화면 메타데이터 — 타이틀 바에 보일 이름
+const SCREEN_META = {
+  home:      { title: '홈',         ico: '🏠' },
+  map:       { title: '조별 지도',   ico: '🗺️' },
+  classmap:  { title: '반별 지도',   ico: '🏫' },
+  students:  { title: '학생 목록',   ico: '👥' },
+  groups:    { title: '조 정보',     ico: '🧭' },
+  rooms:     { title: '숙소 · 점호', ico: '🏨' },
+  sos:       { title: 'SOS 관리',    ico: '🆘' },
+  announce:  { title: '공지',        ico: '📢' },
+  memos:     { title: '교사 쪽지',   ico: '💬' },
+  records:   { title: '교사 기록',   ico: '📝' },
+  notes:     { title: '관리자',      ico: '🛡️' },
+};
+
 function goTab(name) {
-  // 관리자 전용 탭 접근 차단
+  // 관리자 전용 화면 접근 차단
   if (name === 'notes' && !isAdminTeacher()) {
-    alert('유의사항 편집은 관리자 권한이 필요합니다.');
+    alert('이 화면은 관리자 권한이 필요합니다.');
     return;
   }
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelector(`.tab[data-panel="${name}"]`)?.classList.add('active');
-  document.getElementById('panel-' + name)?.classList.add('active');
 
-  // 지도 관련 탭 전환 — #map div를 해당 패널로 옮기고 뷰 모드 갱신
+  // 모든 패널 비활성화 → 대상 패널만 활성화
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panelEl = document.getElementById('panel-' + name);
+  if (panelEl) panelEl.classList.add('active');
+
+  // (혹시 모를 tab 요소 잔재 — 현재 DOM에 없지만 방어용)
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-panel="${name}"]`)?.classList.add('active');
+
+  // ── 헤더 뒤로가기 버튼 + 화면 타이틀 바 토글
+  const backBtn = document.getElementById('backToHomeBtn');
+  const titleBar = document.getElementById('screenTitleBar');
+  const titleEl = document.getElementById('screenTitle');
+  const meta = SCREEN_META[name] || { title: name, ico: '' };
+
+  if (name === 'home') {
+    if (backBtn) backBtn.style.display = 'none';
+    if (titleBar) titleBar.style.display = 'none';
+    // 홈 카드 카운트 갱신
+    updateHomeCounts();
+  } else {
+    if (backBtn) backBtn.style.display = '';
+    if (titleBar) titleBar.style.display = '';
+    if (titleEl) titleEl.innerHTML = `<span class="screen-title-ico">${meta.ico}</span>${meta.title}`;
+  }
+
+  // 화면 최상단으로 스크롤
+  try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch { window.scrollTo(0, 0); }
+
+  // ─── 각 화면별 초기화 로직 ───
+
+  // 지도 관련 화면 — #map div를 해당 패널로 옮기고 뷰 모드 갱신
   if (name === 'map' || name === 'classmap') {
     const mapEl = document.getElementById('map');
     if (mapEl) {
       const target = name === 'map'
         ? document.getElementById('panel-map')
         : document.getElementById('panel-classmap');
-      // target의 맨 앞(컨트롤 전)에 삽입
       if (target && mapEl.parentElement !== target) {
         target.insertBefore(mapEl, target.firstChild);
       }
@@ -6125,36 +6771,86 @@ function goTab(name) {
       currentMapView = newView;
       if (kakaoMap) updateMapMarkers();
     }
-    // 드롭다운 옵션 새로고침 (학생 데이터 변경 반영)
     if (name === 'classmap') renderClassMapSelect();
     if (kakaoMap) setTimeout(() => kakaoMap.relayout(), 100);
   }
   if (name === 'sos') {
-    // 본 SOS로 표시
     SOS.forEach(s => seenSOSIds.add(s.id));
     updateSOSBanner();
   }
   if (name === 'memos') {
-    // 쪽지 탭 진입 — 모두 읽음으로 처리
     markMemosAsSeen();
   }
   if (name === 'notes') {
-    // 에디터가 비어있으면 현재 day 로드 (dirty 유지)
     const editor = document.getElementById('notesEditor');
     if (editor && !editor.value && !notesDirty[notesCurrentDay]) {
       loadNotesEditor(notesCurrentDay, false);
     }
-    // CSV 내보내기 카운트 갱신
     updateExportCounts();
-    // 교사 계정 목록 렌더
     renderTeacherAccounts();
   }
 }
 
-// Tab switching
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => goTab(tab.dataset.panel));
-});
+// 홈 화면 카드들의 카운트/상태 갱신
+function updateHomeCounts() {
+  // 학생 수
+  const studCountEl = document.getElementById('homeStudentCount');
+  if (studCountEl) {
+    const total = Object.keys(STUDENTS).length;
+    studCountEl.textContent = total > 0 ? `${total}명` : '—';
+  }
+  // SOS 미해결 건수
+  const sosUnresolved = SOS.filter(s => !s.resolved).length;
+  const sosBadgeEl = document.getElementById('homeSosBadge');
+  const sosSubEl = document.getElementById('homeSosSub');
+  if (sosBadgeEl) {
+    if (sosUnresolved > 0) {
+      sosBadgeEl.style.display = '';
+      sosBadgeEl.textContent = sosUnresolved;
+    } else {
+      sosBadgeEl.style.display = 'none';
+    }
+  }
+  if (sosSubEl) sosSubEl.textContent = sosUnresolved > 0 ? `${sosUnresolved}건 미해결` : '이상 없음';
+  // 쪽지 새 글 수
+  const memoBadgeEl = document.getElementById('homeMemoBadge');
+  if (memoBadgeEl) {
+    const unread = TEACHER_MEMOS.filter(m =>
+      (m.ts || 0) > memoSeenTs &&
+      m.authorEmail !== currentTeacher?.email
+    ).length;
+    if (unread > 0) {
+      memoBadgeEl.style.display = '';
+      memoBadgeEl.textContent = unread;
+    } else {
+      memoBadgeEl.style.display = 'none';
+    }
+  }
+  // 점호 미완료
+  const roomsBadgeEl = document.getElementById('homeRoomsBadge');
+  const roomsSubEl = document.getElementById('homeRoomsSub');
+  if (roomsBadgeEl && roomsSubEl) {
+    const myClass = myHomeroomClass ? myHomeroomClass() : null;
+    if (myClass) {
+      const day = (typeof defaultRcDay === 'function') ? defaultRcDay() : 1;
+      const rcData = ROLL_CALL?.[`class-${myClass}`]?.[`day-${day}`]?.students || {};
+      const classStudents = Object.entries(STUDENTS).filter(([sid, s]) => s.class === myClass);
+      const notChecked = classStudents.filter(([sid]) => !rcData[sid]?.present).length;
+      if (notChecked > 0) {
+        roomsBadgeEl.style.display = '';
+        roomsBadgeEl.textContent = notChecked;
+        roomsSubEl.textContent = `${day}일차 · ${notChecked}명 미확인`;
+      } else {
+        roomsBadgeEl.style.display = 'none';
+        roomsSubEl.textContent = classStudents.length > 0 ? `${day}일차 · 전원 확인` : '담당 반 없음';
+      }
+    } else {
+      roomsSubEl.textContent = '방 배정 확인';
+    }
+  }
+}
+
+// 홈 탭 클릭은 이제 카드를 통해 들어가므로 기존 .tab 바인딩은 남길 필요 없음
 
 // 초기화
 window.addEventListener('DOMContentLoaded', () => {
