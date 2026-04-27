@@ -9,6 +9,17 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <title>2026 수학여행 · 통영고</title>
+<script>
+  /* 테마 즉시 적용 — 페인트 전에 data-theme 세팅으로 FOUC 방지 */
+  (function() {
+    try {
+      var t = localStorage.getItem('themePref');
+      if (t === 'dark' || t === 'light') {
+        document.documentElement.setAttribute('data-theme', t);
+      }
+    } catch (e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet" />
@@ -73,9 +84,9 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* ─── 다크 모드 (OS 설정 따라 자동 전환) ─── */
+  /* ─── 다크 모드 (OS 설정 따라 자동 전환 — 수동 토글이 없을 때만) ─── */
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme]) {
       --bg: #16151A;
       --surface: #1F1E23;
       --surface-2: #28272D;
@@ -115,6 +126,81 @@
       --surface-overlay: rgba(0, 0, 0, 0.28);
       --surface-overlay-strong: rgba(0, 0, 0, 0.40);
     }
+  }
+
+  /* ─── 수동 다크 모드 (사용자가 토글로 선택) ─── */
+  :root[data-theme="dark"] {
+    --bg: #16151A;
+    --surface: #1F1E23;
+    --surface-2: #28272D;
+    --surface-3: #322F37;
+
+    --ink: #F5F2EB;
+    --ink-2: #C2BFB6;
+    --ink-3: #8A8780;
+    --ink-4: #5C5952;
+
+    --line: rgba(245, 242, 235, 0.06);
+    --line-2: rgba(245, 242, 235, 0.10);
+
+    --coral: #8A93EE;
+    --coral-ink: #C5CAF5;
+    --coral-bg: rgba(79, 91, 213, 0.22);
+    --coral-deep: #5C68E5;
+
+    --amber: #E0A555;
+    --amber-ink: #F5C788;
+    --amber-bg: rgba(186, 117, 23, 0.20);
+
+    --blue: #6AA7F0;
+    --blue-ink: #A5C8F5;
+    --blue-bg: rgba(47, 116, 194, 0.22);
+
+    --red: #E8615F;
+    --red-ink: #F0908F;
+    --red-bg: rgba(200, 58, 57, 0.22);
+
+    --green: #87BD4D;
+    --green-ink: #B3D685;
+    --green-bg: rgba(78, 133, 24, 0.22);
+
+    --tabbar-bg: rgba(31, 30, 35, 0.96);
+
+    --surface-overlay: rgba(0, 0, 0, 0.28);
+    --surface-overlay-strong: rgba(0, 0, 0, 0.40);
+  }
+
+  /* ─── 테마 토글 (라이트/자동/다크) ─── */
+  .theme-toggle-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 4px 0;
+  }
+  .theme-toggle {
+    display: inline-flex;
+    background: var(--surface-2);
+    border-radius: 999px;
+    padding: 2px;
+  }
+  .theme-opt {
+    width: 30px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--ink);
+    opacity: 0.45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, opacity 0.15s;
+    padding: 0;
+  }
+  .theme-opt svg { width: 14px; height: 14px; }
+  .theme-opt[aria-pressed="true"] {
+    background: var(--surface);
+    opacity: 1;
   }
 
   * {
@@ -3212,6 +3298,19 @@
 
     <!-- 🏠 홈 탭 -->
     <section class="panel active" id="panel-home">
+      <div class="theme-toggle-bar">
+        <div class="theme-toggle" role="radiogroup" aria-label="테마 선택">
+          <button type="button" class="theme-opt" data-theme-set="light" aria-label="라이트 모드" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>
+          </button>
+          <button type="button" class="theme-opt" data-theme-set="auto" aria-label="자동" aria-pressed="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3 a9 9 0 0 1 0 18 z" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="theme-opt" data-theme-set="dark" aria-label="다크 모드" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </div>
+      </div>
       <div class="home-head">
         <div class="home-head-left">
           <div class="hello">TONGYEONG 2026</div>
@@ -6659,7 +6758,61 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('sosModal').addEventListener('click', e => {
     if (e.target.id === 'sosModal') closeSOS();
   });
+  initThemeToggle();
 });
+
+/* ─── 테마 토글 (라이트 / 자동 / 다크) ─── */
+function initThemeToggle() {
+  const KEY = 'themePref';
+  const root = document.documentElement;
+
+  function effectiveBg(pref) {
+    let isDark;
+    if (pref === 'dark') isDark = true;
+    else if (pref === 'light') isDark = false;
+    else isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return isDark ? '#16151A' : '#FAF8F3';
+  }
+
+  function syncMetaThemeColor(pref) {
+    document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.remove());
+    const m = document.createElement('meta');
+    m.name = 'theme-color';
+    m.content = effectiveBg(pref);
+    document.head.appendChild(m);
+  }
+
+  function apply(pref) {
+    if (pref === 'auto') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', pref);
+    document.querySelectorAll('.theme-opt').forEach(b => {
+      b.setAttribute('aria-pressed', b.dataset.themeSet === pref ? 'true' : 'false');
+    });
+    syncMetaThemeColor(pref);
+  }
+
+  const saved = (() => { try { return localStorage.getItem(KEY); } catch (e) { return null; } })();
+  const initial = (saved === 'light' || saved === 'dark' || saved === 'auto') ? saved : 'auto';
+  apply(initial);
+
+  document.querySelectorAll('.theme-opt').forEach(b => {
+    b.addEventListener('click', () => {
+      const pref = b.dataset.themeSet;
+      try { localStorage.setItem(KEY, pref); } catch (e) {}
+      apply(pref);
+    });
+  });
+
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => {
+      const cur = (() => { try { return localStorage.getItem(KEY); } catch (e) { return null; } })() || 'auto';
+      if (cur === 'auto') syncMetaThemeColor('auto');
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
+}
 </script>
 
 </body>
