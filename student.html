@@ -64,6 +64,10 @@
     /* 탭바 배경 (반투명 블러용) */
     --tabbar-bg: rgba(255, 255, 255, 0.96);
 
+    /* 카드 내부의 반투명 오버레이 (코스 카드 등) — 모드별로 밝게/어둡게 */
+    --surface-overlay: rgba(255, 255, 255, 0.5);
+    --surface-overlay-strong: rgba(255, 255, 255, 0.7);
+
     /* 간격 */
     --tab-h: 64px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -107,6 +111,9 @@
       --green-bg: rgba(78, 133, 24, 0.22);
 
       --tabbar-bg: rgba(31, 30, 35, 0.96);
+
+      --surface-overlay: rgba(0, 0, 0, 0.28);
+      --surface-overlay-strong: rgba(0, 0, 0, 0.40);
     }
   }
 
@@ -1861,7 +1868,7 @@
     line-height: 1.5;
   }
   .course-card .cc-stops {
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--surface-overlay);
     border-radius: 12px;
     padding: 14px 14px 14px 16px;
   }
@@ -1909,7 +1916,7 @@
     letter-spacing: -0.01em;
   }
   .course-stop-map {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--surface-overlay-strong);
     border: 0.5px solid rgba(216, 90, 48, 0.2);
     padding: 4px 8px;
     border-radius: 6px;
