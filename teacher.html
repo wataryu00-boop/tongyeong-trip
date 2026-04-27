@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#F5F5F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0B0D" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -46,6 +48,40 @@
   --group5: #a855f7;
   --group6: #ec4899;
 }
+
+/* ─── 라이트 모드 (OS 설정 따라 자동 전환) ─── */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #F5F5F3;
+    --surface: #FFFFFF;
+    --surface-2: #EFEFEC;
+    --surface-3: #E4E4E0;
+
+    --ink: #1A1A1C;
+    --ink-soft: #4A4A4D;
+    --ink-mute: #7A7A7D;
+    --ink-mute-2: #ABABAE;
+
+    --line: rgba(0, 0, 0, 0.08);
+    --line-soft: rgba(0, 0, 0, 0.14);
+
+    --accent: #E04E2A;
+    --accent-deep: #B53B1F;
+    --accent-soft: rgba(224, 78, 42, 0.10);
+
+    --success: #2E9D4E;
+    --success-soft: rgba(46, 157, 78, 0.10);
+
+    --warn: #C68E15;
+    --warn-soft: rgba(198, 142, 21, 0.12);
+
+    --blue: #2F74C2;
+    --blue-soft: rgba(47, 116, 194, 0.10);
+
+    --violet: #7B4DBE;
+  }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body {
   background: var(--bg);

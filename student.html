@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<meta name="theme-color" content="#FAF8F3" />
+<meta name="theme-color" content="#FAF8F3" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#16151A" media="(prefers-color-scheme: dark)" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
@@ -63,6 +64,45 @@
     /* 간격 */
     --tab-h: 64px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* ─── 다크 모드 (OS 설정 따라 자동 전환) ─── */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16151A;
+      --surface: #1F1E23;
+      --surface-2: #28272D;
+      --surface-3: #322F37;
+
+      --ink: #F5F2EB;
+      --ink-2: #C2BFB6;
+      --ink-3: #8A8780;
+      --ink-4: #5C5952;
+
+      --line: rgba(245, 242, 235, 0.06);
+      --line-2: rgba(245, 242, 235, 0.10);
+
+      --coral: #8A93EE;
+      --coral-ink: #C5CAF5;
+      --coral-bg: rgba(79, 91, 213, 0.22);
+      --coral-deep: #5C68E5;
+
+      --amber: #E0A555;
+      --amber-ink: #F5C788;
+      --amber-bg: rgba(186, 117, 23, 0.20);
+
+      --blue: #6AA7F0;
+      --blue-ink: #A5C8F5;
+      --blue-bg: rgba(47, 116, 194, 0.22);
+
+      --red: #E8615F;
+      --red-ink: #F0908F;
+      --red-bg: rgba(200, 58, 57, 0.22);
+
+      --green: #87BD4D;
+      --green-ink: #B3D685;
+      --green-bg: rgba(78, 133, 24, 0.22);
+    }
   }
 
   * {
