@@ -44,6 +44,10 @@
   --accent: #FF6B4A;
   --accent-deep: #D84A28;
   --accent-soft: rgba(255,107,74,0.12);
+  /* SOS 등 비상 UI 전용 — 모드와 무관하게 빨간 톤 유지 */
+  --danger: #FF6B4A;
+  --danger-deep: #D84A28;
+  --danger-soft: rgba(255,107,74,0.12);
   --success: #5BD27F;
   --success-soft: rgba(91,210,127,0.12);
   --warn: #F5B84A;
@@ -76,9 +80,13 @@
     --line: rgba(0, 0, 0, 0.08);
     --line-soft: rgba(0, 0, 0, 0.14);
 
-    --accent: #E04E2A;
-    --accent-deep: #B53B1F;
-    --accent-soft: rgba(224, 78, 42, 0.10);
+    --accent: #4F5BD5;
+    --accent-deep: #2C38A8;
+    --accent-soft: rgba(79, 91, 213, 0.10);
+
+    --danger: #E04E2A;
+    --danger-deep: #B53B1F;
+    --danger-soft: rgba(224, 78, 42, 0.10);
 
     --success: #2E9D4E;
     --success-soft: rgba(46, 157, 78, 0.10);
@@ -108,9 +116,13 @@
   --line: rgba(0, 0, 0, 0.08);
   --line-soft: rgba(0, 0, 0, 0.14);
 
-  --accent: #E04E2A;
-  --accent-deep: #B53B1F;
-  --accent-soft: rgba(224, 78, 42, 0.10);
+  --accent: #4F5BD5;
+  --accent-deep: #2C38A8;
+  --accent-soft: rgba(79, 91, 213, 0.10);
+
+  --danger: #E04E2A;
+  --danger-deep: #B53B1F;
+  --danger-soft: rgba(224, 78, 42, 0.10);
 
   --success: #2E9D4E;
   --success-soft: rgba(46, 157, 78, 0.10);
@@ -480,7 +492,7 @@ header button svg {
 /* SOS 알림 배너 */
 .sos-banner {
   display: none;
-  background: var(--accent);
+  background: var(--danger);
   color: #fff;
   padding: 14px 16px;
   animation: pulse 2s infinite;
@@ -2652,7 +2664,7 @@ body.is-admin .tab.admin-only { display: inline-flex; }
 }
 .sos-big-count {
   font-size: 26px;
-  color: var(--accent);
+  color: var(--danger);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
