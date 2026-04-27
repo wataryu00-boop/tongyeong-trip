@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#F5F5F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#F2F5FC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B0B0D" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -67,18 +67,18 @@
 /* ─── 라이트 모드 (OS 설정 따라 자동 전환 — 수동 토글이 없을 때만) ─── */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --bg: #F5F5F3;
+    --bg: #F2F5FC;
     --surface: #FFFFFF;
-    --surface-2: #EFEFEC;
-    --surface-3: #E4E4E0;
+    --surface-2: #E8ECF7;
+    --surface-3: #DCE2F1;
 
-    --ink: #1A1A1C;
-    --ink-soft: #4A4A4D;
-    --ink-mute: #7A7A7D;
-    --ink-mute-2: #ABABAE;
+    --ink: #1A1B2E;
+    --ink-soft: #4A4D62;
+    --ink-mute: #7A7E92;
+    --ink-mute-2: #ACAFC0;
 
-    --line: rgba(0, 0, 0, 0.08);
-    --line-soft: rgba(0, 0, 0, 0.14);
+    --line: rgba(34, 47, 130, 0.08);
+    --line-soft: rgba(34, 47, 130, 0.14);
 
     --accent: #4F5BD5;
     --accent-deep: #2C38A8;
@@ -103,18 +103,18 @@
 
 /* ─── 수동 라이트 모드 (사용자가 토글로 선택) ─── */
 :root[data-theme="light"] {
-  --bg: #F5F5F3;
+  --bg: #F2F5FC;
   --surface: #FFFFFF;
-  --surface-2: #EFEFEC;
-  --surface-3: #E4E4E0;
+  --surface-2: #E8ECF7;
+  --surface-3: #DCE2F1;
 
-  --ink: #1A1A1C;
-  --ink-soft: #4A4A4D;
-  --ink-mute: #7A7A7D;
-  --ink-mute-2: #ABABAE;
+  --ink: #1A1B2E;
+  --ink-soft: #4A4D62;
+  --ink-mute: #7A7E92;
+  --ink-mute-2: #ACAFC0;
 
-  --line: rgba(0, 0, 0, 0.08);
-  --line-soft: rgba(0, 0, 0, 0.14);
+  --line: rgba(34, 47, 130, 0.08);
+  --line-soft: rgba(34, 47, 130, 0.14);
 
   --accent: #4F5BD5;
   --accent-deep: #2C38A8;
@@ -9861,7 +9861,7 @@ function initThemeToggle() {
     if (pref === 'dark') isDark = true;
     else if (pref === 'light') isDark = false;
     else isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return isDark ? '#0B0B0D' : '#F5F5F3';
+    return isDark ? '#0B0B0D' : '#F2F5FC';
   }
 
   function syncMetaThemeColor(pref) {
