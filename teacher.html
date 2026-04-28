@@ -22,7 +22,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -67,22 +67,22 @@
 /* ─── 라이트 모드 (OS 설정 따라 자동 전환 — 수동 토글이 없을 때만) ─── */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --bg: #F2F5FC;
+    --bg: #FFFFFF;
     --surface: #FFFFFF;
-    --surface-2: #E8ECF7;
-    --surface-3: #DCE2F1;
+    --surface-2: #F6F7FB;
+    --surface-3: #EEF0F6;
 
-    --ink: #1A1B2E;
-    --ink-soft: #4A4D62;
-    --ink-mute: #7A7E92;
-    --ink-mute-2: #ACAFC0;
+    --ink: #0F1424;
+    --ink-soft: #3A4060;
+    --ink-mute: #6E7491;
+    --ink-mute-2: #A2A8C0;
 
-    --line: rgba(34, 47, 130, 0.08);
-    --line-soft: rgba(34, 47, 130, 0.14);
+    --line: rgba(15, 20, 36, 0.07);
+    --line-soft: rgba(15, 20, 36, 0.12);
 
-    --accent: #4F5BD5;
-    --accent-deep: #2C38A8;
-    --accent-soft: rgba(79, 91, 213, 0.10);
+    --accent: #3D4DCC;
+    --accent-deep: #1E2BA8;
+    --accent-soft: rgba(61, 77, 204, 0.08);
 
     --danger: #E04E2A;
     --danger-deep: #B53B1F;
@@ -103,22 +103,22 @@
 
 /* ─── 수동 라이트 모드 (사용자가 토글로 선택) ─── */
 :root[data-theme="light"] {
-  --bg: #F2F5FC;
+  --bg: #FFFFFF;
   --surface: #FFFFFF;
-  --surface-2: #E8ECF7;
-  --surface-3: #DCE2F1;
+  --surface-2: #F6F7FB;
+  --surface-3: #EEF0F6;
 
-  --ink: #1A1B2E;
-  --ink-soft: #4A4D62;
-  --ink-mute: #7A7E92;
-  --ink-mute-2: #ACAFC0;
+  --ink: #0F1424;
+  --ink-soft: #3A4060;
+  --ink-mute: #6E7491;
+  --ink-mute-2: #A2A8C0;
 
-  --line: rgba(34, 47, 130, 0.08);
-  --line-soft: rgba(34, 47, 130, 0.14);
+  --line: rgba(15, 20, 36, 0.07);
+  --line-soft: rgba(15, 20, 36, 0.12);
 
-  --accent: #4F5BD5;
-  --accent-deep: #2C38A8;
-  --accent-soft: rgba(79, 91, 213, 0.10);
+  --accent: #3D4DCC;
+  --accent-deep: #1E2BA8;
+  --accent-soft: rgba(61, 77, 204, 0.08);
 
   --danger: #E04E2A;
   --danger-deep: #B53B1F;
@@ -136,7 +136,808 @@
   --violet: #7B4DBE;
 }
 
-/* ─── 테마 토글 (라이트/자동/다크) ─── */
+/* ═══════════════════════════════════════════════════
+   ✨ 라이트 모드 전용 — 가벼운 페이퍼 미감
+   ─ Cool Modernism / Swiss Watch (절제된 인디고)
+   라이트 토글 시(:root[data-theme="light"])만 적용.
+   자동 라이트(:root:not([data-theme]) + prefers-color-scheme: light)도
+   동일 토큰을 받지만 컴포넌트 스타일은 라이트 토글 한정.
+   ═══════════════════════════════════════════════════ */
+
+/* light용 hairline + mono — 모드 무관하게 정의 (light에서만 사용) */
+:root {
+  --light-hairline: rgba(15, 20, 36, 0.05);
+  --light-line: rgba(15, 20, 36, 0.07);
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+}
+
+/* ═══ 학생 명단 패널 ═══ */
+:root[data-theme="light"] #panel-students,
+:root[data-theme="light"] #panel-students .panel-inner {
+  background: #FFFFFF;
+}
+
+/* 검색창 — 가벼운 surface-2 + hairline */
+:root[data-theme="light"] .stu-search-box {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  box-shadow: none;
+  border-radius: 8px;
+}
+:root[data-theme="light"] .stu-search-box:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+
+/* 상태 필터 칩 — 더 가벼운 스트립 톤 */
+:root[data-theme="light"] .ssf-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  color: var(--ink-soft);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 7px 11px;
+}
+:root[data-theme="light"] .ssf-chip .ssf-cnt {
+  font-family: var(--mono);
+  color: var(--ink-mute);
+  opacity: 1;
+  font-size: 10px;
+}
+:root[data-theme="light"] .ssf-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+:root[data-theme="light"] .ssf-chip.active .ssf-cnt {
+  color: #fff;
+  opacity: 0.75;
+}
+
+/* 반 드롭다운 — 가벼운 surface-2 + hairline */
+:root[data-theme="light"] .student-class-select {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  border-radius: 8px;
+  color: var(--ink);
+}
+:root[data-theme="light"] .student-class-select:focus,
+:root[data-theme="light"] .student-class-select.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+:root[data-theme="light"] .scr-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+:root[data-theme="light"] .scr-count {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+}
+
+/* ═══ 학생 카드 — flat + 좌측 컬러 바 ═══ */
+:root[data-theme="light"] .student-item {
+  background: #FFFFFF;
+  border: 1px solid var(--light-line);
+  border-radius: 10px;
+  padding: 11px 14px 11px 14px;
+  box-shadow: none;
+  position: relative;
+  overflow: hidden;
+}
+:root[data-theme="light"] .student-item::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: transparent;
+  transition: background 0.15s;
+}
+/* 좌측 컬러 바 — 활성/유휴/미확인/SOS */
+:root[data-theme="light"] .student-item:has(.si-status-dot.active)::before { background: #1FA34A; }
+:root[data-theme="light"] .student-item:has(.si-status-dot.idle)::before   { background: #D9A40A; }
+:root[data-theme="light"] .student-item:has(.si-status-dot.unknown)::before{ background: var(--ink-mute-2); }
+:root[data-theme="light"] .student-item.si-sos {
+  background: #fff;
+  border-color: rgba(212, 58, 31, 0.30);
+}
+:root[data-theme="light"] .student-item.si-sos::before {
+  background: #D43A1F;
+  width: 3px;
+}
+:root[data-theme="light"] .student-item:hover {
+  border-color: var(--accent);
+  background: #FAFBFD;
+}
+:root[data-theme="light"] .student-item.si-sos:hover {
+  border-color: rgba(212, 58, 31, 0.55);
+}
+
+/* 아바타 — surface-2 배경 + 인디고 외곽선 */
+:root[data-theme="light"] .si-avatar {
+  background: var(--surface-2) !important;
+  color: var(--ink) !important;
+  box-shadow: inset 0 0 0 1px var(--light-line);
+  width: 36px; height: 36px;
+  font-size: 13px;
+}
+:root[data-theme="light"] .si-status-dot {
+  border-color: #fff;
+}
+:root[data-theme="light"] .si-status-dot.active { background: #1FA34A; }
+:root[data-theme="light"] .si-status-dot.idle   { background: #D9A40A; }
+:root[data-theme="light"] .si-status-dot.sos    { background: #D43A1F; }
+:root[data-theme="light"] .si-status-dot.unknown{ background: var(--ink-mute-2); }
+
+/* 이름/학번/메타 */
+:root[data-theme="light"] .student-item .si-info .nm {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  letter-spacing: -0.015em;
+}
+:root[data-theme="light"] .si-badge.sid {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+:root[data-theme="light"] .si-badge.leader {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  border: 1px solid rgba(61, 77, 204, 0.20);
+  font-weight: 600;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+:root[data-theme="light"] .si-badge.sos {
+  background: #D43A1F;
+  color: #fff;
+  font-weight: 700;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+:root[data-theme="light"] .student-item .si-info .meta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  margin-top: 4px;
+  letter-spacing: 0;
+}
+
+/* 우측 상태 라벨 + 시간 */
+:root[data-theme="light"] .student-item .si-loc .status-label {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+:root[data-theme="light"] .student-item .si-loc .status-label.active   { color: #1FA34A; }
+:root[data-theme="light"] .student-item .si-loc .status-label.idle     { color: #B07A0E; }
+:root[data-theme="light"] .student-item .si-loc .status-label.sos      { color: #D43A1F; }
+:root[data-theme="light"] .student-item .si-loc .status-label.unknown  { color: var(--ink-mute); }
+:root[data-theme="light"] .student-item .si-loc {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+}
+
+/* 빈 상태 */
+:root[data-theme="light"] .empty {
+  color: var(--ink-mute);
+  background: var(--surface-2);
+  border: 1px dashed var(--light-line);
+  border-radius: 10px;
+}
+
+/* ═══ 공통: 패널 헤더 / 섹션 라벨 ═══ */
+:root[data-theme="light"] .section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+:root[data-theme="light"] .panel { background: #fff; }
+:root[data-theme="light"] .panel-inner { background: transparent; }
+
+/* ═══ 홈(허브) 카드 ═══ */
+:root[data-theme="light"] .home-title {
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+:root[data-theme="light"] .home-label {
+  font-family: var(--mono);
+  color: var(--ink-mute);
+  letter-spacing: 0.22em;
+}
+:root[data-theme="light"] .home-card {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 12px;
+  box-shadow: none;
+  transition: all 0.15s;
+}
+:root[data-theme="light"] .home-card:hover {
+  border-color: var(--accent);
+  background: #FAFBFD;
+}
+:root[data-theme="light"] .home-card-label {
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+:root[data-theme="light"] .home-card-sub {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0;
+}
+:root[data-theme="light"] .home-card-badge {
+  background: #D43A1F;
+  color: #fff;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+/* ═══ 조 정보 (Groups) ═══ */
+:root[data-theme="light"] .group-card {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: none;
+}
+:root[data-theme="light"] .group-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 14px; bottom: 14px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+  opacity: 0.85;
+}
+:root[data-theme="light"] .group-card-head {
+  border-bottom: 1px solid var(--light-hairline);
+  padding-left: 18px;
+  background: transparent;
+}
+:root[data-theme="light"] .group-card-head .gname {
+  font-family: 'Pretendard', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+:root[data-theme="light"] .group-card-head .gcount {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0;
+}
+:root[data-theme="light"] .group-card-body {
+  padding-left: 18px;
+}
+:root[data-theme="light"] .group-card-body .row {
+  border-bottom: 1px solid var(--light-hairline);
+  padding: 9px 0;
+}
+:root[data-theme="light"] .group-card-body .row .k {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+:root[data-theme="light"] .group-card-body .row .v {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 13px;
+}
+:root[data-theme="light"] .group-members {
+  padding-left: 18px;
+  border-top: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .group-members-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+}
+
+/* 조원 칩 */
+:root[data-theme="light"] .group-members-list .gm-chip,
+:root[data-theme="light"] .group-members-list .member-chip,
+:root[data-theme="light"] .group-members-list > * {
+  background: var(--surface-2);
+  border: 1px solid var(--light-line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ═══ SOS 카드 ═══ */
+:root[data-theme="light"] .sos-big-title {
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+:root[data-theme="light"] .sos-big-count {
+  color: #D43A1F;
+  font-family: var(--mono);
+  font-weight: 700;
+}
+:root[data-theme="light"] .sos-alert-toggle {
+  background: var(--surface-2);
+  border-color: var(--light-line);
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+:root[data-theme="light"] .sos-item {
+  background: #fff;
+  border: 1px solid rgba(212, 58, 31, 0.30);
+  border-radius: 12px;
+  box-shadow: none;
+}
+:root[data-theme="light"] .sos-item.resolved {
+  border-color: var(--light-line);
+  opacity: 1;
+  background: #FAFBFD;
+}
+:root[data-theme="light"] .sos-item-top-bar {
+  background: #D43A1F;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+:root[data-theme="light"] .sos-item.resolved .sos-item-top-bar {
+  background: var(--surface-3);
+  color: var(--ink-mute);
+}
+:root[data-theme="light"] .sos-item-top-bar .stb-time {
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+:root[data-theme="light"] .sos-item-avatar {
+  background: #D43A1F;
+  color: #fff;
+  font-weight: 700;
+}
+:root[data-theme="light"] .sos-item.resolved .sos-item-avatar {
+  background: var(--surface-3);
+  color: var(--ink-mute);
+}
+:root[data-theme="light"] .sos-item-stu-id {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+}
+:root[data-theme="light"] .sos-item-msg {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  color: var(--ink);
+}
+:root[data-theme="light"] .sos-item-msg::before,
+:root[data-theme="light"] .sos-item-msg::after {
+  color: #D43A1F;
+}
+:root[data-theme="light"] .sos-item-location {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .sos-item-location .sil-ico { color: #D43A1F; }
+:root[data-theme="light"] .sos-item-location .sil-coords {
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+}
+:root[data-theme="light"] .sos-action {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+:root[data-theme="light"] .sos-action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+:root[data-theme="light"] .sos-action.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+:root[data-theme="light"] .sos-action.primary:hover {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+}
+
+/* ═══ 일정 (Schedule) ═══ */
+:root[data-theme="light"] .tsched-time {
+  font-family: var(--mono);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+:root[data-theme="light"] .tsched-content {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+:root[data-theme="light"] .tsched-item.now .tsched-content {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+:root[data-theme="light"] .tsched-what {
+  color: var(--ink);
+  font-weight: 700;
+}
+:root[data-theme="light"] .tsched-note {
+  color: var(--ink-soft);
+}
+:root[data-theme="light"] .tsched-hint {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  color: var(--ink-soft);
+  border-radius: 10px;
+}
+
+/* 교사 배치 */
+:root[data-theme="light"] .tsched-ta-row {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 12px;
+}
+:root[data-theme="light"] .tsched-ta-row.me {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+:root[data-theme="light"] .tsched-ta-zone-name {
+  color: var(--ink);
+  font-weight: 700;
+}
+:root[data-theme="light"] .tsched-ta-note {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0;
+}
+:root[data-theme="light"] .tsched-ta-teacher-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--light-line);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 12px;
+  border-radius: 999px;
+}
+:root[data-theme="light"] .tsched-ta-teacher-chip.has-tel {
+  border-color: rgba(61, 77, 204, 0.25);
+}
+:root[data-theme="light"] .tsched-ta-teacher-chip.has-tel:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+:root[data-theme="light"] .tsched-ta-teacher-chip.me {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* ═══ 공통 카드/입력 ═══ */
+:root[data-theme="light"] .filter-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  border-radius: 8px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+:root[data-theme="light"] .filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+:root[data-theme="light"] .search-box {
+  background: var(--surface-2);
+  border: 1px solid var(--light-hairline);
+  border-radius: 8px;
+}
+:root[data-theme="light"] .search-box:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+
+/* ═══ 상단 헤더 (사용자 인사) ═══ */
+:root[data-theme="light"] .header,
+:root[data-theme="light"] .top-bar,
+:root[data-theme="light"] .app-header {
+  background: #fff;
+  border-bottom: 1px solid var(--light-hairline);
+}
+
+/* ═══ 하단 네비게이션 ═══ */
+:root[data-theme="light"] .bottom-nav,
+:root[data-theme="light"] nav.bottom-nav {
+  background: #fff;
+  border-top: 1px solid var(--light-hairline);
+  box-shadow: none;
+}
+:root[data-theme="light"] .bottom-nav .nav-item,
+:root[data-theme="light"] .bottom-nav button {
+  color: var(--ink-mute);
+}
+:root[data-theme="light"] .bottom-nav .nav-item.active,
+:root[data-theme="light"] .bottom-nav button.active {
+  color: var(--accent);
+}
+
+/* ═══ SOS 배너 (상단 알림) ═══ */
+:root[data-theme="light"] .sos-banner {
+  background: #D43A1F;
+  color: #fff;
+}
+:root[data-theme="light"] .sos-banner-label {
+  font-family: var(--mono);
+  letter-spacing: 0.2em;
+}
+
+/* ═══ 메모 / 공지 / 기록 — 패널 공통 카드 ═══ */
+:root[data-theme="light"] #panel-memos .panel-inner > div,
+:root[data-theme="light"] #panel-announce .panel-inner > div,
+:root[data-theme="light"] #panel-records .panel-inner > div {
+  border-radius: 10px;
+}
+:root[data-theme="light"] .memo-item,
+:root[data-theme="light"] .announce-item,
+:root[data-theme="light"] .record-item {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+:root[data-theme="light"] .memo-meta,
+:root[data-theme="light"] .announce-meta,
+:root[data-theme="light"] .record-meta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+}
+
+/* ═══ 룸/방 패널 ═══ */
+:root[data-theme="light"] .room-card,
+:root[data-theme="light"] .rooms-item {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+:root[data-theme="light"] .room-no,
+:root[data-theme="light"] .rooms-item .rm-no {
+  font-family: var(--mono);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+/* ═══ 지도 툴바 ═══ */
+:root[data-theme="light"] .map-top-toolbar {
+  background: #fff;
+  border-bottom: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .map-stats {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 10px;
+}
+:root[data-theme="light"] .map-stats .k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+:root[data-theme="light"] .map-stats .v {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* JetBrains Mono 로딩 — head에 추가됨 */
+
+/* ═══ 숙소·점호 — 라이트 모드에서 노란 #fbbf24가 흰 배경에 안 보여 진한 호박색으로 교체 ═══ */
+:root[data-theme="light"] .rcsc-fill.low {
+  background: #C77E0A;  /* 진한 호박 */
+}
+:root[data-theme="light"] .rcsc-legend .dot-pending {
+  background: #C77E0A;
+}
+:root[data-theme="light"] .room-card-head .room-status.pending {
+  background: rgba(176, 122, 14, 0.12);
+  color: #8A5A08;
+  font-weight: 700;
+}
+:root[data-theme="light"] .room-card-head .room-status.done {
+  background: rgba(31, 163, 74, 0.12);
+  color: #1B7C3A;
+  font-weight: 700;
+}
+:root[data-theme="light"] .room-stu-pending-tag {
+  color: #8A5A08;
+}
+:root[data-theme="light"] .rcsc-legend .dot-done {
+  background: #1FA34A;
+}
+
+/* 점호 진행 요약 카드 자체도 hairline 카드로 */
+:root[data-theme="light"] .rc-summary-card {
+  background: #fff;
+  border: 1px solid var(--light-line);
+  border-radius: 12px;
+  box-shadow: none;
+}
+:root[data-theme="light"] .rcsc-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-weight: 600;
+}
+:root[data-theme="light"] .rcsc-score {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+:root[data-theme="light"] .rcsc-bar {
+  background: var(--surface-2);
+}
+:root[data-theme="light"] .rcsc-open-btn {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 600;
+}
+:root[data-theme="light"] .rcsc-open-btn:hover {
+  background: var(--accent-deep);
+}
+
+/* 룸 카드 자체도 라이트 톤으로 */
+:root[data-theme="light"] .room-card-head {
+  background: transparent;
+  border-bottom: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .room-card-head .room-no {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+/* 점호 모달 내부 — 흰 배경에서 노랑 안 보이는 부분 추가로 */
+:root[data-theme="light"] .rc-row .rc-time,
+:root[data-theme="light"] .rc-summary {
+  color: var(--ink-soft);
+}
+
+/* 점호 모달 — 라이트 톤 통일 */
+:root[data-theme="light"] .roll-call-modal {
+  background: #fff;
+}
+:root[data-theme="light"] .rc-head {
+  background: #fff;
+  border-bottom: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .rc-title {
+  color: var(--ink);
+  font-weight: 700;
+}
+:root[data-theme="light"] .rc-sub {
+  font-family: var(--mono);
+  color: var(--ink-mute);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+:root[data-theme="light"] .rc-day-tabs {
+  border-bottom: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .rc-day-tab {
+  color: var(--ink-mute);
+  font-weight: 500;
+}
+:root[data-theme="light"] .rc-day-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+:root[data-theme="light"] .rc-day-count {
+  font-family: var(--mono);
+  color: var(--ink-mute);
+}
+:root[data-theme="light"] .rc-day-tab.active .rc-day-count {
+  color: var(--accent);
+}
+:root[data-theme="light"] .rc-progress {
+  background: var(--surface-2);
+}
+:root[data-theme="light"] .rc-progress-fill {
+  background: #1FA34A;
+}
+:root[data-theme="light"] .rc-progress-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0;
+}
+:root[data-theme="light"] .rc-row {
+  border-bottom: 1px solid var(--light-hairline);
+}
+:root[data-theme="light"] .rc-row.checked {
+  background: rgba(31, 163, 74, 0.06);
+}
+:root[data-theme="light"] .rc-row .rc-check {
+  border: 1.5px solid var(--light-line);
+  background: #fff;
+}
+:root[data-theme="light"] .rc-row.checked .rc-check {
+  background: #1FA34A;
+  border-color: #1FA34A;
+  color: #fff;
+}
+
+/* 공지 메뉴: 식사 태그(노랑) — 라이트에서 진한 호박 */
+:root[data-theme="light"] .announce-hi-tag.meal {
+  background: rgba(176, 122, 14, 0.12);
+  color: #8A5A08;
+  font-weight: 700;
+}
+:root[data-theme="light"] .announce-hi-tag.urgent {
+  background: rgba(212, 58, 31, 0.12);
+  color: #B0301A;
+}
+:root[data-theme="light"] .announce-hi-tag.location {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+:root[data-theme="light"] .announce-hi-read-fill.low {
+  background: #C77E0A;
+}
+
+/* 지도 탭 상단 상태 라벨 — idle 노랑이 흰 배경에 안 보임 */
+:root[data-theme="light"] .mst-v-idle {
+  color: #8A5A08;
+}
+:root[data-theme="light"] .ssf-chip .ssf-ico.idle {
+  background: #C77E0A;
+}
+
 .theme-toggle-bar {
   display: flex;
   justify-content: flex-end;
