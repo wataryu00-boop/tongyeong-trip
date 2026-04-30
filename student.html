@@ -4417,10 +4417,11 @@ function initFirebase() {
       }
     }
 
-    db.ref(FIREBASE_PATH + '/students').on('value', snap => {
+    // /students는 데이터가 크므로(300명) 한 번만 읽음. 여행 중 학생 데이터 변경은 드뭄.
+    db.ref(FIREBASE_PATH + '/students').once('value').then(snap => {
       _rawStudents = snap.val();
       _rebuildFromRaw();
-    });
+    }).catch(e => console.warn('students 로드 실패:', e));
     db.ref(FIREBASE_PATH + '/groups').on('value', snap => {
       _rawGroups = snap.val();
       _rebuildFromRaw();
@@ -4579,28 +4580,75 @@ function loadSession() {
 
 // 저장된 세션으로 자동 로그인 시도 (실패시 조용히 로그인 화면 표시)
 // Firebase 데이터 도착 후 호출되거나, 캐시에 이미 데이터가 있으면 즉시 호출
-function tryAutoLogin() {
+/* 캐시·전체 데이터에 의존하지 않고, 본인 학번 한 명만 Firebase에서 직접 조회.
+   대규모 동시 접속 시 /students(300명) 전체 응답 기다리지 않게 하기 위함. */
+async function fetchStudentDirect(id) {
+  if (!db) return null;
+  const ref = db.ref(FIREBASE_PATH + '/students/' + id);
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10000));
+  try {
+    const snap = await Promise.race([ref.once('value'), timeout]);
+    return snap.val() || null;
+  } catch (e) {
+    console.warn('학생 직접 조회 실패:', e.message);
+    return null;
+  }
+}
+
+/* raw 학생 객체 → 화면에서 쓰는 형태로 변환. _rawRooms 도착 전엔 floor 등 일부 비어있을 수 있음. */
+function buildStudentFromRaw(raw) {
+  const roomById = _rawRooms || {};
+  const classStr = (raw.class != null && raw.class !== '') ? `2-${raw.class}` : '';
+  const busStr = (raw.bus != null && raw.bus !== '') ? `${raw.bus}호차` : '';
+  const groupStr = (raw.group != null && raw.group !== 0 && raw.group !== '') ? String(raw.group) : '';
+  let roomStr = '', floorStr = '';
+  if (raw.room && roomById[raw.room]) {
+    roomStr = String(roomById[raw.room].no || '');
+    floorStr = roomById[raw.room].floor ? `${roomById[raw.room].floor}층` : '';
+  } else if (raw.room) {
+    roomStr = String(raw.room).replace(/^R/, '');
+  }
+  return {
+    name: raw.name,
+    class: classStr,
+    classNum: raw.class,
+    num: raw.num,
+    room: roomStr,
+    floor: floorStr,
+    group: groupStr,
+    bus: busStr,
+    tel: raw.tel || '',
+    gender: raw.gender || '',
+    note: raw.note || ''
+  };
+}
+
+async function tryAutoLogin() {
   // 이미 로그인되어 있으면 스킵
   if (currentStudent) return false;
   const sess = loadSession();
   if (!sess) return false;
-  // STUDENTS 비어있으면 아직 데이터 도착 전 — 복원 불가
-  if (!STUDENTS || Object.keys(STUDENTS).length === 0) return false;
 
-  const student = STUDENTS[sess.id];
-  if (!student) {
-    // 학번이 DB에 없어진 경우 — 세션 폐기
+  // 캐시 히트 — 즉시 복원
+  if (STUDENTS && STUDENTS[sess.id]) {
+    const student = STUDENTS[sess.id];
+    if (student.name !== sess.name) { clearSession(); return false; }
+    currentStudent = { id: sess.id, ...student };
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('main').classList.add('active');
+    renderHome();
+    restoreLocationSettings();
+    return true;
+  }
+
+  // 캐시 미스 — Firebase에 본인 데이터만 직접 조회 (전체 학생 명단 안 기다림)
+  const raw = await fetchStudentDirect(sess.id);
+  if (!raw || raw.name !== sess.name) {
+    if (raw === null) return false; // 네트워크 실패 — 세션 유지하고 재시도 가능
     clearSession();
     return false;
   }
-  if (student.name !== sess.name) {
-    // 이름이 바뀌었으면 (개명 등) — 세션 폐기
-    clearSession();
-    return false;
-  }
-
-  // 로그인 상태 복원
-  currentStudent = { id: sess.id, ...student };
+  currentStudent = { id: sess.id, ...buildStudentFromRaw(raw) };
   document.getElementById('login').style.display = 'none';
   document.getElementById('main').classList.add('active');
   renderHome();
@@ -4611,7 +4659,7 @@ function tryAutoLogin() {
 /* ═══════════════════════════════════════════════════
    로그인 / 로그아웃
    ═══════════════════════════════════════════════════ */
-function login() {
+async function login() {
   const id = document.getElementById('inputId').value.trim();
   const name = document.getElementById('inputName').value.trim();
   const err = document.getElementById('loginError');
@@ -4620,12 +4668,28 @@ function login() {
     err.textContent = '학번과 이름을 모두 입력해주세요';
     return;
   }
-  const student = STUDENTS[id];
+
+  // 캐시 히트 빠른 경로
+  let student = STUDENTS[id];
+
+  // 캐시 미스 — Firebase에 본인 데이터만 직접 조회
   if (!student) {
-    err.textContent = '학번이 존재하지 않습니다';
-    return;
-  }
-  if (student.name !== name) {
+    err.textContent = '확인 중...';
+    const raw = await fetchStudentDirect(id);
+    if (raw === null) {
+      err.textContent = '네트워크가 불안정해요. 잠시 후 다시 시도해주세요';
+      return;
+    }
+    if (!raw.name) {
+      err.textContent = '학번이 존재하지 않습니다';
+      return;
+    }
+    if (raw.name !== name) {
+      err.textContent = '이름이 일치하지 않습니다';
+      return;
+    }
+    student = buildStudentFromRaw(raw);
+  } else if (student.name !== name) {
     err.textContent = '이름이 일치하지 않습니다';
     return;
   }
