@@ -5767,7 +5767,7 @@ const TRIP_SCHEDULE = [
       { time: '07:00', what: '기상 · 아침 식사 · 짐 정리', note: '~ 08:00' },
       { time: '08:00', what: '숙소 출발', note: '집결 및 인원 확인' },
       { time: '11:00', what: '전주한옥마을 자유 탐방', note: '개별 중식 · ~14:00', highlight: true },
-      { time: '13:50', what: '버스 내린 곳 집결', note: '당일 위치 안내 예정' },
+      { time: '13:50', what: '전동성당 앞 집결', note: '14:00 정시 출발' },
       { time: '14:00', what: '통영으로 출발', note: '인원 확인 후 출발' },
       { time: '16:30', what: '통영 도착 · 해산', note: '열방교회' }
     ]
@@ -5899,7 +5899,7 @@ const DEFAULT_DAY_NOTES = [
         '07:00~08:00 기상 · 조식 · 짐 정리 (체크아웃)',
         '08:00 숙소 출발',
         '11:00~14:00 전주한옥마을 자유 탐방',
-        '13:50 집결 시작, 14:00 정시 통영 출발 — 엄수',
+        '13:50 전동성당 앞 집결 시작, 14:00 정시 통영 출발 — 엄수',
         '16:30 열방교회 도착 예정'
       ]},
       { icon: '🏯', title: '문화재 · 예절', items: [
@@ -6160,6 +6160,18 @@ function initFirebase() {
     }
     db.ref('.info/connected').on('value', snap => {
       setConn(snap.val() ? 'online' : 'offline', snap.val() ? '실시간 연결' : '오프라인');
+    });
+
+    // 운영자 강제 새로고침 — Firebase에서 _forceReload 값을 바꾸면 모든 클라이언트 자동 reload
+    let _frInitial = null;
+    db.ref(FIREBASE_PATH + '/_forceReload').on('value', snap => {
+      const v = snap.val();
+      if (v == null) return;
+      if (_frInitial === null) { _frInitial = v; return; }
+      if (v !== _frInitial) {
+        _frInitial = v;
+        setTimeout(() => { try { location.reload(); } catch (e) {} }, 800);
+      }
     });
   } catch (e) {
     console.error('Firebase 초기화 실패:', e);
